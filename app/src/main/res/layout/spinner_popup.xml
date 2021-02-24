@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="350dp"
+    android:layout_height="310dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/mainTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Category"
+            android:textColor="@android:color/black"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:id="@+id/mainCategoryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Main Category"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="15dp"
+            android:textSize="15dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/box_frame"
+            android:layout_marginTop="10dp">
+
+            <Spinner
+                android:id="@+id/mainCategorySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/subCategoryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sub Category"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="15dp"
+            android:textSize="15dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/box_frame"
+            android:layout_marginTop="10dp">
+
+            <Spinner
+                android:id="@+id/subCategorySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:gravity="bottom|right">
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "CANCEL"
+                android:textAlignment="textEnd"
+                android:background="@android:color/transparent"
+                android:textColor="@color/mainColor"/>
+
+            <Button
+                android:id="@+id/okButon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "OK"
+                android:background="@android:color/transparent"
+                android:textColor="@color/mainColor"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AddFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/uploadPhotoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12.5dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:text="Upload Photo(s)" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/uploadPhotoCollectionView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp">
+
+                <TextView
+                    android:id="@+id/itemNameTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item Name"
+                    android:textSize="12.5dp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+                <EditText
+                    android:id="@+id/itemNameTextField"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:ems="7"
+                    android:inputType="textPersonName"
+                    android:hint="Name"
+                    android:textSize="12.5dp"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/box_frame"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp">
+
+                <TextView
+                    android:id="@+id/itemPriceTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Price"
+                    android:textSize="12.5dp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+                <EditText
+                    android:id="@+id/itemPriceTextField"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:ems="7"
+                    android:layout_marginTop="10dp"
+                    android:inputType="textPersonName"
+                    android:hint="Price"
+                    android:textSize="12.5dp"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/box_frame"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/categoryTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textSize="12.5dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="10dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/box_frame">
+            <Spinner
+                android:id="@+id/categorySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="10dp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/itemPhoneTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone"
+            android:textSize="12.5dp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/itemPhoneTextField"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:textSize="12.5dp"
+            android:hint="Phone Number"
+            android:paddingLeft="5dp"
+            android:background="@drawable/box_frame"
+            android:inputType="phone" />
+
+        <TextView
+            android:id="@+id/itemAddressTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address"
+            android:textSize="12.5dp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/itemAddressTextField"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/box_frame"
+            android:ems="10"
+            android:textSize="12.5dp"
+            android:paddingLeft="5dp"
+            android:inputType="textPersonName"
+            android:hint="Address" />
+
+        <TextView
+            android:id="@+id/descriptionTitle"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12.5dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:text="Description" />
+
+        <EditText
+            android:id="@+id/itemDescriptionTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="top|left"
+            android:hint="Please enter the item detail here"
+            android:textSize="12.5dp"
+            android:textColor="@android:color/darker_gray"
+            android:lines="4"
+            android:minLines="7"
+            android:maxLines="10"
+            android:inputType="textMultiLine"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:background="@drawable/box_frame"/>
+
+        <Button
+            android:id="@+id/uploadButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#FF0F0F"
+            android:textColor="@android:color/white"
+            android:text="Upload" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="80dp" />
+    </LinearLayout>
+
+
+
+</ScrollView>

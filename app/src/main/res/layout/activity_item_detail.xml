@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".David.activity.ItemDetailActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/imageViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="414dp">
+            </androidx.viewpager.widget.ViewPager>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                app:tabBackground="@drawable/tab_selector"
+                app:tabGravity="center"
+                android:layout_gravity="bottom"
+                app:tabIndicatorHeight="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:id="@+id/itemDetailItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="18.5dp"
+                android:text="Samsung Galaxy S9" />
+
+            <TextView
+                android:id="@+id/itemDetailPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                android:text="USD 100" />
+
+            <TextView
+                android:id="@+id/itemDetailTitleTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textSize="13dp"
+                android:text="Item Detail" />
+
+            <TextView
+                android:id="@+id/itemDetailViewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="20dp"
+                android:textSize="12.5dp"
+                android:text="View: 118" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/itemDetailDescriptionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textSize="13dp"
+                android:text="Description" />
+
+            <TextView
+                android:id="@+id/itemDetailDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="20dp"
+                android:textSize="12.5dp"
+                android:text="Good condition, 2 months of used, No charger and earphones, free delivery in Phnom penh" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/itemDetailAboutThisSellerTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textSize="13dp"
+                android:text="About this Seller" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="0dp">
+                    <ImageView
+                        android:id="@+id/itemDetailSellerImage"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:scaleType="fitXY"
+                        tools:srcCompat="@tools:sample/avatars" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/itemDetailSellerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="12.5dp"
+                    android:text="Pan Panha" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemDetailSellerPhoneNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textSize="12.5dp"
+                android:text="Phone Number: 010965628" />
+            <TextView
+                android:id="@+id/itemDetailSellerAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textSize="12.5dp"
+                android:text="Address: Boeung Tumpun, Meanchey, Phnom Penh" />
+            <Button
+                android:id="@+id/itemDetailViewSellerProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/sellerprofile_buttonframe"
+                android:text="VIEW SELLER PROFILE"
+                android:paddingLeft="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textColor="@android:color/white"
+                android:layout_gravity="center">
+            </Button>
+
+            <Button
+                android:id="@+id/itemDetailAddToSaveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/addtosave_buttonframe"
+                android:text="ADD TO SAVED"
+                android:paddingLeft="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textColor="@color/mainColor"
+                android:layout_gravity="center">
+            </Button>
+
+            <TextView
+                android:id="@+id/itemDetailSimilarItemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:textSize="13dp"
+                android:text="Similar Items" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/similarItemCollectionView"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+
+

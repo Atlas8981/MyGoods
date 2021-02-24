@@ -1,0 +1,102 @@
+<resources>
+    <string-array name="categories">
+        <item>Electronic</item>
+        <item>Car &amp; Vehicle</item>
+        <item>Furniture &amp; Decors</item>
+    </string-array>
+
+
+    <string-array name="electronic">
+        <item>Phone</item>
+        <item>Desktop</item>
+        <item>Laptop</item>
+        <item>Parts &amp; Accessories</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="vehicle">
+        <item>Cars</item>
+        <item>Motobikes</item>
+        <item>Bicycle</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="furiture">
+        <item>Table &amp; Desk</item>
+        <item>Chair &amp; Sofa</item>
+        <item>Household item</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="aboutMe_Menu">
+        <item>My Item</item>
+        <item>Saved</item>
+        <item>About Our App</item>
+        <item>Term &amp; Conditions</item>
+    </string-array>
+
+    <string name="app_name">MyGoods</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_full_screen_image">FullScreenImageActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+
+    <string name="plasticimage">plasticImage</string>
+    <string name="furnitureimage">furnitureimage</string>
+    <string name="electronicimage">electronicimage</string>
+    <string name="discover">Home</string>
+    <string name="additem">Add Item</string>
+    <string name="category">Category:</string>
+    <string name="upload">UPLOAD</string>
+    <string name="itemName">Item name</string>
+    <string name="amount">Amount</string>
+    <string name="price">Price(USD)</string>
+    <string name="address">Address</string>
+    <string name="phoneNumber">Phone Number</string>
+    <string name="description">Description:</string>
+    <string name="photo">Photo</string>
+    <string name="desc">Description:</string>
+    <string name="phone">Tel:</string>
+    <string name="address2">Address:</string>
+    <string-array name="mainCategoryList">
+        <item>Electronics</item>
+        <item>Furniture and Decor</item>
+        <item>Car and Vehicle</item>
+    </string-array>
+    <string-array name="electronicSubCategoryList">
+        <item>Phone</item>
+        <item>Desktop</item>
+        <item>Part and Accessories</item>
+        <item>Laptop</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="furnitureAndDecorSubCategoryList">
+        <item>Table and Desk</item>
+        <item>Chair and Sofa</item>
+        <item>Household Items</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="carAndVehicleSuCategoryList">
+        <item>Car</item>
+        <item>Motorbike</item>
+        <item>Bike</item>
+        <item>Other</item>
+    </string-array>
+    <string name="title_activity_search">SearchActivity</string>
+
+
+</resources>

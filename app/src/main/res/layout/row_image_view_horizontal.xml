@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="120dp"
+    android:layout_height="120dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="4dp">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp">
+
+        <ImageView
+            android:id="@+id/itemImageUpload"
+            android:layout_width="120dp"
+            android:layout_height="120dp"/>
+
+        <ImageView
+            android:id="@+id/plusSign"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_baseline_add_24" />
+
+        <ImageView
+            android:id="@+id/minusSign"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="#000000"
+            android:foregroundTint="#000000"
+            android:src="@drawable/ic_outline_indeterminate_check_box_24"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

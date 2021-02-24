@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AboutMeFragment">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="45dp"
+                android:paddingBottom="45dp"
+                android:orientation="vertical">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myImage"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:src="@drawable/laptoppicture" />
+
+                <TextView
+                    android:id="@+id/myName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:singleLine="true"
+                    android:text="TEARDROP"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/myAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true"
+                    android:text="Adress: Phnom Penh " />
+
+                <TextView
+                    android:id="@+id/myPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true"
+                    android:text="+855 12 12 12 12" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="#F4F4F4" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/aboutMeRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:isScrollContainer="false"
+
+                />
+
+            <Button
+                android:id="@+id/signOutBtn"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:backgroundTint="#EC0000"
+                android:text="Sign Out"
+                android:layout_margin="20dp"
+                />
+
+            <Button
+                android:id="@+id/myItemBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:text="My Item(s)"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/saveItemBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:text="Save Items"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

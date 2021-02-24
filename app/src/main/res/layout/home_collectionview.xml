@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="94dp"
+        android:layout_height="94dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="0dp">
+
+        <ImageView
+            android:id="@+id/homeScreenProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="TODO"
+            tools:srcCompat="@tools:sample/avatars" />
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/homeScreenProductName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
+        android:text="TextView"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/homeScreenProductPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="TextView"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="13dp" />
+</LinearLayout>

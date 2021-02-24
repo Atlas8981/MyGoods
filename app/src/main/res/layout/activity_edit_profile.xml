@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".Activity.EditProfileActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/firstNameProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Firstname"
+                    android:inputType="textPersonName"
+                    android:maxLength="30" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lastNameProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Lastname"
+                    android:inputType="textPersonName"
+                    android:maxLength="30" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/usernameProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:inputType="text"
+                    android:maxLength="30" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/emailProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
+                    android:inputType="text"
+                    android:maxLength="30" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/addressProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Address"
+                    android:inputType="text"
+                    android:maxLength="30" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/phoneProfile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:counterEnabled="true"
+                app:counterMaxLength="15"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Phone Number"
+                    android:inputType="phone" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/saveProfileBtn"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="SAVE" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
