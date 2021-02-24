@@ -26,13 +26,14 @@ import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity implements HomeFragment.HomeFragmentInterface {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation_bar);
+        bottomNavigationView = findViewById(R.id.navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
@@ -75,6 +76,8 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
             new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+
             Fragment selectedFragment = null;
 
             switch (item.getItemId()){
@@ -111,7 +114,9 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
 
             }
 
-            if (selectedFragment != null) {
+
+
+            if (selectedFragment != null && bottomNavigationView.getSelectedItemId() != item.getItemId()) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
             }
             return true;

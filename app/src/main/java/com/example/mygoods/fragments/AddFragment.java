@@ -33,14 +33,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mygoods.Adapters.RecyclerHorizontalScrollAdapter;
-import com.example.mygoods.Model.Address;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.Item;
+import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -112,15 +113,6 @@ public class AddFragment extends Fragment {
 
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static AddFragment newInstance(String param1, String param2) {
         AddFragment fragment = new AddFragment();
         Bundle args = new Bundle();
@@ -175,9 +167,31 @@ public class AddFragment extends Fragment {
 
         initializeVariable();
 
+        autoCompleteField();
+
         return v;
     } // End of onCreateView()
 
+    private void autoCompleteField() {
+
+        db.collection("users")
+                .document(auth.getUid())
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User currentUser = documentSnapshot.toObject(User.class);
+
+                if (currentUser.getAddress() != null){
+                    address.setText(currentUser.getAddress());
+                }
+
+                if (currentUser.getPhoneNumber() != null){
+                    phone.setText(currentUser.getPhoneNumber());
+                }
+
+            }
+        });
+    }
 
 
     private void initializeVariable() {
@@ -366,16 +380,12 @@ public class AddFragment extends Fragment {
     }
 
     private Item getItem() {
-        Address address = new Address(
-                "String district",
-                "String streetName",
-                "String province",
-                "String khan",
-                "String houseNumber");
+
         Date date = new Date();
+
         Item item = new Item(
                 itemName.getText().toString().trim(),
-                address.toString(),
+                address.getText().toString().trim(),
                 imagesUpload,
                 subCategory,
                 mainCategory,

@@ -22,14 +22,17 @@ import com.bumptech.glide.Glide;
 import com.example.mygoods.Adapters.ImageAdapter;
 import com.example.mygoods.Adapters.RecyclerSimilarItemAdapter;
 import com.example.mygoods.David.activity.SellerProfileActivity;
+import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.Firewall.WelcomeActivity;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -39,9 +42,11 @@ import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MyItemDetailActivity extends AppCompatActivity {
@@ -84,6 +89,11 @@ public class MyItemDetailActivity extends AppCompatActivity {
 
         addView();
 
+        String email = auth.getCurrentUser().getEmail();
+        if (!email.equals("")){
+            addToRecentView();
+        }
+
         getSellerData();
     }
 
@@ -104,6 +114,24 @@ public class MyItemDetailActivity extends AppCompatActivity {
                 });
     }
 
+    private void addToRecentView() {
+        //TODO: Change documentPath to adaptive user id
+        DocumentReference ref = db
+                .collection(Constant.userCollection)
+                .document(auth.getUid())
+                .collection("recentView")
+                .document(mitem.getItemid());
+        Map<String, Object> recentViewItem = new HashMap<>();
+        recentViewItem.put("itemID", mitem.getItemid());
+        recentViewItem.put("date", new Timestamp(new Date()));
+
+        ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     private void addView() {
         if (!edit.equalsIgnoreCase("yes")) {
