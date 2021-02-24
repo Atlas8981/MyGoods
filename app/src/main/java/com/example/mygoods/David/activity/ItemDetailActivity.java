@@ -265,11 +265,21 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     private void addToRecentView() {
         //TODO: Change documentPath to adaptive user id
-        DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentView").document(item.getItemid());
+        DocumentReference ref = db
+                .collection(Constant.userCollection)
+                .document(currentUser.getUid())
+                .collection("recentView")
+                .document(item.getItemid());
         Map<String, Object> recentViewItem = new HashMap<>();
         recentViewItem.put("itemID", item.getItemid());
         recentViewItem.put("date", new Timestamp(new Date()));
-        ref.set(recentViewItem);
+
+        ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void addToSaveItem() {
