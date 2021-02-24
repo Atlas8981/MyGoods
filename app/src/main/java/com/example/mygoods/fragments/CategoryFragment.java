@@ -202,8 +202,9 @@ public class CategoryFragment extends Fragment {
 
         arrCategoryImages = new int[]{
                 R.drawable.electronic,
-                R.drawable.furniture,
                 R.drawable.car,
+                R.drawable.furniture
+
         };
 
     }

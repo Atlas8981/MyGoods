@@ -111,7 +111,10 @@ public class MyItemDetailActivity extends AppCompatActivity {
 //            mitem.setViews(view);
             Set<String> currentViewers = new HashSet<>();
 
-            db.collection("items").document(mitem.getItemid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            db.collection("items")
+                    .document(mitem.getItemid())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
 

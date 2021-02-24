@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.CustomProgressDialog;
 import com.example.mygoods.Model.Item;
+import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -187,6 +188,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         //TODO: Check if MainCat equal each other
                         if(doc.get(Constant.subCategoryField).equals(getCategory) && doc.get(Constant.mainCategoryField).equals(getMainCategory)) {
                             Item item = doc.toObject(Item.class);
+
+
+
                             newsFeedData.add(item);
                         }else{
                             notMatchCount += 1;
@@ -205,14 +209,21 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     //////////////////////////////
     private void getTrendingItem() {
         //TODO: Decide how many views up
-        int count = 0;
-        db.collection(Constant.itemCollection).whereGreaterThan(Constant.viewField, 0).orderBy(Constant.viewField, Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        int views = 0;
+        db.collection(Constant.itemCollection)
+                .whereGreaterThan(Constant.viewField, views)
+                .orderBy(Constant.viewField, Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                 if (!list.isEmpty()) {
                     for(DocumentSnapshot doc : list) {
                         Item trending = doc.toObject(Item.class);
+
+                        trending.setItemid(doc.getId());
+
                         newsFeedData.add(trending);
                         if (newsFeedData.size() == list.size()) {
                             generateTimeAndSellerName();
@@ -281,7 +292,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     // Check if list is empty, else start finding top view item of that category
-                    System.out.println(list.size());
+
                     if (!list.isEmpty()) {
                         ArrayList<Item> rawRecommendationData = new ArrayList<>();
                         int documentSize = 0;
@@ -340,10 +351,23 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 String duration = calculateDate(newsFeedData.get(o).getDate());
                 time.add(duration);
 
-                db.collection(Constant.userCollection).document(ownerID.get(o)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                db.collection(Constant.userCollection)
+                        .document(ownerID.get(o))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        String owner = documentSnapshot.getString(Constant.usernameField);
+                        User user = documentSnapshot.toObject(User.class);
+                        String owner;
+//                        String owner = documentSnapshot.getString(Constant.usernameField);
+                        if (user != null) {
+
+                            owner = user.getUsername();
+                        }else{
+                            owner = "Someone";
+
+                        }
+
                         if (owner != null) {
                             ownerName.add(owner);
                             if (ownerName.size() == (ownerID.size() - noOwner)) {
@@ -351,6 +375,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                 customAdapter.notifyDataSetChanged();
                             }
                         }else{
+                            ownerName.add("Someone");
                             noOwner += 1;
                         }
                     }
@@ -435,7 +460,14 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             viewHolder.itemPrice.setText("USD "+dataObjects.get(pos).getPrice());
 
 //            The problem is that if an item have no owner then it will crash
-//            viewHolder.itemOwner.setText("Posted by: "+ownerName.get(pos));
+//            System.out.println("Object Size : " + dataObjects.size());
+//            System.out.println("Username array size : " + ownerName.size());
+
+//            System.out.println("Item Name : " + dataObjects.get(pos).getName() + " posted by " + ownerName.get(pos));
+
+            if (pos<ownerName.size()) {
+                viewHolder.itemOwner.setText("Posted by: " + ownerName.get(pos));
+            }
 
             viewHolder.itemDuration.setText(time.get(pos));
             viewHolder.itemViewCount.setText("View: "+dataObjects.get(pos).getViews());

@@ -89,7 +89,12 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
         Set<String> currentViewers = new HashSet<>();
 
-        db.collection("items").document(item.getItemid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        System.out.println(item.getItemid());
+
+        db.collection("items")
+                .document(item.getItemid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
