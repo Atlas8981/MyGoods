@@ -477,9 +477,7 @@ public class AboutMeFragment extends Fragment {
     }
 
     private void putOldDataIntoView(View view) {
-        System.out.println(currentUser.toString());
-        System.out.println(currentUser.getUserId());
-        System.out.println(auth.getUid());
+
 
         if (currentUser != null && currentUser.getUserId().equals(auth.getUid())) {
             if (currentUser.getImage() != null && currentUser.getImage().getImageURL() != null) {

@@ -273,11 +273,15 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
         for (int i = 0; i <5; i++) {
             int count = i;
-            db.collection(Constant.itemCollection).whereEqualTo(Constant.subCategoryField, preferences.get(i)).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            db.collection(Constant.itemCollection)
+                    .whereEqualTo(Constant.subCategoryField, preferences.get(i))
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     // Check if list is empty, else start finding top view item of that category
+                    System.out.println(list.size());
                     if (!list.isEmpty()) {
                         ArrayList<Item> rawRecommendationData = new ArrayList<>();
                         int documentSize = 0;
@@ -285,6 +289,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         for(DocumentSnapshot doc : list) {
                             documentSize += 1;
                             Item trending = doc.toObject(Item.class);
+
+
+
                             rawRecommendationData.add(trending);
                             if (documentSize == list.size()) {
                                 Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData

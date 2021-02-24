@@ -41,7 +41,7 @@ public class TrendingCollectionView extends RecyclerView.Adapter<TrendingCollect
                 .load(data.get(position).getImages().get(0).getImageURL())
                 .placeholder(R.drawable.camera)
                 .into(holder.itemImage);
-        System.out.println(data.get(position).getImages().get(0).getImageURL());
+
         holder.itemPrice.setText( "USD "+data.get(position).getPrice());
         holder.itemName.setText(data.get(position).getName());
     }

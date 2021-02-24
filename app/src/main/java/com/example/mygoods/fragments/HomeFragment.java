@@ -307,34 +307,51 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
     private void getUserPreferences() {
         //TODO: Change document path to current UID
-        db.collection(Constant.userCollection).document(currentUserID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(Constant.userCollection)
+                .document(currentUserID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot document = task.getResult();
                 preferences = (ArrayList<String>) document.get("preferenceid");
+
                 if (preferences !=null) {
-                    if (preferences.size() == 5) {
+                    if (preferences.size() <= 5) {
                         getRecommendationItem();
                     }
                 }
             }
         });
     }
+    public static String capitalize(String str) {
+        if(str == null || str.isEmpty()) {
+            return str;
+        }
+
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
 
     private void getRecommendationItem() {
-        for (int i = 0; i <5; i++) {
-            int count = i;
-            db.collection(Constant.itemCollection).whereEqualTo(Constant.subCategoryField, preferences.get(i)).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        for (int i = 0; i < preferences.size(); i++) {
+
+            db.collection(Constant.itemCollection)
+                    .whereEqualTo(Constant.subCategoryField, capitalize(preferences.get(i)))
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+
                     // Filter only item with most view
                     if (!list.isEmpty()) {
+
                         ArrayList<Item> rawRecommendationData = new ArrayList<>();
                         int documentSize = 0;
                         for(DocumentSnapshot doc : list) {
                             documentSize += 1;
                             Item trending = doc.toObject(Item.class);
+
                             rawRecommendationData.add(trending);
                             if (rawRecommendationData.size() == list.size()) {
                                 Collections.sort(rawRecommendationData);
@@ -346,6 +363,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                             prefAdapter.notifyDataSetChanged();
                         }
                     }else{
+                        System.out.println("Query Empty");
                         noTopViewItem += 1;
                     }
 

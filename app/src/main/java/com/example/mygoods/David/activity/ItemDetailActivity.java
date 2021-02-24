@@ -189,6 +189,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     private void getSimilarItems() {
         float avgPrice = (float) (item.getPrice() + 50);
+
         db.collection(Constant.itemCollection).whereGreaterThan(Constant.priceField, item.getPrice()).whereLessThan(Constant.priceField, avgPrice).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -240,6 +241,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     private void updateViewCount() {
         //TODO: Update view with guest's id also
+
         FirebaseUser currentUser;
         FirebaseAuth mAuth;
         mAuth = FirebaseAuth.getInstance();
@@ -265,11 +267,21 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     private void addToRecentView() {
         //TODO: Change documentPath to adaptive user id
-        DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentView").document(item.getItemid());
+        DocumentReference ref = db
+                .collection(Constant.userCollection)
+                .document(currentUser.getUid())
+                .collection("recentView")
+                .document(item.getItemid());
         Map<String, Object> recentViewItem = new HashMap<>();
         recentViewItem.put("itemID", item.getItemid());
         recentViewItem.put("date", new Timestamp(new Date()));
-        ref.set(recentViewItem);
+
+        ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void addToSaveItem() {
