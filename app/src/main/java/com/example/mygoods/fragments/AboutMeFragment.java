@@ -508,9 +508,11 @@ public class AboutMeFragment extends Fragment {
     }
 
     public static final String FILE_NAME = "currentUser.ser";
+
     private void saveCurrentUser(User user){
 
         try {
+
             FileOutputStream fileOutputStream =  context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
@@ -541,7 +543,6 @@ public class AboutMeFragment extends Fragment {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         return userData;
     }
 

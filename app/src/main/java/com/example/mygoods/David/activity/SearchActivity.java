@@ -176,7 +176,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchBySubCat(String subCat) {
-        db.collection(Constant.itemCollection).whereEqualTo(Constant.subCategoryField, subCat).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection(Constant.itemCollection)
+                .whereEqualTo(Constant.subCategoryField, subCat)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(!queryDocumentSnapshots.isEmpty()){
@@ -197,7 +200,11 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchByItemName(String itemName) {
-        db.collection(Constant.itemCollection).whereEqualTo(Constant.itemNameField, itemName).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+        db.collection(Constant.itemCollection)
+                .whereEqualTo(Constant.itemNameField, itemName)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(!queryDocumentSnapshots.isEmpty()){
@@ -218,7 +225,12 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void getRecentSearchData() {
-        db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentSearch").orderBy(Constant.dateField, Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection(Constant.userCollection)
+                .document(currentUser.getUid())
+                .collection("recentSearch")
+                .orderBy(Constant.dateField, Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(!queryDocumentSnapshots.isEmpty()){

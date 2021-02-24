@@ -324,19 +324,13 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             }
         });
     }
-    public static String capitalize(String str) {
-        if(str == null || str.isEmpty()) {
-            return str;
-        }
 
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
 
     private void getRecommendationItem() {
         for (int i = 0; i < preferences.size(); i++) {
 
             db.collection(Constant.itemCollection)
-                    .whereEqualTo(Constant.subCategoryField, capitalize(preferences.get(i)))
+                    .whereEqualTo(Constant.subCategoryField, Constant.capitalize(preferences.get(i)))
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override

@@ -89,7 +89,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
         Set<String> currentViewers = new HashSet<>();
 
-        System.out.println(item.getItemid());
+
 
         db.collection("items")
                 .document(item.getItemid())
@@ -134,15 +134,15 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager, true);
 
-        itemName = (TextView)findViewById(R.id.itemDetailItemName);
-        itemPrice = (TextView)findViewById(R.id.itemDetailPrice);
-        itemViewCount = (TextView)findViewById(R.id.itemDetailViewCount);
-        itemDescription = (TextView)findViewById(R.id.itemDetailDescription);
-        sellerImage = (ImageView)findViewById(R.id.itemDetailSellerImage);
-        sellerName = (TextView)findViewById(R.id.itemDetailSellerName);
-        sellerPhone = (TextView)findViewById(R.id.itemDetailSellerPhoneNumber);
-        sellerAddress = (TextView)findViewById(R.id.itemDetailSellerAddress);
-        viewSellerProfileButton = (Button)findViewById(R.id.itemDetailViewSellerProfileButton);
+        itemName = (TextView) findViewById(R.id.itemDetailItemName);
+        itemPrice = (TextView) findViewById(R.id.itemDetailPrice);
+        itemViewCount = (TextView) findViewById(R.id.itemDetailViewCount);
+        itemDescription = (TextView) findViewById(R.id.itemDetailDescription);
+        sellerImage = (ImageView) findViewById(R.id.itemDetailSellerImage);
+        sellerName = (TextView) findViewById(R.id.itemDetailSellerName);
+        sellerPhone = (TextView) findViewById(R.id.itemDetailSellerPhoneNumber);
+        sellerAddress = (TextView) findViewById(R.id.itemDetailSellerAddress);
+        viewSellerProfileButton = (Button) findViewById(R.id.itemDetailViewSellerProfileButton);
         viewSellerProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

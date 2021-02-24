@@ -259,9 +259,12 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private void getRecentViewItem() {
 
         //TODO: Item not sort by date at this part
+
         for (int i = 0; i<recentlyViewItemID.size(); i++) {
             int notCount = recentlyViewItemID.size();
-            db.collection(Constant.itemCollection).document(recentlyViewItemID.get(i)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            db.collection(Constant.itemCollection)
+                    .document(recentlyViewItemID.get(i))
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Item item = documentSnapshot.toObject(Item.class);
@@ -282,42 +285,47 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
 
-        for (int i = 0; i <5; i++) {
-            int count = i;
-            db.collection(Constant.itemCollection)
-                    .whereEqualTo(Constant.subCategoryField, preferences.get(i))
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                    // Check if list is empty, else start finding top view item of that category
+        System.out.println(preferences.size());
 
-                    if (!list.isEmpty()) {
-                        ArrayList<Item> rawRecommendationData = new ArrayList<>();
-                        int documentSize = 0;
-                        // Get all the data first before sorting for top view item
-                        for(DocumentSnapshot doc : list) {
-                            documentSize += 1;
-                            Item trending = doc.toObject(Item.class);
+        if (preferences.size()>0) {
+            for (int i = 0; i < preferences.size(); i++) {
+                int count = i;
+                System.out.println(Constant.capitalize(preferences.get(i)));
+                db.collection(Constant.itemCollection)
+                        .whereEqualTo(Constant.subCategoryField, Constant.capitalize(preferences.get(i)))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                                // Check if list is empty, else start finding top view item of that category
 
+                                if (!list.isEmpty()) {
+                                    ArrayList<Item> rawRecommendationData = new ArrayList<>();
+                                    int documentSize = 0;
+                                    // Get all the data first before sorting for top view item
+                                    for (DocumentSnapshot doc : list) {
+                                        documentSize += 1;
+                                        Item trending = doc.toObject(Item.class);
 
-
-                            rawRecommendationData.add(trending);
-                            if (documentSize == list.size()) {
-                                Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData
-                                newsFeedData.add(rawRecommendationData.get(0));
-                                // Handle Firebase Async: generateTimeAndSellerName() will be called after newsFeedData stop getting any data input
-                                if (newsFeedData.size() == (5 - noTopViewItem)) {
-                                    generateTimeAndSellerName();
+                                        rawRecommendationData.add(trending);
+                                        if (documentSize == list.size()) {
+                                            Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData
+                                            newsFeedData.add(rawRecommendationData.get(0));
+                                            // Handle Firebase Async: generateTimeAndSellerName() will be called after newsFeedData stop getting any data input
+                                            if (newsFeedData.size() == (5 - noTopViewItem)) {
+                                                generateTimeAndSellerName();
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    progressDialog.hide();
+                                    Toast.makeText(NewsFeedActivity.this, "No Data ?", Toast.LENGTH_SHORT).show();
+                                    noTopViewItem += 1; // Count the number of category that does not has item so that we can use this variable to handle firebase async
                                 }
                             }
-                        }
-                    }else{
-                        noTopViewItem += 1; // Count the number of category that does not has item so that we can use this variable to handle firebase async
-                    }
-                }
-            });
+                        });
+            }
         }
 
     }
