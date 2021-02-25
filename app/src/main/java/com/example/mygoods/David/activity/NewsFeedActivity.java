@@ -283,7 +283,11 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                     if (item != null) {
                         item.setItemid(documentSnapshot.getId());
                         newsFeedData.add(item);
+                        System.out.println(item.getItemid());
                         if (newsFeedData.size() == (recentlyViewItemID.size() - deletedItem)) {
+
+
+
                             System.out.println("NF RECENTLY VIEWWWWWWWWWWWWWWWWWWWW");
                             generateTimeAndSellerName();
                         }

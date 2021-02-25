@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     private HomeFragmentInterface callback;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private ArrayList<String> preferences;
@@ -258,14 +258,23 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
     private void getRecentViewItemID() {
         //TODO: Change document path to current UID
-        db.collection(Constant.userCollection).document(currentUserID).collection("recentView").orderBy("date", Query.Direction.DESCENDING).limit(7).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(Constant.userCollection)
+                .document(currentUserID)
+                .collection("recentView")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .limit(7)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document: task.getResult()) {
-                        itemID.add(document.getId());
-                        if (itemID.size() == task.getResult().size()) {
-                            getRecentViewItem();
+                    if (task.getResult()!=null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            itemID.add(document.getId());
+
+                            if (itemID.size() == task.getResult().size()) {
+                                getRecentViewItem();
+                            }
                         }
                     }
                 }else{
@@ -274,28 +283,40 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             }
         });
     }
-
+    private int i = 0;
     private void getRecentViewItem() {
         //TODO: Item not sort by date at this part
-        for (int i = 0; i<itemID.size(); i++) {
+//        for (int i = 0; i<itemID.size(); i++) {
+
             int count = i;
-            db.collection(Constant.itemCollection).document(itemID.get(i)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            db.collection(Constant.itemCollection)
+                    .document(itemID.get(i))
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Item item = documentSnapshot.toObject(Item.class);
+
                     if (item != null) {
                         item.setItemid(documentSnapshot.getId());
+
                         recentlyViewData.add(item);
-                        if (recentlyViewData.size() == (itemID.size() - deletedItem)) {
+                        i++;
+                        if (i<itemID.size()){
+                            getRecentViewItem();
+                        }
+
+//                        if (recentlyViewData.size() == (itemID.size() - deletedItem)) {
+//                        if (recentlyViewData.size() == itemID.size()) {
                             recentViewAdapter.notifyDataSetChanged();
                             System.out.println("RECENTVIEW ADAPTER NOTIFYYYYYYYYYYYY");
-                        }
+//                        }
                     }else{
                         deletedItem += 1;
                     }
                 }
             });
-        }
+//        }
     }
 
     private void setupRecommendationCollectionView() {

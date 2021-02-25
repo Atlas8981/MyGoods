@@ -97,8 +97,9 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
         if (currentItem.getDate() != null) {
             itemDate.setText("Posted " + calculateDate(currentItem.getDate()) + "ago");
         }
-
-        itemOwner.setText("Posted by " + userNames.get(position));
+        if (position<userNames.size()) {
+            itemOwner.setText("Posted by " + userNames.get(position));
+        }
 
         System.out.println("Username " + userNames.get(position));
         System.out.println("Item Name " + currentItem.getName());
