@@ -232,6 +232,9 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                 for(DocumentSnapshot doc : list) {
                     Item trending = doc.toObject(Item.class);
+                    if (trending!=null){
+                        trending.setItemid(doc.getId());
+                    }
                     trendingData.add(trending);
                     if (trendingData.size() == list.size()) {
                         trendingAdapter.notifyDataSetChanged();
@@ -281,6 +284,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Item item = documentSnapshot.toObject(Item.class);
                     if (item != null) {
+                        item.setItemid(documentSnapshot.getId());
                         recentlyViewData.add(item);
                         if (recentlyViewData.size() == (itemID.size() - deletedItem)) {
                             recentViewAdapter.notifyDataSetChanged();
@@ -345,6 +349,9 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                         for(DocumentSnapshot doc : list) {
                             documentSize += 1;
                             Item trending = doc.toObject(Item.class);
+                            if (trending!=null) {
+                                trending.setItemid(doc.getId());
+                            }
 
                             rawRecommendationData.add(trending);
                             if (rawRecommendationData.size() == list.size()) {

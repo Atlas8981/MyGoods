@@ -177,7 +177,10 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         getCategory = dataBundle.getString(Constant.intentFromSubCat).toLowerCase();
         String getMainCategory = dataBundle.getString(Constant.mainCatTitle).toLowerCase();
 
-        db.collection(Constant.itemCollection).orderBy(Constant.dateField, Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection(Constant.itemCollection)
+                .orderBy(Constant.dateField, Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(!queryDocumentSnapshots.isEmpty()){
@@ -189,7 +192,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         if(doc.get(Constant.subCategoryField).equals(getCategory) && doc.get(Constant.mainCategoryField).equals(getMainCategory)) {
                             Item item = doc.toObject(Item.class);
 
-
+                            if (item != null){
+                                item.setItemid(doc.getId());
+                            }
 
                             newsFeedData.add(item);
                         }else{
@@ -221,8 +226,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 if (!list.isEmpty()) {
                     for(DocumentSnapshot doc : list) {
                         Item trending = doc.toObject(Item.class);
-
-                        trending.setItemid(doc.getId());
+                        if (trending != null) {
+                            trending.setItemid(doc.getId());
+                        }
 
                         newsFeedData.add(trending);
                         if (newsFeedData.size() == list.size()) {
@@ -238,7 +244,12 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     private void getRecentViewItemID() {
-        db.collection(Constant.userCollection).document(currentUserID).collection("recentView").orderBy("date", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(Constant.userCollection)
+                .document(currentUserID)
+                .collection("recentView")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -268,7 +279,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Item item = documentSnapshot.toObject(Item.class);
+
                     if (item != null) {
+                        item.setItemid(documentSnapshot.getId());
                         newsFeedData.add(item);
                         if (newsFeedData.size() == (recentlyViewItemID.size() - deletedItem)) {
                             System.out.println("NF RECENTLY VIEWWWWWWWWWWWWWWWWWWWW");
@@ -285,14 +298,14 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
 
-        System.out.println(preferences.size());
 
         if (preferences.size()>0) {
             for (int i = 0; i < preferences.size(); i++) {
                 int count = i;
-                System.out.println(Constant.capitalize(preferences.get(i)));
+
                 db.collection(Constant.itemCollection)
                         .whereEqualTo(Constant.subCategoryField, Constant.capitalize(preferences.get(i)))
+//                        .whereEqualTo(Constant.subCategoryField, Constant.capitalize(preferences.get(i)))
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
@@ -308,19 +321,31 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                         documentSize += 1;
                                         Item trending = doc.toObject(Item.class);
 
+                                        if (trending!=null) {
+                                            trending.setItemid(doc.getId());
+                                        }
+
                                         rawRecommendationData.add(trending);
+
+
+
                                         if (documentSize == list.size()) {
                                             Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData
                                             newsFeedData.add(rawRecommendationData.get(0));
+
                                             // Handle Firebase Async: generateTimeAndSellerName() will be called after newsFeedData stop getting any data input
-                                            if (newsFeedData.size() == (5 - noTopViewItem)) {
+
+//                                            if (newsFeedData.size() == (5 - noTopViewItem)) {
+                                            if (newsFeedData.size() == (preferences.size() - noTopViewItem)) {
                                                 generateTimeAndSellerName();
                                             }
+
                                         }
                                     }
+
                                 } else {
-                                    progressDialog.hide();
-                                    Toast.makeText(NewsFeedActivity.this, "No Data ?", Toast.LENGTH_SHORT).show();
+//                                    progressDialog.hide();
+//                                    Toast.makeText(NewsFeedActivity.this, "No Data ?", Toast.LENGTH_SHORT).show();
                                     noTopViewItem += 1; // Count the number of category that does not has item so that we can use this variable to handle firebase async
                                 }
                             }
@@ -351,8 +376,11 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private void generateTimeAndSellerName() {
         if (!newsFeedData.isEmpty()) {
             for (int i = 0; i<newsFeedData.size(); i++) {
+
                 ownerID.add(newsFeedData.get(i).getUserid());
             }
+
+
 
             for (int o = 0; o<ownerID.size(); o++) {
                 // Convert date
@@ -369,11 +397,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         String owner;
 //                        String owner = documentSnapshot.getString(Constant.usernameField);
                         if (user != null) {
-
                             owner = user.getUsername();
                         }else{
                             owner = "Someone";
-
                         }
 
                         if (owner != null) {

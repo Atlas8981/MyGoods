@@ -78,18 +78,20 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
         setupViews();
         setData();
-        addView();
+
+        if (item.getItemid() != null) {
+            addView();
+            addToRecentView();
+        }
 
 //        updateViewCount();
 
-        addToRecentView();
+
     }
 
     private void addView() {
 
         Set<String> currentViewers = new HashSet<>();
-
-
 
         db.collection("items")
                 .document(item.getItemid())
@@ -230,10 +232,18 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 users.add(tempUser);
 
                 if (tempUser != null) {
-                    Glide.with(ItemDetailActivity.this)
-                            .load(tempUser.getImage().getImageURL())
-                            .centerCrop()
-                            .into(sellerImage);
+                    if (tempUser.getImage() != null && tempUser.getImage().getImageURL() != null) {
+                        Glide.with(ItemDetailActivity.this)
+                                .load(tempUser.getImage().getImageURL())
+                                .placeholder(R.drawable.account)
+                                .centerCrop()
+                                .into(sellerImage);
+                    }else {
+                        Glide.with(ItemDetailActivity.this)
+                                .load(R.drawable.account)
+                                .centerCrop()
+                                .into(sellerImage);
+                    }
 
 
                     sellerName.setText(tempUser.getUsername());
