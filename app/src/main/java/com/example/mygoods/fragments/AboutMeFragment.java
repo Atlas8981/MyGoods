@@ -27,11 +27,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.mygoods.Activity.AboutOurAppActivity;
 import com.example.mygoods.Activity.EditProfileActivity;
 import com.example.mygoods.Activity.FullScreenImageActivity;
 import com.example.mygoods.Activity.MyItemActivity;
 import com.example.mygoods.Activity.MySaveItemActivity;
 import com.example.mygoods.Activity.PasswordResetActivity;
+import com.example.mygoods.Activity.TermAndConditionActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
 import com.example.mygoods.Firewall.WelcomeActivity;
 import com.example.mygoods.Model.Image;
@@ -166,7 +168,6 @@ public class AboutMeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
 //        Update and Save Data if user change and
         getDataFromDatabase();
 
@@ -467,6 +468,16 @@ public class AboutMeFragment extends Fragment {
                         intent.setClass(getContext(), MySaveItemActivity.class);
                         startActivity(intent);
                     }break;
+                    case 2:{
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(), AboutOurAppActivity.class);
+                        startActivity(intent);
+                    } break;
+                    case 3:{
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(), TermAndConditionActivity.class);
+                        startActivity(intent);
+                    }
                 }
 //                Intent intent = new Intent();
 //                intent.setClass(getContext(), SubCategoryListActivity.class);
