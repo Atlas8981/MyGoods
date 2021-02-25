@@ -78,6 +78,19 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (progressDialog!=null){
+                    progressDialog.dismiss();
+                }
+            }
+        }, 2000);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         progressDialog.dismiss();
@@ -308,7 +321,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
-//        progressDialog.dismiss();
 
         if (preferences != null && preferences.size()>0) {
             for (int i = 0; i < preferences.size(); i++) {
@@ -363,7 +375,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         });
             }
         }else{
-
             Toast.makeText(NewsFeedActivity.this, "No Recommendation Data Available", Toast.LENGTH_SHORT).show();
         }
 
