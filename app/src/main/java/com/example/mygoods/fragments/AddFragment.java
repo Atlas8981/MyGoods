@@ -392,7 +392,7 @@ public class AddFragment extends Fragment {
                 description.getText().toString().trim(),
                 auth.getUid(),
                 phone.getText().toString().trim(),
-                Integer.parseInt(price.getText().toString()),
+                Double.parseDouble(price.getText().toString().trim()),
                 date
         );
 
@@ -476,7 +476,7 @@ public class AddFragment extends Fragment {
         @Override
         protected byte[] doInBackground(Bitmap... bitmaps) {
 
-            return getBytesFromBitmap(imageBitmap.get(uploadNumber), 75);
+            return getBytesFromBitmap(imageBitmap.get(uploadNumber), 50);
         }
 
         @Override

@@ -108,7 +108,7 @@ public class CategoryFragment extends Fragment {
 
         ));
         popularCategory.add(new PopularCategory(
-                "Table & Desks",
+                "Table & Desk",
                 R.drawable.desk
         ));
 
