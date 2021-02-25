@@ -39,7 +39,6 @@ public class PasswordResetActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
                 password = passwordEdt.getEditText().getText().toString().trim();
                 confirmPassword = confirmPasswordEdt.getEditText().getText().toString().trim();
 

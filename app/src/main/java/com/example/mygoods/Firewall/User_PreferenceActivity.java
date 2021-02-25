@@ -39,13 +39,14 @@ public class User_PreferenceActivity extends AppCompatActivity {
         ttable = findViewById(R.id.tablecheckBox);
         cchair_sofa = findViewById(R.id.chairsofacheckBox);
 
-        skipButton = findViewById(R.id.skipButton);
-        skipButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchHomeActivity();
-            }
-        });
+//        skipButton = findViewById(R.id.skipButton);
+//
+//        skipButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                launchHomeActivity();
+//            }
+//        });
     }
 
     public void checkingthebox(){

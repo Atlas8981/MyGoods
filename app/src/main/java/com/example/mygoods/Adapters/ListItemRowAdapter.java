@@ -101,8 +101,6 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
             itemOwner.setText("Posted by " + userNames.get(position));
         }
 
-        System.out.println("Username " + userNames.get(position));
-        System.out.println("Item Name " + currentItem.getName());
         return rowView;
     }
 
