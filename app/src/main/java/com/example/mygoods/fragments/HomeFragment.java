@@ -273,6 +273,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                             itemID.add(document.getId());
 
                             if (itemID.size() == task.getResult().size()) {
+
                                 getRecentViewItem();
                             }
                         }
@@ -285,7 +286,8 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     }
     private int i = 0;
     private void getRecentViewItem() {
-        //TODO: Item not sort by date at this part
+
+//        TODO: What if the 7 top recently view has been deleted? Then there would be no data
 //        for (int i = 0; i<itemID.size(); i++) {
 
             int count = i;
@@ -301,10 +303,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                         item.setItemid(documentSnapshot.getId());
 
                         recentlyViewData.add(item);
-                        i++;
-                        if (i<itemID.size()){
-                            getRecentViewItem();
-                        }
+
 
 //                        if (recentlyViewData.size() == (itemID.size() - deletedItem)) {
 //                        if (recentlyViewData.size() == itemID.size()) {
@@ -313,6 +312,10 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 //                        }
                     }else{
                         deletedItem += 1;
+                    }
+                    i++;
+                    if (i<itemID.size()){
+                        getRecentViewItem();
                     }
                 }
             });
@@ -342,6 +345,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 preferences = (ArrayList<String>) document.get("preferenceid");
 
                 if (preferences !=null) {
+                    System.out.println(preferences.size());
                     if (preferences.size() <= 5) {
                         getRecommendationItem();
                     }
@@ -380,7 +384,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                                 recommendationData.add(rawRecommendationData.get(0));
                             }
                         }
-                        if (recommendationData.size() == (5-noTopViewItem)) {
+                        if (recommendationData.size() == (preferences.size()-noTopViewItem)) {
                             System.out.println("PREFERENCE ADAPTER NOTIFYYYYYYYYYYYY");
                             prefAdapter.notifyDataSetChanged();
                         }

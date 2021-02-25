@@ -25,6 +25,7 @@ import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -83,8 +84,10 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (progressDialog!=null){
-                    progressDialog.dismiss();
+                if (newsFeedData.size()==0) {
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
                 }
             }
         }, 2000);
@@ -289,34 +292,44 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         });
     }
 
+    private int i = 0;
     private void getRecentViewItem() {
 
-        for (int i = 0; i<recentlyViewItemID.size(); i++) {
+//        for (int i = 0; i<recentlyViewItemID.size(); i++) {
+
             int notCount = recentlyViewItemID.size();
             db.collection(Constant.itemCollection)
                     .document(recentlyViewItemID.get(i))
-                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Item item = documentSnapshot.toObject(Item.class);
-
                     if (item != null) {
                         item.setItemid(documentSnapshot.getId());
                         newsFeedData.add(item);
-                        System.out.println(item.getItemid());
-                        if (newsFeedData.size() == (recentlyViewItemID.size() - deletedItem)) {
 
-
-
-                            System.out.println("NF RECENTLY VIEWWWWWWWWWWWWWWWWWWWW");
-                            generateTimeAndSellerName();
-                        }
+//                        if (newsFeedData.size() == (recentlyViewItemID.size() - deletedItem)) {
+//                            System.out.println("NF RECENTLY VIEWWWWWWWWWWWWWWWWWWWW");
+//                            generateTimeAndSellerName();
+//                        }
                     }else{
                         deletedItem += 1;
                     }
+                    i++;
+                    if (i<recentlyViewItemID.size()){
+                        getRecentViewItem();
+                    }else{
+                        generateTimeAndSellerName();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    deletedItem++;
                 }
             });
-        }
+//        }
     }
 
     private void getRecommendationItem() {
@@ -349,8 +362,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                         }
 
                                         rawRecommendationData.add(trending);
-
-
 
                                         if (documentSize == list.size()) {
                                             Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData
@@ -401,8 +412,8 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private void generateTimeAndSellerName() {
         if (!newsFeedData.isEmpty()) {
             for (int i = 0; i<newsFeedData.size(); i++) {
-
                 ownerID.add(newsFeedData.get(i).getUserid());
+
             }
 
 
