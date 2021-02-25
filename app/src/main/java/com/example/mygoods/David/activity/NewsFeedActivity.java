@@ -73,6 +73,8 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
         setToolBarTitle();
         setupViews();
+
+
     }
 
     @Override
@@ -145,10 +147,12 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             }
             NewsFeedActivity.this.setTitle(intentFromHome);
 
+
         }else if (intentFromCategory != null){
             // Get items for sub category
             NewsFeedActivity.this.setTitle(intentFromCategory);
             getSubCategoryData();
+
         }else{
             NewsFeedActivity.this.setTitle("Results");
             ArrayList<Item> searchData = (ArrayList<Item>) getIntent().getSerializableExtra("SearchData");
@@ -160,16 +164,16 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 progressDialog.hide();
             }else{
                 final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Do something after 5s = 5000ms
-                    progressDialog.hide();
-                }
-            }, 500);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Do something after 5s = 5000ms
+                        progressDialog.hide();
+                    }
+                }, 500);
             }
-
         }
+
     }
 
     private void getSubCategoryData(){
@@ -253,11 +257,16 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document: task.getResult()) {
-                        recentlyViewItemID.add(document.getId());
-                        if (recentlyViewItemID.size() == task.getResult().size()) {
-                            getRecentViewItem();
+                    if(task.getResult().size()>0) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            recentlyViewItemID.add(document.getId());
+                            if (recentlyViewItemID.size() == task.getResult().size()) {
+                                getRecentViewItem();
+                            }
                         }
+                    }else{
+                        progressDialog.hide();
+                        Toast.makeText(NewsFeedActivity.this, "No Recently View Data", Toast.LENGTH_SHORT).show();
                     }
                 }else{
                     Toast.makeText(NewsFeedActivity.this, "Error getting document", Toast.LENGTH_SHORT).show();
@@ -268,8 +277,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     private void getRecentViewItem() {
-
-        //TODO: Item not sort by date at this part
 
         for (int i = 0; i<recentlyViewItemID.size(); i++) {
             int notCount = recentlyViewItemID.size();
@@ -301,9 +308,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
+//        progressDialog.dismiss();
 
-
-        if (preferences.size()>0) {
+        if (preferences != null && preferences.size()>0) {
             for (int i = 0; i < preferences.size(); i++) {
                 int count = i;
 
@@ -355,6 +362,9 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                             }
                         });
             }
+        }else{
+
+            Toast.makeText(NewsFeedActivity.this, "No Recommendation Data Available", Toast.LENGTH_SHORT).show();
         }
 
     }

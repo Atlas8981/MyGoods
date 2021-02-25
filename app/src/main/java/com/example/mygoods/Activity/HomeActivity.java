@@ -125,11 +125,7 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
 
     private boolean isSignInAnonymous() {
         String email = auth.getCurrentUser().getEmail();
-        if (email == null||email.equals("")){
-            return true;
-        }else{
-            return false;
-        }
+        return email == null || email.equals("");
     }
 
 

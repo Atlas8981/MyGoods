@@ -80,13 +80,19 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         setData();
 
         if (item.getItemid() != null) {
-            addView();
-            addToRecentView();
+            if (!isSignInAnonymously()) {
+                addView();
+                addToRecentView();
+            }
         }
 
 //        updateViewCount();
 
+    }
 
+    private boolean isSignInAnonymously() {
+        String email = mAuth.getCurrentUser().getEmail();
+        return email == null || email.equals("");
     }
 
     private void addView() {

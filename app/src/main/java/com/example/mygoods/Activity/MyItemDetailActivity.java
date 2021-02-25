@@ -87,14 +87,20 @@ public class MyItemDetailActivity extends AppCompatActivity {
             settingUpSimilarItem();
         }
 
-        addView();
 
-        String email = auth.getCurrentUser().getEmail();
-        if (!email.equals("")){
+
+
+        if (!isSignInAnonymously()){
             addToRecentView();
+            addView();
         }
 
         getSellerData();
+    }
+
+    private boolean isSignInAnonymously() {
+        String email = auth.getCurrentUser().getEmail();
+        return email == null || email.equals("");
     }
 
     private void getSellerData() {
