@@ -67,8 +67,6 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView;
 
-
-
         rowView = inflater.inflate(R.layout.row_item, null);
 
         itemName = rowView.findViewById(R.id.itemName);

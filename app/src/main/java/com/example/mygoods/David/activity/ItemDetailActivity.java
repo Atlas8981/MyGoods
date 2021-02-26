@@ -203,7 +203,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private void getSimilarItems() {
         float avgPrice = (float) (item.getPrice() + 50);
 
-        db.collection(Constant.itemCollection).whereGreaterThan(Constant.priceField, item.getPrice()).whereLessThan(Constant.priceField, avgPrice).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection(Constant.itemCollection)
+                .whereGreaterThanOrEqualTo(Constant.priceField, item.getPrice())
+                .whereLessThanOrEqualTo(Constant.priceField, avgPrice)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 int count = 0;

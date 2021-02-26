@@ -404,7 +404,6 @@ public class AddFragment extends Fragment {
     //****************
     private void uploadDataAndPicture(byte[] bytes){
 
-
         final String randomKey = UUID.randomUUID().toString();
         storageRef = firebaseStorage.getReference().child("images/" +randomKey);
 
@@ -476,7 +475,7 @@ public class AddFragment extends Fragment {
         @Override
         protected byte[] doInBackground(Bitmap... bitmaps) {
 
-            return getBytesFromBitmap(imageBitmap.get(uploadNumber), 50);
+            return getBytesFromBitmap(imageBitmap.get(uploadNumber), 25);
         }
 
         @Override

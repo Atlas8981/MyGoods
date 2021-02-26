@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.mygoods.Adapters.ListItemRowAdapter;
+import com.example.mygoods.David.activity.ItemDetailActivity;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
@@ -130,25 +131,17 @@ public class CategoryListViewActivity extends AppCompatActivity {
         });
     }
 
-    private Query queryStatement;
+    private final Query queryStatement = itemRef.orderBy("date", Query.Direction.DESCENDING).limit(10);
 
     private void getDataFromFireStore(){
-
-        if (mainCategory==null || mainCategory.equals("")){
-            queryStatement = itemRef.whereEqualTo("subCategory",subCategory);
-        }else {
-            queryStatement = itemRef.whereEqualTo("mainCategory", mainCategory).whereEqualTo("subCategory",subCategory);
-        }
-
 //        queryStatement.limit(10).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-        queryStatement = itemRef.orderBy("date", Query.Direction.DESCENDING).limit(10);
-
         queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
                     Item curItem = documentSnapshot.toObject(Item.class);
-                    if (curItem.getSubCategory().equalsIgnoreCase(subCategory)){
+//                    if (curItem.getSubCategory().equalsIgnoreCase(subCategory)){
+                    if (checkCategory(curItem)){
                         curItem.setItemid(documentSnapshot.getId());
                         itemList.add(curItem);
 
@@ -201,7 +194,6 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     Toast.makeText(CategoryListViewActivity.this, "No Data", Toast.LENGTH_SHORT).show();
                 }
                 if (itemList.size()<10){
-
                     Thread thread = new ThreadGetMoreData();
                     thread.start();
                 }
@@ -216,6 +208,15 @@ public class CategoryListViewActivity extends AppCompatActivity {
                 Toast.makeText(CategoryListViewActivity.this, "There is no data in this category", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean checkCategory(Item item) {
+        if (mainCategory==null || mainCategory.equals("")){
+            return item.getSubCategory().equalsIgnoreCase(subCategory);
+        }else {
+            return item.getSubCategory().equalsIgnoreCase(subCategory)
+                    && item.getMainCategory().equalsIgnoreCase(mainCategory);
+        }
     }
 
 
@@ -274,7 +275,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     if (queryDocumentSnapshots.size()>0) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Item curItem = documentSnapshot.toObject(Item.class);
-                            if (curItem.getSubCategory().equalsIgnoreCase(subCategory)) {
+                            if (checkCategory(curItem)) {
                                 curItem.setItemid(documentSnapshot.getId());
 
                                 firestore.collection("users")
@@ -359,10 +360,15 @@ public class CategoryListViewActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-            Intent intent = new Intent(CategoryListViewActivity.this, MyItemDetailActivity.class);
+//            Intent intent = new Intent(CategoryListViewActivity.this, MyItemDetailActivity.class);
+//            intent.putExtra("edit", "no");
+//            intent.putExtra("item", itemList.get(position));
+//            startActivity(intent);
+            Intent intent = new Intent(CategoryListViewActivity.this, ItemDetailActivity.class);
             intent.putExtra("edit", "no");
-            intent.putExtra("item", itemList.get(position));
+            intent.putExtra("ItemData", itemList.get(position));
             startActivity(intent);
+
         }
     };
 }
