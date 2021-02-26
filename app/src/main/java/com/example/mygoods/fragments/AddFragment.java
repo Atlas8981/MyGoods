@@ -496,7 +496,7 @@ public class AddFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()){
-            case R.id.confirmPost:{
+            case R.id.confirmPost: {
 //                if(itemName.getText().toString().isEmpty()
 //                        || price.getText().toString().isEmpty()
 //                        || address.getText().toString().isEmpty()
@@ -505,7 +505,7 @@ public class AddFragment extends Fragment {
 //                    Toast.makeText(addFragmentContext, "Please fill in all the information", Toast.LENGTH_LONG).show();
 //                }else {
 
-
+//                }
 //                    // Upload data
 
                     pd = new ProgressDialog(addFragmentContext);
@@ -513,7 +513,6 @@ public class AddFragment extends Fragment {
                     pd.show();
                     new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
 
-//                }
             }break;
         }
 

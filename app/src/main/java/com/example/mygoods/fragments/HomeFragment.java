@@ -345,10 +345,12 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 preferences = (ArrayList<String>) document.get("preferenceid");
 
                 if (preferences !=null) {
-                    System.out.println(preferences.size());
                     if (preferences.size() <= 5) {
                         getRecommendationItem();
                     }
+                }
+                if (preferences == null || preferences.size()==0){
+                    Toast.makeText(homeFragmentContext, "We Can't Recommend You Anything", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -41,7 +41,6 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
     private final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
-
     private ListView myItemListView;
     private ProgressBar progressBar;
     private ListItemRowAdapter listItemRowAdapter;
@@ -52,7 +51,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
     private View footerView;
     boolean isLoading = false;
     boolean isOutOfData = false;
-    Query next;
+    private Query next;
 
     private String subCategory;
     private String mainCategory;
@@ -66,7 +65,10 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
         itemList = new ArrayList<Item>();
         userName = new ArrayList<>();
+
         getDataFromFireStore();
+
+//        testingGetDataFromFireStore();
 
 
 
@@ -111,6 +113,23 @@ public class CategoryListViewActivity extends AppCompatActivity {
         });
     }
 
+    private void testingGetDataFromFireStore() {
+        getCategoryItemId();
+    }
+
+    private void getCategoryItemId() {
+        itemRef.orderBy("date")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot q: queryDocumentSnapshots){
+                    System.out.println(q.toObject(Item.class).toString());
+                }
+            }
+        });
+    }
+
     private Query queryStatement;
 
     private void getDataFromFireStore(){
@@ -121,48 +140,46 @@ public class CategoryListViewActivity extends AppCompatActivity {
             queryStatement = itemRef.whereEqualTo("mainCategory", mainCategory).whereEqualTo("subCategory",subCategory);
         }
 
-        queryStatement.limit(10).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//        queryStatement.limit(10).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        queryStatement = itemRef.orderBy("date", Query.Direction.DESCENDING).limit(10);
+
+        queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
                     Item curItem = documentSnapshot.toObject(Item.class);
-                    curItem.setItemid(documentSnapshot.getId());
-                    itemList.add(curItem);
+                    if (curItem.getSubCategory().equalsIgnoreCase(subCategory)){
+                        curItem.setItemid(documentSnapshot.getId());
+                        itemList.add(curItem);
 
+                        firestore.collection("users")
+                                .document(curItem.getUserid())
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                    firestore.collection("users")
-                            .document(curItem.getUserid())
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                    User user = documentSnapshot.toObject(User.class);
-                                    if (user != null && user.getUsername() != null) {
-                                        userName.add(user.getUsername());
-
-
-                                    }else {
-                                        userName.add("Someone");
+                                        User user = documentSnapshot.toObject(User.class);
+                                        if (user != null && user.getUsername() != null) {
+                                            userName.add(user.getUsername());
+                                        } else {
+                                            userName.add("Someone");
+                                        }
+                                        setUpItemRowAdapter();
                                     }
-
-
-
-                                    setUpItemRowAdapter();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            userName.add("Someone");
-                            setUpItemRowAdapter();
-                        }
-                    });
-
-
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                userName.add("Someone");
+                                setUpItemRowAdapter();
+                            }
+                        });
+                    }
                 }
 
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
+
 
 //                Function below was follow from the firebase documentation
 
@@ -183,6 +200,12 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     isOutOfData=true;
                     Toast.makeText(CategoryListViewActivity.this, "No Data", Toast.LENGTH_SHORT).show();
                 }
+                if (itemList.size()<10){
+
+                    Thread thread = new ThreadGetMoreData();
+                    thread.start();
+                }
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -197,9 +220,6 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
 
     private void setUpItemRowAdapter(){
-
-
-
         listItemRowAdapter = new ListItemRowAdapter(CategoryListViewActivity.this,itemList,userName);
         myItemListView.setAdapter(listItemRowAdapter);
         listItemRowAdapter.notifyDataSetChanged();
@@ -254,30 +274,32 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     if (queryDocumentSnapshots.size()>0) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Item curItem = documentSnapshot.toObject(Item.class);
-                            curItem.setItemid(documentSnapshot.getId());
+                            if (curItem.getSubCategory().equalsIgnoreCase(subCategory)) {
+                                curItem.setItemid(documentSnapshot.getId());
 
-                            firestore.collection("users")
-                                    .document(curItem.getUserid())
-                                    .get()
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            User user = documentSnapshot.toObject(User.class);
-                                            if (user != null && user.getUsername() != null) {
-                                                userName.add(user.getUsername());
-                                            }else {
-                                                userName.add("Someone");
+                                firestore.collection("users")
+                                        .document(curItem.getUserid())
+                                        .get()
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                User user = documentSnapshot.toObject(User.class);
+                                                if (user != null && user.getUsername() != null) {
+                                                    userName.add(user.getUsername());
+                                                } else {
+                                                    userName.add("Someone");
+                                                }
+
                                             }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        userName.add("Someone");
+                                    }
+                                });
 
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    userName.add("Someone");
-                                }
-                            });
-
-                            anotherListItem.add(curItem);
+                                anotherListItem.add(curItem);
+                            }
                         }
 
 

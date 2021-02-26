@@ -10,7 +10,10 @@ public class Image implements Serializable {
     public Image(){
 
     }
-
+    public Image(String imageURL) {
+        this.imageURL = imageURL;
+        this.imageName = "ImageName";
+    }
     public Image(String imageURL, String imageName) {
         this.imageURL = imageURL;
         this.imageName = imageName;
