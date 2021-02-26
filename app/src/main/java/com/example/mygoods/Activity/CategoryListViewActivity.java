@@ -148,7 +148,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
                     Item curItem = documentSnapshot.toObject(Item.class);
-//                    if (curItem.getSubCategory().equalsIgnoreCase(subCategory)){
+
                     if (checkCategory(curItem)){
                         curItem.setItemid(documentSnapshot.getId());
                         itemList.add(curItem);
@@ -177,8 +177,9 @@ public class CategoryListViewActivity extends AppCompatActivity {
                         });
                     }
                 }
-
-                progressBar.setVisibility(ProgressBar.INVISIBLE);
+                if (itemList.size()>0) {
+                    progressBar.setVisibility(ProgressBar.INVISIBLE);
+                }
                 swipeRefreshLayout.setRefreshing(false);
 
 
@@ -320,6 +321,9 @@ public class CategoryListViewActivity extends AppCompatActivity {
                             }
                         }
 
+                        if (itemList.size()>0 || myItemListView.getFooterViewsCount()>0) {
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
 
                         DocumentSnapshot lastVisible = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);

@@ -215,15 +215,19 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 ArrayList<Item> similarItemData = new ArrayList<>();
                 for(DocumentSnapshot doc : list) {
                     count += 1;
-                    Item item = doc.toObject(Item.class);
-                    similarItemData.add(item);
-                    if (count == list.size()){
-                        for(int i = 0; i<similarItemData.size(); i++) {
-                            if (similarItemData.get(i).getSubCategory().equals(ItemDetailActivity.this.item.getSubCategory())) {
-                                similarItemArrayAdapter.add(similarItemData.get(i));
+                    Item tempItem = doc.toObject(Item.class);
+                    tempItem.setItemid(doc.getId());
+
+                    if (!tempItem.getItemid().equals(item.getItemid())) {
+                        similarItemData.add(tempItem);
+                        if (count == list.size()) {
+                            for (int i = 0; i < similarItemData.size(); i++) {
+                                if (similarItemData.get(i).getSubCategory().equals(ItemDetailActivity.this.item.getSubCategory())) {
+                                    similarItemArrayAdapter.add(similarItemData.get(i));
+                                }
                             }
+                            similarItemAdapter.notifyDataSetChanged();
                         }
-                        similarItemAdapter.notifyDataSetChanged();
                     }
                 }
             }
