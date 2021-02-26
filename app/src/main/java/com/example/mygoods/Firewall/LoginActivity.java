@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,7 +23,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText eemail, ppassword;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-
+    private Button forgotPasswordBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +33,21 @@ public class LoginActivity extends AppCompatActivity {
 
         eemail = findViewById(R.id. emaileditText);
         ppassword = findViewById(R.id. passwordeditText);
+        forgotPasswordBtn = findViewById(R.id.forgotPasswordBtn);
+
+        forgotPasswordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                forgotPasswordBtn.setEnabled(false);
+                moveToForgotPasswordScreen();
+            }
+        });
+
+    }
+
+    private void moveToForgotPasswordScreen() {
+        Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+        startActivity(intent);
     }
 
     public void loginuser (){

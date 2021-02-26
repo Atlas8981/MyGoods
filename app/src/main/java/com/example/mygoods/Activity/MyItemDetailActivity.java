@@ -99,8 +99,11 @@ public class MyItemDetailActivity extends AppCompatActivity {
     }
 
     private boolean isSignInAnonymously() {
-        String email = auth.getCurrentUser().getEmail();
-        return email == null || email.equals("");
+        if (auth.getCurrentUser()!=null){
+            return auth.getCurrentUser().isAnonymous();
+        }else{
+            return false;
+        }
     }
 
     private void getSellerData() {

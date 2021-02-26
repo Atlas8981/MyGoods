@@ -98,5 +98,16 @@
     </string-array>
     <string name="title_activity_search">SearchActivity</string>
 
+    <string name="emailVerificationMessage">
+        You\'ve entered (Email) as the email address for your account. Please verify email address by clicking button below
+    </string>
+
+    <string name="emailVerificationMessageStart">
+        You\'ve entered&#032;
+    </string>
+    <string name="emailVerificationMessageEnd">
+        &#032;as the email address for your account. Please verify email address by clicking button below
+    </string>
+
 
 </resources>

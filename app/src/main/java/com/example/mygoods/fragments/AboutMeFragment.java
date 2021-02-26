@@ -89,7 +89,11 @@ public class AboutMeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        if (auth.getCurrentUser()!=null){
+            if (!auth.getCurrentUser().isAnonymous()) {
+                setHasOptionsMenu(true);
+            }
+        }
     }
 
     @Override
@@ -175,7 +179,7 @@ public class AboutMeFragment extends Fragment {
 
     private void getDataFromDatabase(){
 
-        if (auth != null){
+        if (auth != null && auth.getUid()!=null){
             userInfoRef.document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -544,6 +548,7 @@ public class AboutMeFragment extends Fragment {
             FileInputStream fileInputStream = getContext().openFileInput(FILE_NAME);
 
             ObjectInputStream ois = new ObjectInputStream(fileInputStream);
+
             User tempUser = (User) ois.readObject();
 
             userData = new User(tempUser);

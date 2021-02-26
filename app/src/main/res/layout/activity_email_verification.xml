@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Firewall.EmailVerificationActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="25dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/emailverification" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="Verify your email address"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/verifyEmailText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emailVerificationMessage"
+            android:layout_marginTop="15dp"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            android:textSize="18sp"/>
+
+
+        <Button
+            android:id="@+id/verifyEmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="25dp"
+            android:text="Resend Verify Email"
+            />
+
+        <Button
+            android:id="@+id/skipVerifyEmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="25dp"
+            android:background="#00FFFFFF"
+            android:text="Verify Later"
+            android:textColor="@color/ActivityBar" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class SignUpActivity extends AppCompatActivity {
 
     private TextInputEditText ffirstname, llastname, uusername, pphonenumber,aaddress,eemail,ppassword,cconfirmpassword;
+    private Button signUpBtn;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
@@ -41,6 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         eemail = findViewById(R.id.emaileditText);
         ppassword= findViewById(R.id.passwordeditText);
         cconfirmpassword = findViewById(R.id.confirmpasswordEditText);
+        signUpBtn = findViewById(R.id.signUpButton);
 
         progressBar = findViewById(R.id.signUpProgressBar3);
     }
@@ -48,7 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
     public void signUpBtn(View v) {
 
         progressBar.setVisibility(View.VISIBLE);
-
+        signUpBtn.setEnabled(false);
 //        convert to String
         String firstname = ffirstname.getText().toString().trim();
         String lastname = llastname.getText().toString().trim();
@@ -111,19 +114,36 @@ public class SignUpActivity extends AppCompatActivity {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
+
+//                        Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        intent.putExtra("email",email);
+//                        startActivity(intent);
+//                        finish();
+
                         progressBar.setVisibility(View.INVISIBLE);
                         Toast.makeText(SignUpActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        signUpBtn.setEnabled(true);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Toast.makeText(SignUpActivity.this, "Error" , Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                signUpBtn.setEnabled(true);
                 progressBar.setVisibility(View.INVISIBLE);
                 Toast.makeText(SignUpActivity.this, "Error" , Toast.LENGTH_SHORT).show();
             }
         });
 
-
     }
+
+
+
 }

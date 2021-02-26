@@ -69,7 +69,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
             }
         }, 2000);
 
-
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener =
@@ -90,9 +89,11 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                     setTitle("Category");
                     break;
                 case R.id.navigation_add: {
-                    if (!isSignInAnonymous()) {
-                        selectedFragment = new AddFragment();
-                        setTitle("Add Item");
+                    if (auth.getCurrentUser()!=null){
+                        if (!auth.getCurrentUser().isAnonymous()) {
+                            selectedFragment = new AddFragment();
+                            setTitle("Add Item");
+                        }
                     }else{
                         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
                         intent.putExtra("wantToSign","true");
@@ -101,13 +102,16 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                 } break;
                 case R.id.navigation_aboutMe: {
 
-                    if (!isSignInAnonymous()) {
-                        selectedFragment = new AboutMeFragment();
-                        setTitle("About Me");
+                    if (auth.getCurrentUser()!=null){
+                        if (!auth.getCurrentUser().isAnonymous()) {
+                            selectedFragment = new AboutMeFragment();
+                            setTitle("About Me");
+                        }
                     }else{
                         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
                         intent.putExtra("wantToSign","true");
                         startActivity(intent);
+
                     }
 
                 }break;
@@ -123,10 +127,7 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
         }
     };
 
-    private boolean isSignInAnonymous() {
-        String email = auth.getCurrentUser().getEmail();
-        return email == null || email.equals("");
-    }
+
 
 
     @Override

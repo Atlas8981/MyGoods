@@ -47,8 +47,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private ViewPager viewPager;
     private Intent intent = getIntent();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private Item item;
     private ArrayList<Item> similarItemArrayAdapter = new ArrayList<>();
@@ -80,9 +80,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         setData();
 
         if (item.getItemid() != null) {
-            if (!isSignInAnonymously()) {
-                addView();
-                addToRecentView();
+            if (mAuth.getCurrentUser()!=null) {
+                if (!mAuth.getCurrentUser().isAnonymous()){
+                    addView();
+                    addToRecentView();
+                }
             }
         }
 
@@ -90,10 +92,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     }
 
-    private boolean isSignInAnonymously() {
-        String email = mAuth.getCurrentUser().getEmail();
-        return email == null || email.equals("");
-    }
+
 
     private void addView() {
 
@@ -115,8 +114,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 currentViewers.add(mAuth.getUid());
 
 
-                List<String> toFirebase = new ArrayList<>();
-                toFirebase.addAll(currentViewers);
+                List<String> toFirebase = new ArrayList<>(currentViewers);
 
                 currentItem.setViewers(toFirebase);
                 currentItem.setViews(currentViewers.size());

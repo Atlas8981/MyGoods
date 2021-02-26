@@ -173,24 +173,25 @@ public class AddFragment extends Fragment {
     } // End of onCreateView()
 
     private void autoCompleteField() {
+        if (auth.getUid()!=null) {
+            db.collection("users")
+                    .document(auth.getUid())
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    User currentUser = documentSnapshot.toObject(User.class);
 
-        db.collection("users")
-                .document(auth.getUid())
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User currentUser = documentSnapshot.toObject(User.class);
+                    if (currentUser.getAddress() != null) {
+                        address.setText(currentUser.getAddress());
+                    }
 
-                if (currentUser.getAddress() != null){
-                    address.setText(currentUser.getAddress());
+                    if (currentUser.getPhoneNumber() != null) {
+                        phone.setText(currentUser.getPhoneNumber());
+                    }
+
                 }
-
-                if (currentUser.getPhoneNumber() != null){
-                    phone.setText(currentUser.getPhoneNumber());
-                }
-
-            }
-        });
+            });
+        }
     }
 
 
