@@ -56,7 +56,10 @@ public class MyItemActivity extends AppCompatActivity {
     boolean isLoading = false;
     boolean isOutOfData = false;
 
-    private Query queryStatement;
+    private final Query queryStatement =
+            itemRef.orderBy("date", Query.Direction.DESCENDING)
+                    .limit(10);
+
     private Query next;
 
     @Override
@@ -92,14 +95,16 @@ public class MyItemActivity extends AppCompatActivity {
                     if (absListView.getLastVisiblePosition() == i2 - 1
                             && myItemListView.getCount() >= 0 && !isLoading && next != null && !isOutOfData) {
                         isLoading = true;
-//                        Check if current number of item is bigger than 10
-                        if (itemList.size()>=10) {
-                            Thread thread = new ThreadGetMoreData();
-                            thread.start();
-                        }else{
-                            isOutOfData=true;
-                            Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
-                        }
+
+//                        if (itemList.size()>=10) {
+//                        }else{
+//                            isOutOfData=true;
+//                            Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
+//                        }
+
+                        Thread thread = new ThreadGetMoreData();
+                        thread.start();
+
                     }
                 }
             }
@@ -121,21 +126,17 @@ public class MyItemActivity extends AppCompatActivity {
 //        whereEqualTo("userid", FirebaseAuth.getInstance().getUid())
 //        itemRef.whereEqualTo("userid", FirebaseAuth.getInstance().getUid()).limit(10)
 
-        queryStatement = itemRef
-                .whereEqualTo("userid",auth.getUid())
-                .limit(10)
-                ;
         queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
                     Item curItem = documentSnapshot.toObject(Item.class);
-                    curItem.setItemid(documentSnapshot.getId());
-                    itemList.add(curItem);
-                    listMyItemRowAdapter = new ListMyItemRowAdapter(MyItemActivity.this,itemList,true);
-                    myItemListView.setAdapter(listMyItemRowAdapter);
-                    myItemListView.setOnItemClickListener(listViewListener);
-                    listMyItemRowAdapter.setOnItemClickListener(listViewAdapterClickListener);
+                    if (curItem.getUserid().equals(auth.getUid())) {
+                        curItem.setItemid(documentSnapshot.getId());
+                        itemList.add(curItem);
+                        setUpItemRowAdapter();
+                    }
+
                 }
 
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -159,6 +160,11 @@ public class MyItemActivity extends AppCompatActivity {
                     isOutOfData=true;
                     Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
                 }
+                if (itemList.size()<10 && !isOutOfData){
+                    isLoading=true;
+                    Thread thread = new ThreadGetMoreData();
+                    thread.start();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -170,6 +176,12 @@ public class MyItemActivity extends AppCompatActivity {
         });
     }
 
+    private void setUpItemRowAdapter() {
+        listMyItemRowAdapter = new ListMyItemRowAdapter(MyItemActivity.this,itemList,true);
+        myItemListView.setAdapter(listMyItemRowAdapter);
+        myItemListView.setOnItemClickListener(listViewListener);
+        listMyItemRowAdapter.setOnItemClickListener(listViewAdapterClickListener);
+    }
 
 
     //    Thread to send message to initiate the data retrieval by calling handler
@@ -198,6 +210,9 @@ public class MyItemActivity extends AppCompatActivity {
                     myItemListView.addFooterView(footerView);
                     break;
                 case 1:
+                    if (listMyItemRowAdapter == null){
+                        setUpItemRowAdapter();
+                    }
                     listMyItemRowAdapter.addListItemToAdapter((ArrayList<Item>)msg.obj);
                     myItemListView.removeFooterView(footerView);
                     isLoading = false;
@@ -219,8 +234,10 @@ public class MyItemActivity extends AppCompatActivity {
                     if (queryDocumentSnapshots.size()>0) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Item curItem = documentSnapshot.toObject(Item.class);
-                            curItem.setItemid(documentSnapshot.getId());
-                            anotherListItem.add(curItem);
+                            if (curItem.getUserid().equals(auth.getUid())) {
+                                curItem.setItemid(documentSnapshot.getId());
+                                anotherListItem.add(curItem);
+                            }
                         }
 
 
@@ -343,10 +360,8 @@ public class MyItemActivity extends AppCompatActivity {
 
     private void refreshViewAndData(){
         isOutOfData = false;
-        itemList.clear();
-        listMyItemRowAdapter = new ListMyItemRowAdapter(MyItemActivity.this,itemList,true);
-        myItemListView.setAdapter(listMyItemRowAdapter);
-
+        itemList = new ArrayList<>();
+        setUpItemRowAdapter();
         getDataFromFireStore();
     }
 

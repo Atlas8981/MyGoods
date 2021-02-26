@@ -56,6 +56,8 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
     private String subCategory;
     private String mainCategory;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,18 +87,22 @@ public class CategoryListViewActivity extends AppCompatActivity {
                 if (!swipeRefreshLayout.isRefreshing()) {
 //                If scroll to the second last, Initiate function by calling thread
                     if (absListView.getLastVisiblePosition() == i2 - 1
-                            && myItemListView.getCount() >= 0 && !isLoading && next != null && !isOutOfData) {
+                            && myItemListView.getCount() >= 0
+                            && !isLoading
+                            && next != null
+                            && !isOutOfData) {
                         isLoading = true;
-//                        Check if current number of item is bigger than 10
-                        if (itemList.size()>=10) {
 
-                            Thread thread = new ThreadGetMoreData();
-                            thread.start();
 
-                        }else{
-                            isOutOfData=true;
-                            Toast.makeText(CategoryListViewActivity.this, "No More Data", Toast.LENGTH_SHORT).show();
-                        }
+//                        if (itemList.size()>=10) {
+//                          }else{
+//                            isOutOfData=true;
+//                            Toast.makeText(CategoryListViewActivity.this, "No More Data", Toast.LENGTH_SHORT).show();
+//                        }
+                        Thread thread = new ThreadGetMoreData();
+                        thread.start();
+//
+
                     }
                 }
             }
@@ -106,7 +112,8 @@ public class CategoryListViewActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 isOutOfData = false;
-                itemList.clear();
+                itemList = new ArrayList<>();
+                userName = new ArrayList<>();
                 setUpItemRowAdapter();
                 getDataFromFireStore();
 
@@ -131,7 +138,8 @@ public class CategoryListViewActivity extends AppCompatActivity {
         });
     }
 
-    private final Query queryStatement = itemRef.orderBy("date", Query.Direction.DESCENDING).limit(10);
+    private final Query queryStatement = itemRef.orderBy("date", Query.Direction.DESCENDING)
+            .limit(10);
 
     private void getDataFromFireStore(){
 //        queryStatement.limit(10).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -193,7 +201,12 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     isOutOfData=true;
                     Toast.makeText(CategoryListViewActivity.this, "No Data", Toast.LENGTH_SHORT).show();
                 }
-                if (itemList.size()<10){
+
+
+                if (itemList.size()<10 && !isOutOfData){
+                    System.out.println("execute");
+                    isLoading=true;
+
                     Thread thread = new ThreadGetMoreData();
                     thread.start();
                 }
@@ -225,6 +238,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
         myItemListView.setAdapter(listItemRowAdapter);
         listItemRowAdapter.notifyDataSetChanged();
         myItemListView.setOnItemClickListener(recyclerViewListener);
+
     }
 
     //    Thread to send message to initiate the data retrieval by calling handler
@@ -253,6 +267,9 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     myItemListView.addFooterView(footerView);
                     break;
                 case 1:
+                    if (listItemRowAdapter == null){
+                        setUpItemRowAdapter();
+                    }
                     listItemRowAdapter.addListItemToAdapter((ArrayList<Item>)msg.obj,userName);
                     myItemListView.removeFooterView(footerView);
                     isLoading = false;
@@ -354,9 +371,11 @@ public class CategoryListViewActivity extends AppCompatActivity {
         Drawable divider = getResources().getDrawable( R.drawable.list_divider );
         myItemListView.setDivider(divider);
         myItemListView.setDividerHeight(100);
+
+
     }
 
-    private AdapterView.OnItemClickListener recyclerViewListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener recyclerViewListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 

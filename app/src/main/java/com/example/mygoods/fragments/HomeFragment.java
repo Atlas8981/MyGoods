@@ -351,7 +351,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 }
                 if (preferences == null || preferences.size()==0) {
                     if (homeFragmentContext != null) {
-                        Toast.makeText(homeFragmentContext, "We Can't Recommend You Anything", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(homeFragmentContext, "We Can't Recommend You Anything\nBecause No Preference", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
