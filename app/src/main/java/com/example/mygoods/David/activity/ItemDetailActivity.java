@@ -193,6 +193,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         for (int i = 0; i<item.getImages().size(); i++){
             imageUrl.add(item.getImages().get(i).getImageURL());
         }
+        sellerPhone.setText("Tel: " + item.getPhone());
+        sellerAddress.setText("Address: " + item.getAddress());
         getSellerProfile();
         viewPagerAdapter.notifyDataSetChanged();
         getSimilarItems();
@@ -259,8 +261,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
 
                     sellerName.setText(tempUser.getUsername());
-                    sellerPhone.setText("Tel: " + tempUser.getPhoneNumber());
-                    sellerAddress.setText("Address: " + tempUser.getAddress());
+
                 }
             }
         });
