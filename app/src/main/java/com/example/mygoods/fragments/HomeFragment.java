@@ -385,13 +385,21 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                             rawRecommendationData.add(trending);
                             if (rawRecommendationData.size() == list.size()) {
                                 Collections.sort(rawRecommendationData);
-                                recommendationData.add(rawRecommendationData.get(0));
+                                for (Item i:rawRecommendationData){
+                                    if (recommendationData.size()<7){
+                                        recommendationData.add(i);
+                                    }
+                                }
+//                                recommendationData.add(rawRecommendationData.get(0));
                             }
                         }
-                        if (recommendationData.size() == (preferences.size()-noTopViewItem)) {
+
+//                        if (recommendationData.size() == (preferences.size()-noTopViewItem)) {
+
+//                        if (recommendationData.size() == 7) {
                             System.out.println("PREFERENCE ADAPTER NOTIFYYYYYYYYYYYY");
                             prefAdapter.notifyDataSetChanged();
-                        }
+//                        }
                     }else{
                         System.out.println("Query Empty");
                         noTopViewItem += 1;

@@ -91,6 +91,18 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 }
             }
         }, 2000);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (newsFeedData.size()==0&&progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                    Toast.makeText(NewsFeedActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }, 5000);
     }
 
     @Override
@@ -332,6 +344,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 //        }
     }
 
+    private int j=0;
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
 
@@ -356,7 +369,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                         documentSize += 1;
                                         Item trending = doc.toObject(Item.class);
 
-                                        if (trending!=null) {
+                                        if (trending != null) {
                                             trending.setItemid(doc.getId());
                                         }
 
@@ -364,26 +377,41 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
                                         if (documentSize == list.size()) {
                                             Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData
-                                            newsFeedData.add(rawRecommendationData.get(0));
+//                                            newsFeedData.add(rawRecommendationData.get(0));
 
+                                            for (Item item : rawRecommendationData) {
+                                                if (newsFeedData.size() < 15) {
+                                                    newsFeedData.add(item);
+                                                }
+                                            }
                                             // Handle Firebase Async: generateTimeAndSellerName() will be called after newsFeedData stop getting any data input
 
 //                                            if (newsFeedData.size() == (5 - noTopViewItem)) {
-                                            if (newsFeedData.size() == (preferences.size() - noTopViewItem)) {
-                                                generateTimeAndSellerName();
-                                            }
+                                            System.out.println(newsFeedData.size());
+                                            System.out.println(preferences.size());
+                                            System.out.println(noTopViewItem);
+                                            System.out.println(newsFeedData.size() == (preferences.size() - noTopViewItem));
+
+//                                            if (newsFeedData.size() == (preferences.size() - noTopViewItem)) {
 
                                         }
                                     }
 
                                 } else {
-//                                    progressDialog.hide();
-//                                    Toast.makeText(NewsFeedActivity.this, "No Data ?", Toast.LENGTH_SHORT).show();
                                     noTopViewItem += 1; // Count the number of category that does not has item so that we can use this variable to handle firebase async
                                 }
+                                if (count == (preferences.size()-1)) {
+                                    generateTimeAndSellerName();
+                                }
+
+//                            j++;
+//                            if(j<preferences.size()){
+//                                getRecommendationItem();
+//                            }
                             }
                         });
             }
+
         }else{
             Toast.makeText(NewsFeedActivity.this, "No Recommendation Data Available", Toast.LENGTH_SHORT).show();
         }
@@ -414,8 +442,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 ownerID.add(newsFeedData.get(i).getUserid());
 
             }
-
-
 
             for (int o = 0; o<ownerID.size(); o++) {
                 // Convert date
