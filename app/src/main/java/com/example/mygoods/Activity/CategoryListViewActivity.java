@@ -225,11 +225,15 @@ public class CategoryListViewActivity extends AppCompatActivity {
     }
 
     private boolean checkCategory(Item item) {
-        if (mainCategory==null || mainCategory.equals("")){
-            return item.getSubCategory().equalsIgnoreCase(subCategory);
-        }else {
-            return item.getSubCategory().equalsIgnoreCase(subCategory)
-                    && item.getMainCategory().equalsIgnoreCase(mainCategory);
+        if (item.getMainCategory() != null || item.getSubCategory() !=null) {
+            if (mainCategory == null || mainCategory.equals("")) {
+                return item.getSubCategory().equalsIgnoreCase(subCategory);
+            } else {
+                return item.getSubCategory().equalsIgnoreCase(subCategory)
+                        && item.getMainCategory().equalsIgnoreCase(mainCategory);
+            }
+        }else{
+            return false;
         }
     }
 

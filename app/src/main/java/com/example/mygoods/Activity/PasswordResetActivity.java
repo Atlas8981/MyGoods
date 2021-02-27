@@ -54,7 +54,6 @@ public class PasswordResetActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private boolean checkViews() {
