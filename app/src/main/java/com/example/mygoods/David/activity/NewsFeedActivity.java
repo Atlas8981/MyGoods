@@ -75,7 +75,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         setToolBarTitle();
         setupViews();
 
-
     }
 
     @Override
@@ -95,14 +94,13 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                if (newsFeedData.size()==0&&progressDialog != null && progressDialog.isShowing()) {
+                if (newsFeedData.size()==0 && progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                     Toast.makeText(NewsFeedActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 }
-
             }
         }, 5000);
+
     }
 
     @Override
@@ -344,7 +342,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 //        }
     }
 
-    private int j=0;
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
 
@@ -404,10 +401,6 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                     generateTimeAndSellerName();
                                 }
 
-//                            j++;
-//                            if(j<preferences.size()){
-//                                getRecommendationItem();
-//                            }
                             }
                         });
             }
@@ -456,7 +449,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         String owner;
-//                        String owner = documentSnapshot.getString(Constant.usernameField);
+
                         if (user != null) {
                             owner = user.getUsername();
                         }else{
@@ -554,17 +547,13 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             viewHolder.itemName.setText(dataObjects.get(pos).getName());
             viewHolder.itemPrice.setText("USD "+dataObjects.get(pos).getPrice());
 
-//            The problem is that if an item have no owner then it will crash
-//            System.out.println("Object Size : " + dataObjects.size());
-//            System.out.println("Username array size : " + ownerName.size());
-
-//            System.out.println("Item Name : " + dataObjects.get(pos).getName() + " posted by " + ownerName.get(pos));
 
             if (pos<ownerName.size()) {
                 viewHolder.itemOwner.setText("Posted by: " + ownerName.get(pos));
             }
-
-            viewHolder.itemDuration.setText(time.get(pos));
+            if (pos<time.size()) {
+                viewHolder.itemDuration.setText(time.get(pos));
+            }
             viewHolder.itemViewCount.setText("View: "+dataObjects.get(pos).getViews());
             viewHolder.itemImage.setImageResource(R.drawable.plastic);
             Glide.with(mContext).load(dataObjects.get(pos).getImages().get(0).getImageURL()).centerCrop().placeholder(R.drawable.loading).into(viewHolder.itemImage);

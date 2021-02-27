@@ -274,7 +274,7 @@ public class AboutMeFragment extends Fragment {
         protected byte[] doInBackground(Bitmap... bitmaps) {
 //            progressDialog.setTitle("Compressing Image...");
 //            Start Compressing Image in the back thread
-            return getBytesFromBitmap(userChosenProfileInBitmap, 50);
+            return getBytesFromBitmap(userChosenProfileInBitmap, 25);
         }
 
         @Override
