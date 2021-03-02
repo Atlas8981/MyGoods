@@ -89,15 +89,18 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                     setTitle("Category");
                     break;
                 case R.id.navigation_add: {
+                    System.out.println(auth.getCurrentUser());
                     if (auth.getCurrentUser()!=null){
                         if (!auth.getCurrentUser().isAnonymous()) {
                             selectedFragment = new AddFragment();
                             setTitle("Add Item");
+                        }else{
+                            moveToWelcomeActivity();
+
                         }
                     }else{
-                        Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
-                        intent.putExtra("wantToSign","true");
-                        startActivity(intent);
+                        moveToWelcomeActivity();
+
                     }
                 } break;
                 case R.id.navigation_aboutMe: {
@@ -106,11 +109,11 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                         if (!auth.getCurrentUser().isAnonymous()) {
                             selectedFragment = new AboutMeFragment();
                             setTitle("About Me");
+                        }else{
+                            moveToWelcomeActivity();
                         }
                     }else{
-                        Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
-                        intent.putExtra("wantToSign","true");
-                        startActivity(intent);
+                        moveToWelcomeActivity();
 
                     }
 
@@ -127,7 +130,11 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
         }
     };
 
-
+    private void moveToWelcomeActivity(){
+        Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+        intent.putExtra("wantToSign","true");
+        startActivity(intent);
+    }
 
 
     @Override

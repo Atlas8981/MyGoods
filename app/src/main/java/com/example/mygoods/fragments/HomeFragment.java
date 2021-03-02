@@ -232,9 +232,11 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                 for(DocumentSnapshot doc : list) {
                     Item trending = doc.toObject(Item.class);
+
                     if (trending!=null){
                         trending.setItemid(doc.getId());
                     }
+
                     trendingData.add(trending);
                     if (trendingData.size() == list.size()) {
                         trendingAdapter.notifyDataSetChanged();

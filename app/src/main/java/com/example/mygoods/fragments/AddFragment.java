@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mygoods.Adapters.RecyclerHorizontalScrollAdapter;
+import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
@@ -84,6 +85,7 @@ public class AddFragment extends Fragment {
     private List<Bitmap> imageBitmap;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageRef;
+    private DocumentReference ref = db.collection(Constant.itemCollection).document();
 
     // Views
     private View v;
@@ -359,11 +361,9 @@ public class AddFragment extends Fragment {
     private void uploadData(){
 
         Item item = getItem();
-
-        // Add a new document with a generated ID
-        db.collection("items").add(item).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        db.collection("items").document(item.getItemid()).set(item).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onSuccess(DocumentReference documentReference) {
+            public void onSuccess(Void aVoid) {
                 Toast.makeText(addFragmentContext, "Item Uploaded", Toast.LENGTH_SHORT).show();
                 if (pd!=null) {
                     pd.dismiss();
@@ -378,6 +378,27 @@ public class AddFragment extends Fragment {
                 Toast.makeText(addFragmentContext, "Failed Item Uploaded", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        // Add a new document with a generated ID
+//        db.collection("items").add(item).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//            @Override
+//            public void onSuccess(DocumentReference documentReference) {
+//                Toast.makeText(addFragmentContext, "Item Uploaded", Toast.LENGTH_SHORT).show();
+//                if (pd!=null) {
+//                    pd.dismiss();
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                if (pd!=null) {
+//                    pd.dismiss();
+//                }
+//                Toast.makeText(addFragmentContext, "Failed Item Uploaded", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
     }
 
     private Item getItem() {
@@ -396,6 +417,8 @@ public class AddFragment extends Fragment {
                 Double.parseDouble(price.getText().toString().trim()),
                 date
         );
+
+        item.setItemid(ref.getId());
 
         return item;
     }
@@ -416,6 +439,7 @@ public class AddFragment extends Fragment {
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+
                         Image imageData = new Image(
                                 uri.toString(),
                                 randomKey);
@@ -427,7 +451,6 @@ public class AddFragment extends Fragment {
                             new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
                         }else{
                             uploadNumber = 0;
-
                             uploadData();
                             Toast.makeText(addFragmentContext, "Image Upload Successfully", Toast.LENGTH_LONG).show();
                         }
@@ -435,8 +458,7 @@ public class AddFragment extends Fragment {
                     }
                 });
             }
-        })
-                .addOnFailureListener(new OnFailureListener() {
+        }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         Toast.makeText(addFragmentContext, "Upload Fail, TRY AGAIN", Toast.LENGTH_LONG).show();
@@ -467,7 +489,6 @@ public class AddFragment extends Fragment {
     // METHOD USE TO PERFORM TASK AT THE BACKGROUND
     //****************
     private class BackgroundImageResize extends AsyncTask<Bitmap, Integer, byte[]> {
-
 
         public BackgroundImageResize() {
 
