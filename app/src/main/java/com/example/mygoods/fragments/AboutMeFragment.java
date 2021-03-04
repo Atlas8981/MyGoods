@@ -32,9 +32,9 @@ import com.example.mygoods.Activity.EditProfileActivity;
 import com.example.mygoods.Activity.FullScreenImageActivity;
 import com.example.mygoods.Activity.MyItemActivity;
 import com.example.mygoods.Activity.MySaveItemActivity;
-import com.example.mygoods.Activity.PasswordResetActivity;
 import com.example.mygoods.Activity.TermAndConditionActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
+import com.example.mygoods.Firewall.ForgotPasswordActivity;
 import com.example.mygoods.Firewall.WelcomeActivity;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.User;
@@ -86,6 +86,7 @@ public class AboutMeFragment extends Fragment {
 
     private View view;
     private Context context;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -427,7 +428,8 @@ public class AboutMeFragment extends Fragment {
             break;
             case R.id.resetPassword: {
                 Intent intent = new Intent();
-                intent.setClass(getContext(), PasswordResetActivity.class);
+                intent.setClass(getContext(), ForgotPasswordActivity.class);
+                intent.putExtra("email",currentUser.getEmail());
                 startActivity(intent);
             }
             break;

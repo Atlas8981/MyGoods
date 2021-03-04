@@ -50,6 +50,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (getIntent().getExtras() != null){
+            String email = getIntent().getExtras().getString("email");
+            emailEditText.getEditText().setText(email);
+        }
     }
 
     private boolean checkEmail(String email) {

@@ -39,14 +39,14 @@ public class PasswordResetActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                password = passwordEdt.getEditText().getText().toString().trim();
-                confirmPassword = confirmPasswordEdt.getEditText().getText().toString().trim();
+//                password = passwordEdt.getEditText().getText().toString().trim();
+//                confirmPassword = confirmPasswordEdt.getEditText().getText().toString().trim();
 
                 if (user != null && auth.getUid() != null) {
-                    if (checkViews()) {
-                        savePasswordBtn.setEnabled(false);
-                        updatePassword();
-                    }
+//                    if (checkViews()) {
+//                        savePasswordBtn.setEnabled(false);
+//                        updatePassword();
+//                    }
 
                 }else {
                     Toast.makeText(PasswordResetActivity.this, "User is null", Toast.LENGTH_SHORT).show();
