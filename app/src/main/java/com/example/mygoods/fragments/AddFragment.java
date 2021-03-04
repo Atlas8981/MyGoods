@@ -518,26 +518,59 @@ public class AddFragment extends Fragment {
 
         switch (item.getItemId()){
             case R.id.confirmPost: {
-//                if(itemName.getText().toString().isEmpty()
-//                        || price.getText().toString().isEmpty()
-//                        || address.getText().toString().isEmpty()
-//                        || phone.getText().toString().isEmpty()
-//                        || description.getText().toString().isEmpty()){
-//                    Toast.makeText(addFragmentContext, "Please fill in all the information", Toast.LENGTH_LONG).show();
-//                }else {
-
-//                }
-//                    // Upload data
-
-                    pd = new ProgressDialog(addFragmentContext);
-                    pd.setTitle("Uploading...");
-                    pd.show();
-                    new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
-
+            if (checkView()) {
+                pd = new ProgressDialog(addFragmentContext);
+                pd.setTitle("Uploading...");
+                pd.show();
+                new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
+            }
             }break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean checkView() {
+        String errorMsg = "Here";
+        boolean flag = true;
+
+        if (itemName.getText().toString().isEmpty()){
+            itemName.setError(errorMsg);
+            flag = false;
+        }
+        if (!price.getText().toString().isEmpty()) {
+            try {
+                Double.parseDouble(price.getText().toString());
+            } catch (NumberFormatException e) {
+                price.setError("Number Format Error");
+                flag = false;
+            }
+        }else {
+            price.setError(errorMsg);
+            flag = false;
+        }
+        if (address.getText().toString().isEmpty()){
+            address.setError(errorMsg);
+            flag = false;
+        }
+        if (phone.getText().toString().isEmpty()){
+            phone.setError(errorMsg);
+            flag = false;
+        }
+        if (description.getText().toString().isEmpty()){
+            description.setError(errorMsg);
+            flag = false;
+        }
+        if (imagesUpload==null){
+            Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
+            flag = false;
+        }
+        if (subCategory == null || mainCategory ==null){
+            Toast.makeText(getContext(), "Please Choose a Category", Toast.LENGTH_SHORT).show();
+            flag = false;
+        }
+
+        return flag;
     }
 
 

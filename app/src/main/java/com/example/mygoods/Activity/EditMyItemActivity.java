@@ -274,55 +274,6 @@ public class EditMyItemActivity extends AppCompatActivity {
     }
 
     private void uploadImageToFirestore (byte[] bytes){
-////        Generate Random Keyid as the name of image
-//        final String randomKey = UUID.randomUUID().toString();
-//
-////        Referencing the firebase storage
-//        final StorageReference ref = firebaseStorage.getReference().child("images/" + randomKey);
-//
-////        This function is follow from the documentation of firebase website
-////        ref.putBytes(bytes) is for uploading but without any knowledge of the progress
-////        That why Task uploadtask is created to check the progress and download the imageUrl after finish uploading
-//        uploadtask = ref.putBytes(bytes);
-//
-////        uploadtask = ref.putUri(Dak Uri jol mok)
-//        uploadtask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//            @Override
-//            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-////                To check the progress of upload in case file is too big
-////                double progressPercent = (100.00 * snapshot.getBytesTransferred()/ snapshot.getTotalByteCount());
-//            }
-//        }).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-//            @Override
-//            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-////                After task is successful the firebase storage would be able generate a url of the uploaded image
-//                if (!task.isSuccessful()) {
-//                    throw Objects.requireNonNull(task.getException());
-//                }
-//
-//                // Continue with the task to get the download URL
-//                return ref.getDownloadUrl();
-//            }
-//        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Uri> task) {
-//
-////                Delete Old Image after the new one is uploaded
-//                firebaseStorage.getReference().child("images/" + mitem.getImages()).delete();
-//
-////                Get The new image url
-//                Uri url = task.getResult();
-//
-////                Gathering all the data from view in a organize manner
-////                Not all data is needed to change
-////                Some are here for referencing but all are useful
-//
-
-//                imagesUpload.add(uri.toString(),
-//                        randomKey)
-
-//            }
-//        });
 
         final String randomKey = UUID.randomUUID().toString();
         StorageReference storageRef = firebaseStorage.getReference().child("images/" +randomKey);
@@ -409,10 +360,10 @@ public class EditMyItemActivity extends AppCompatActivity {
 
                 if (task.isSuccessful()){
                     Toast.makeText(EditMyItemActivity.this, "Data Updated", Toast.LENGTH_SHORT).show();
-//                            When upload is successful launch the myitemAcitivity without user ability to come back
+//                  When upload is successful launch the myitemAcitivity without user ability to come back
                     launchActivityWithoutBack();
                 }else {
-//                            Else stay in the same activity until everything workout
+//                  Else stay in the same activity until everything workout
                     Toast.makeText(EditMyItemActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 }
 
@@ -582,6 +533,8 @@ public class EditMyItemActivity extends AppCompatActivity {
             if (mitem.getSubCategory()!=null && mitem.getMainCategory() !=null) {
                 mainCategoryText.setText("Category : " + mitem.getMainCategory());
                 categorySelector.setText(mitem.getSubCategory());
+                subCategory = mitem.getSubCategory();
+                mainCategory = mitem.getMainCategory();
             }
 
             itemPrice.setText(String.valueOf(mitem.getPrice()));
@@ -643,6 +596,7 @@ public class EditMyItemActivity extends AppCompatActivity {
             itemPrice.setError(errorMsg);
             flag = false;
         }
+
         if (itemAddress.getText().toString().isEmpty()){
             itemAddress.setError(errorMsg);
             flag = false;
