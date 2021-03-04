@@ -551,12 +551,22 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             if (pos<ownerName.size()) {
                 viewHolder.itemOwner.setText("Posted by: " + ownerName.get(pos));
             }
+
             if (pos<time.size()) {
-                viewHolder.itemDuration.setText(time.get(pos));
+                viewHolder.itemDuration.setText("Posted " + time.get(pos));
             }
+
             viewHolder.itemViewCount.setText("View: "+dataObjects.get(pos).getViews());
             viewHolder.itemImage.setImageResource(R.drawable.plastic);
-            Glide.with(mContext).load(dataObjects.get(pos).getImages().get(0).getImageURL()).centerCrop().placeholder(R.drawable.loading).into(viewHolder.itemImage);
+
+            Glide.with(mContext)
+                    .load(dataObjects.get(pos)
+                            .getImages()
+                            .get(0)
+                            .getImageURL())
+                    .centerCrop()
+                    .placeholder(R.drawable.loading)
+                    .into(viewHolder.itemImage);
 
             return cView;
         }

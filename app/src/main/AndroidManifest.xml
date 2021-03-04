@@ -23,10 +23,12 @@
         <activity
             android:name=".Activity.SplashActivity"
             android:theme="@style/Theme.MyGoods.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".Activity.PasswordResetActivity" />
         <activity android:name=".Activity.EditProfileActivity" />
@@ -48,7 +50,12 @@
         <activity android:name=".Activity.MyItemActivity" />
         <activity android:name=".Activity.MyItemDetailActivity" />
         <activity android:name=".Activity.EditMyItemActivity" />
-        <activity android:name=".Firewall.User_PreferenceActivity" />
+
+        <activity android:name=".Firewall.User_PreferenceActivity" >
+
+
+        </activity>
+
         <activity android:name=".Firewall.LoginActivity" />
         <activity android:name=".Firewall.SignUpActivity" />
         <activity android:name=".Firewall.WelcomeActivity" />

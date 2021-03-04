@@ -311,6 +311,7 @@ public class MyItemDetailActivity extends AppCompatActivity {
                 intent.setClass(getApplicationContext(), SellerProfileActivity.class);
                 intent.putExtra("sellerData", sellers);
                 startActivity(intent);
+
             }
         });
     }

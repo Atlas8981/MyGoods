@@ -156,9 +156,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:text="Phone Number: 010965628"
                 android:textColor="@android:color/black"
-                android:textSize="12.5dp"
-                android:text="Phone Number: 010965628" />
+                android:textSize="12.5dp" />
             <TextView
                 android:id="@+id/itemDetailSellerAddress"
                 android:layout_width="wrap_content"

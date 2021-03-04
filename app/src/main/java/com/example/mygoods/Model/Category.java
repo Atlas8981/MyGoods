@@ -3,11 +3,11 @@ package com.example.mygoods.Model;
 public class Category {
 
     private int iconName;
-    private String categoryTitle;
+    private String subCategoryTitle;
 
-    public Category(int iconName, String categoryTitle) {
+    public Category(int iconName, String subCategoryTitle) {
         this.iconName = iconName;
-        this.categoryTitle = categoryTitle;
+        this.subCategoryTitle = subCategoryTitle;
     }
 
     public int getIconName() {
@@ -18,11 +18,11 @@ public class Category {
         this.iconName = iconName;
     }
 
-    public String getCategoryTitle() {
-        return categoryTitle;
+    public String getSubCategoryTitle() {
+        return subCategoryTitle;
     }
 
-    public void setCategoryTitle(String categoryTitle) {
-        this.categoryTitle = categoryTitle;
+    public void setSubCategoryTitle(String subCategoryTitle) {
+        this.subCategoryTitle = subCategoryTitle;
     }
 }

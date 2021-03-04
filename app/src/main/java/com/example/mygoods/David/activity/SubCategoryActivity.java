@@ -82,11 +82,11 @@ public class SubCategoryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (title.contains("Electronic")) {
-                    moveToNewsFeedActivity(electronicAdapter.get(i).getCategoryTitle());
+                    moveToNewsFeedActivity(electronicAdapter.get(i).getSubCategoryTitle());
                 } else if (title.contains("Furniture & Decors")) {
-                    moveToNewsFeedActivity(furnitureAdapter.get(i).getCategoryTitle());
+                    moveToNewsFeedActivity(furnitureAdapter.get(i).getSubCategoryTitle());
                 } else {
-                    moveToNewsFeedActivity(carAdapter.get(i).getCategoryTitle());
+                    moveToNewsFeedActivity(carAdapter.get(i).getSubCategoryTitle());
                 }
             }
         });
@@ -131,7 +131,7 @@ public class SubCategoryActivity extends AppCompatActivity {
             }
 
             viewHolder.catIcon.setImageResource(dataObjects.get(pos).getIconName());
-            viewHolder.catTitle.setText(dataObjects.get(pos).getCategoryTitle());
+            viewHolder.catTitle.setText(dataObjects.get(pos).getSubCategoryTitle());
 
             return cView;
         }

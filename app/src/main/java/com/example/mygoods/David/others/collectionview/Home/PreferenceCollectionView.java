@@ -37,8 +37,16 @@ public class PreferenceCollectionView extends RecyclerView.Adapter<PreferenceCol
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(mContext).load(data.get(position).getImages().get(0).getImageURL()).fitCenter().into(holder.itemImage);
-        holder.itemPrice.setText("USD "+data.get(position).getPrice());
+        Glide.with(mContext)
+                .load(data.get(position)
+                        .getImages()
+                        .get(0)
+                        .getImageURL())
+                .fitCenter()
+                .into(holder.itemImage);
+
+        holder.itemPrice.setText("USD " + data.get(position).getPrice());
+
         holder.itemName.setText(data.get(position).getName());
     }
 

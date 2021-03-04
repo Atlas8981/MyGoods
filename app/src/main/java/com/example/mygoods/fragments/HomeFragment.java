@@ -347,9 +347,9 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 preferences = (ArrayList<String>) document.get("preferenceid");
 
                 if (preferences !=null) {
-                    if (preferences.size() <= 5) {
+//                    if (preferences.size() <= 5) {
                         getRecommendationItem();
-                    }
+//                    }
                 }
                 if (preferences == null || preferences.size()==0) {
                     if (homeFragmentContext != null) {
