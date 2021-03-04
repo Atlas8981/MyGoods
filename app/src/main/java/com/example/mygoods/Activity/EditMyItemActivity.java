@@ -557,6 +557,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                                 notifyImageNumberChange();
                             }
                         });
+
             }
 
         }

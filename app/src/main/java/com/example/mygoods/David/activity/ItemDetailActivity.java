@@ -16,6 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.mygoods.Activity.FullScreenImageActivity;
+import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.ViewPagerAdapter;
 import com.example.mygoods.David.others.collectionview.ItemDetail.SimilarItemCollectionView;
@@ -46,6 +47,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     private ViewPager viewPager;
     private Intent intent = getIntent();
+    private SQLiteManager sqLiteManager;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -293,23 +295,37 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         ref.update(Constant.viewField, (id.size()-1));
     }
 
-    private void addToRecentView() {
-        //TODO: Change documentPath to adaptive user id
-        DocumentReference ref = db
-                .collection(Constant.userCollection)
-                .document(currentUser.getUid())
-                .collection("recentView")
-                .document(item.getItemid());
-        Map<String, Object> recentViewItem = new HashMap<>();
-        recentViewItem.put("itemID", item.getItemid());
-        recentViewItem.put("date", new Timestamp(new Date()));
 
-        ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
-            }
-        });
+
+    private void addToRecentView() {
+        if (currentUser.isAnonymous()) {
+            //TODO: Save to local database
+            sqLiteManager = new SQLiteManager(ItemDetailActivity.this);
+            sqLiteManager.open();
+            sqLiteManager.insert(Constant.recentViewTable,item.getItemid()); // Insert current itemID + date of view
+        } else {
+            DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentView").document(item.getItemid());
+            Map<String, Object> recentViewItem = new HashMap<>();
+            recentViewItem.put("itemID", item.getItemid());
+            recentViewItem.put("date", new Timestamp(new Date()));
+            ref.set(recentViewItem);
+        }
+        //TODO: Change documentPath to adaptive user id
+//        DocumentReference ref = db
+//                .collection(Constant.userCollection)
+//                .document(currentUser.getUid())
+//                .collection("recentView")
+//                .document(item.getItemid());
+//        Map<String, Object> recentViewItem = new HashMap<>();
+//        recentViewItem.put("itemID", item.getItemid());
+//        recentViewItem.put("date", new Timestamp(new Date()));
+//
+//        ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 
     private void addToSaveItem() {

@@ -1,10 +1,8 @@
 package com.example.mygoods.fragments;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,11 +12,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.activity.NewsFeedActivity;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.collectionview.Home.PreferenceCollectionView;
@@ -73,13 +71,12 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     private String currentUserID;
     private int deletedItem = 0;
     private int noTopViewItem = 0;
+    private SQLiteManager sqLiteManager; // ADD THIS
 
     private Button trendingViewAllButton;
     private Button recentlyViewViewAllButton;
     private Button recommendationViewAllButton;
 
-    String IMEINumber;
-    private static final int REQUEST_CODE = 101;
 
     public interface HomeFragmentInterface {
         public void onViewAllButtonClickListener(Class destinationActivity, ArrayList<String> data, String title, String userID);
@@ -150,40 +147,27 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
         return v;
     }
 
+    // ADD THIS
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sqLiteManager.close();
+    }
+
     private void setupFirebase() {
 
-        if (currentUser == null) {
-            //TODO: Take user phone IMEI
+        if (mAuth.getCurrentUser().isAnonymous()) {
+            currentUserID = currentUser.getUid().toString();
+
+            sqLiteManager = new SQLiteManager(homeFragmentContext);
+            sqLiteManager.open();
+            setupTrendingCollectionView();
+            setupRecentlyViewedCollectionView();
         } else {
             currentUserID = currentUser.getUid().toString();
             setupTrendingCollectionView();
             setupRecentlyViewedCollectionView();
             setupRecommendationCollectionView();
-        }
-    }
-
-    private void getIMEI() {
-        TelephonyManager telephonyManager = (TelephonyManager) homeFragmentContext.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(homeFragmentContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_CODE);
-            return;
-        }else{
-            Toast.makeText(homeFragmentContext, "error", Toast.LENGTH_SHORT).show();
-        }
-        IMEINumber = telephonyManager.getImei();
-        Toast.makeText(homeFragmentContext, IMEINumber, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(homeFragmentContext, "Permission granted.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(homeFragmentContext, "Permission denied.", Toast.LENGTH_SHORT).show();
-                }
-            }
         }
     }
 
@@ -212,6 +196,8 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             }
         });
     }
+
+
 
     private void setupTrendingCollectionView() {
         getTrendingItem();
@@ -259,34 +245,48 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     }
 
     private void getRecentViewItemID() {
-        //TODO: Change document path to current UID
-        db.collection(Constant.userCollection)
-                .document(currentUserID)
-                .collection("recentView")
-                .orderBy("date", Query.Direction.DESCENDING)
-                .limit(7)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (task.getResult()!=null) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            itemID.add(document.getId());
 
-                            if (itemID.size() == task.getResult().size()) {
-
-                                getRecentViewItem();
+        if (currentUser.isAnonymous()) {
+            Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
+            if (cursor.getCount() != 0 && cursor != null) {
+                do{
+                    String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
+                    itemID.add(getItemID);
+                }while (cursor.moveToNext());
+                getRecentViewItem();
+            }else{
+                return;
+            }
+        } else {
+            db.collection(Constant.userCollection)
+                    .document(currentUserID)
+                    .collection("recentView")
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .limit(7)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult()!=null) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        itemID.add(document.getId());
+                                        if (itemID.size() == task.getResult().size()) {
+                                            getRecentViewItem();
+                                        }
+                                    }
+                                }
+                            }else{
+                                System.out.println("Error getting documents: ");
                             }
                         }
-                    }
-                }else{
-                    System.out.println("Error getting documents: ");
-                }
-            }
-        });
+                    });
+        }
+
     }
+
     private int i = 0;
+
     private void getRecentViewItem() {
 
 //        TODO: What if the 7 top recently view has been deleted? Then there would be no data
@@ -309,11 +309,16 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
 //                        if (recentlyViewData.size() == (itemID.size() - deletedItem)) {
 //                        if (recentlyViewData.size() == itemID.size()) {
-                            recentViewAdapter.notifyDataSetChanged();
-                            System.out.println("RECENTVIEW ADAPTER NOTIFYYYYYYYYYYYY");
+                        recentViewAdapter.notifyDataSetChanged();
+                        System.out.println("RECENTVIEW ADAPTER NOTIFYYYYYYYYYYYY");
 //                        }
                     }else{
                         deletedItem += 1;
+                        if (currentUser.isAnonymous()) {
+                            sqLiteManager.delete(Constant.recentViewTable, itemID.get(count));
+                        }else{
+                            deleteRecentViewItem(count);
+                        }
                     }
                     i++;
                     if (i<itemID.size()){
@@ -322,6 +327,11 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 }
             });
 //        }
+    }
+    private void deleteRecentViewItem(int pos) {
+        db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentView").document(
+                itemID.get(pos)
+        ).delete();
     }
 
     private void setupRecommendationCollectionView() {
@@ -337,29 +347,37 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
     private void getUserPreferences() {
         //TODO: Change document path to current UID
-        db.collection(Constant.userCollection)
-                .document(currentUserID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot document = task.getResult();
-                preferences = (ArrayList<String>) document.get("preferenceid");
+        if (currentUser.isAnonymous()) {
+            return;
+        } else {
+            db.collection(Constant.userCollection)
+                    .document(currentUserID)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                preferences = (ArrayList<String>) document.get("preferenceid");
 
-                if (preferences !=null) {
-//                    if (preferences.size() <= 5) {
-                        getRecommendationItem();
-//                    }
-                }
-                if (preferences == null || preferences.size()==0) {
-                    if (homeFragmentContext != null) {
-                        Toast.makeText(homeFragmentContext, "We Can't Recommend You Anything\nBecause No Preference", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
+                                if (preferences != null) {
+                                    //                    if (preferences.size() <= 5) {
+                                    getRecommendationItem();
+                                    //                    }
+                                }
+                                if (preferences == null || preferences.size() == 0) {
+                                    if (homeFragmentContext != null) {
+                                        Toast.makeText(homeFragmentContext, "We Can't Recommend You Anything\nBecause No Preference", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }else{
+                                System.out.println("NO USERRRRRRRRRRRRRRRRRRRRRR");
+                            }
+                        }
+                    });
+        }
+
     }
-
 
     private void getRecommendationItem() {
         for (int i = 0; i < preferences.size(); i++) {
@@ -412,6 +430,8 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
         }
 
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {

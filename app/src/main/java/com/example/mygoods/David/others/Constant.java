@@ -10,6 +10,11 @@ import java.util.Date;
 import java.util.List;
 
 public class Constant {
+
+    public static String recentViewTable    = "RECENTVIEW";
+    public static String recentSearchTable  = "RECENTSEARCH";
+
+
     public static String itemCollection     = "items";
     public static String userCollection     = "users";
     public static String recentSearchCollection = "recentSearch";
