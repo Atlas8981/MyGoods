@@ -63,6 +63,9 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:3.0.3'
 
+//    Activity Slide to dismiss
+    implementation 'com.r0adkll:slidableactivity:2.1.0'
+
 
     implementation 'androidx.cardview:cardview:1.0.0' // Curve Edge Image
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0" // Refresh
