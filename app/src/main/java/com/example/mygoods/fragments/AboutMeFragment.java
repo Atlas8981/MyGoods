@@ -23,6 +23,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +37,6 @@ import com.example.mygoods.Activity.MySaveItemActivity;
 import com.example.mygoods.Activity.TermAndConditionActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
 import com.example.mygoods.Firewall.ForgotPasswordActivity;
-import com.example.mygoods.Firewall.WelcomeActivity;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
@@ -70,17 +71,17 @@ public class AboutMeFragment extends Fragment {
     private TextView myName, myPhone,myAddress;
     private Button signOutBtn;
 
-    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private CollectionReference userInfoRef = firestore.collection("users");
+    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private final CollectionReference userInfoRef = firestore.collection("users");
 
     private Button myItemBtn;
     private Button mySaveItemBtn;
 
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private static User currentUser;
 
-    private int placeHolder = R.drawable.account;
+    private final int placeHolder = R.drawable.account;
 
     public AboutMeFragment() {/*Required empty public constructor*/}
 
@@ -120,9 +121,23 @@ public class AboutMeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 auth.signOut();
-                Intent intent = new Intent(getContext(), WelcomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+//                Intent intent = new Intent(getContext(), WelcomeActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
+
+                // Create new fragment and transaction
+                FragmentManager fragmentManager = getFragmentManager();
+                assert fragmentManager != null;
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setReorderingAllowed(true);
+
+                // Replace whatever is in the fragment_container view with this fragment
+                transaction.replace(R.id.fragment_container, HomeFragment.class, null);
+
+                // Commit the transaction
+                transaction.commit();
+
+
 
                 Toast.makeText(getContext(), "Sign Out Successfully", Toast.LENGTH_SHORT).show();
             }
@@ -180,7 +195,7 @@ public class AboutMeFragment extends Fragment {
 
     private void getDataFromDatabase(){
 
-        if (auth != null && auth.getUid()!=null){
+        if (auth.getUid() != null){
             userInfoRef.document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -214,7 +229,7 @@ public class AboutMeFragment extends Fragment {
 
                 }
             });
-        }else if (auth == null){
+        }else{
             myImage.setImageResource(0);
             myName.setText("");
             myPhone.setText("");
@@ -290,7 +305,7 @@ public class AboutMeFragment extends Fragment {
         }
     }
 
-    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
     private void uploadImageToStorage(byte[] bytes) {
         final String randomKey = UUID.randomUUID().toString();

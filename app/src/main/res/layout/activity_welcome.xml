@@ -81,7 +81,8 @@
             android:layout_height="60dp"
             android:layout_marginTop="15dp"
             android:onClick="guestBtn"
-            android:text="continue as guest" />
+            android:text="continue as guest"
+            android:visibility="gone" />
 
     </LinearLayout>
 </LinearLayout>

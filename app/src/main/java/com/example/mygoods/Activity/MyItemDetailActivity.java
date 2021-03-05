@@ -376,12 +376,13 @@ public class MyItemDetailActivity extends AppCompatActivity {
                                 userName.setText(user.getUsername());
                             }
                             if (user.getImage() != null && user.getImage().getImageURL() != null) {
-
-                                Glide.with(MyItemDetailActivity.this)
-                                        .load(user.getImage().getImageURL())
-                                        .centerCrop()
-                                        .placeholder(R.drawable.account)
-                                        .into(userImage);
+                                if (!MyItemDetailActivity.this.isDestroyed()) {
+                                    Glide.with(MyItemDetailActivity.this)
+                                            .load(user.getImage().getImageURL())
+                                            .centerCrop()
+                                            .placeholder(R.drawable.account)
+                                            .into(userImage);
+                                }
                             }
                         }
 

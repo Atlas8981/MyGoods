@@ -25,8 +25,10 @@ import com.example.mygoods.David.others.collectionview.Home.TrendingCollectionVi
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -58,7 +60,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private ArrayList<String> preferences;
     private ArrayList<Item> trendingData = new ArrayList<Item>();
@@ -158,18 +160,34 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
     private void setupFirebase() {
 
-        if (mAuth.getCurrentUser().isAnonymous()) {
-            currentUserID = currentUser.getUid();
+        if (mAuth.getCurrentUser()!=null){
+            if (mAuth.getCurrentUser().isAnonymous()) {
+                currentUserID = currentUser.getUid();
 
-            sqLiteManager = new SQLiteManager(homeFragmentContext);
-            sqLiteManager.open();
-            setupTrendingCollectionView();
-            setupRecentlyViewedCollectionView();
-        } else {
-            currentUserID = currentUser.getUid().toString();
-            setupTrendingCollectionView();
-            setupRecentlyViewedCollectionView();
-            setupRecommendationCollectionView();
+                sqLiteManager = new SQLiteManager(homeFragmentContext);
+                sqLiteManager.open();
+                setupTrendingCollectionView();
+                setupRecentlyViewedCollectionView();
+            } else {
+                currentUserID = currentUser.getUid();
+                setupTrendingCollectionView();
+                setupRecentlyViewedCollectionView();
+                setupRecommendationCollectionView();
+            }
+        }else{
+            mAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    currentUser = mAuth.getCurrentUser();
+                    setupFirebase();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(homeFragmentContext, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -363,9 +381,9 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                                 preferences = (ArrayList<String>) document.get("preferenceid");
 
                                 if (preferences != null) {
-                                    //                    if (preferences.size() <= 5) {
+                                    // if (preferences.size() <= 5) {
                                     getRecommendationItem();
-                                    //                    }
+                                    // }
                                 }
                                 if (preferences == null || preferences.size() == 0) {
                                     if (homeFragmentContext != null) {

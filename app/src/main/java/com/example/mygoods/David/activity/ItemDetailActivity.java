@@ -50,7 +50,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private SQLiteManager sqLiteManager;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private Item item;
     private ArrayList<Item> similarItemArrayAdapter = new ArrayList<>();
@@ -82,12 +82,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         setData();
 
         if (item.getItemid() != null) {
-            if (mAuth.getCurrentUser()!=null) {
-                if (!mAuth.getCurrentUser().isAnonymous()){
-                    addView();
-                    addToRecentView();
-                }
-            }
+            addView();
+            addToRecentView();
         }
 
 //        updateViewCount();
@@ -298,18 +294,26 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
 
     private void addToRecentView() {
+
         if (currentUser.isAnonymous()) {
             //TODO: Save to local database
             sqLiteManager = new SQLiteManager(ItemDetailActivity.this);
             sqLiteManager.open();
             sqLiteManager.insert(Constant.recentViewTable,item.getItemid()); // Insert current itemID + date of view
+
         } else {
-            DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentView").document(item.getItemid());
+
+            DocumentReference ref = db.collection(Constant.userCollection)
+                    .document(currentUser.getUid())
+                    .collection("recentView")
+                    .document(item.getItemid());
+
             Map<String, Object> recentViewItem = new HashMap<>();
             recentViewItem.put("itemID", item.getItemid());
             recentViewItem.put("date", new Timestamp(new Date()));
             ref.set(recentViewItem);
         }
+
         //TODO: Change documentPath to adaptive user id
 //        DocumentReference ref = db
 //                .collection(Constant.userCollection)
@@ -364,6 +368,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         Intent intent = new Intent();
         intent.setClass(this, FullScreenImageActivity.class);
         intent.putExtra("images", (Serializable) item.getImages());
+        intent.putExtra("position",viewPager.getCurrentItem());
         startActivity(intent);
     }
 } // End of class

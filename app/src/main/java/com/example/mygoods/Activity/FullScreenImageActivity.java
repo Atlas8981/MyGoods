@@ -27,17 +27,12 @@ public class FullScreenImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_full_screen_image);
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle.get("position") != null) {
-            position = (int) bundle.get("position");
-        }
+
 
 //        List<Image> images = (List<Image>) bundle.get("images");
         if (bundle.get("images") != null) {
-            List<Image> images = new ArrayList<>();
 
-            for (Image i : (List<Image>) bundle.get("images")) {
-                images.add(i);
-            }
+            List<Image> images = new ArrayList<>((List<Image>) bundle.get("images"));
 
             fullScreenViewPager = findViewById(R.id.fullScreenViewPager);
             fullScreenDotsIndicator = findViewById(R.id.fullScreenDotIndicator);
@@ -45,6 +40,12 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
             ImageAdapter imageAdapter = new ImageAdapter(getApplicationContext(), images, true);
             fullScreenViewPager.setAdapter(imageAdapter);
+
+            if (bundle.get("position") != null) {
+                position = (int) bundle.get("position");
+                fullScreenViewPager.setCurrentItem(position);
+            }
+
             fullScreenDotsIndicator.setViewPager(fullScreenViewPager);
         }
 
@@ -54,6 +55,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
 
 
     }
