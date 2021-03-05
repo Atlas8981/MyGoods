@@ -10,10 +10,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.mygoods.Adapters.ImageAdapter;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.R;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrConfig;
-import com.r0adkll.slidr.model.SlidrInterface;
-import com.r0adkll.slidr.model.SlidrPosition;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 import java.util.ArrayList;
@@ -25,19 +21,10 @@ public class FullScreenImageActivity extends AppCompatActivity {
     private DotsIndicator fullScreenDotsIndicator;
     private int position;
     private ImageButton cancelButton;
-
-    private SlidrInterface slidrInterface;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_image);
-
-        SlidrConfig config = new SlidrConfig.Builder()
-                .position(SlidrPosition.VERTICAL)
-                .build();
-
-        slidrInterface = Slidr.attach(this,config);
 
         Bundle bundle = getIntent().getExtras();
 
@@ -60,8 +47,6 @@ public class FullScreenImageActivity extends AppCompatActivity {
             }
 
             fullScreenDotsIndicator.setViewPager(fullScreenViewPager);
-
-
         }
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -73,8 +58,9 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
 
 
-
     }
+
+
 
     @Override
     public void onBackPressed() {
