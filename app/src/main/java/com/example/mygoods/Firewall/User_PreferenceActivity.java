@@ -35,7 +35,7 @@ public class User_PreferenceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user__preference);
+        setContentView(R.layout.activity_user_preference);
 
         populatePreference();
 
@@ -66,8 +66,10 @@ public class User_PreferenceActivity extends AppCompatActivity {
         List<String> selectedPreferences = new ArrayList<>();
 
         if (gridViewAdapter!=null) {
-            if(selectedPreferences.size()<=5){
+            if(selectedPreferences.size()<=5 && selectedPreferences.size()>=1){
                 selectedPreferences.addAll(gridViewAdapter.getCheckedItems());
+            }else if (selectedPreferences.size()==0){
+                Toast.makeText(this, "Please Select At Least 1", Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(this, "Cannot Select More than 5", Toast.LENGTH_SHORT).show();
             }

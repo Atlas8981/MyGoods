@@ -56,9 +56,9 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     private View v;
     private HomeFragmentInterface callback;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private ArrayList<String> preferences;
     private ArrayList<Item> trendingData = new ArrayList<Item>();
@@ -151,13 +151,15 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     @Override
     public void onDestroy() {
         super.onDestroy();
-        sqLiteManager.close();
+        if (sqLiteManager!=null){
+            sqLiteManager.close();
+        }
     }
 
     private void setupFirebase() {
 
         if (mAuth.getCurrentUser().isAnonymous()) {
-            currentUserID = currentUser.getUid().toString();
+            currentUserID = currentUser.getUid();
 
             sqLiteManager = new SQLiteManager(homeFragmentContext);
             sqLiteManager.open();

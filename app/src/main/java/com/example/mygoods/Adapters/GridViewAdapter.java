@@ -67,7 +67,7 @@ public class GridViewAdapter extends BaseAdapter {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     if (preferenceCheck.size()<5) {
-                        toggleButton.setBackgroundResource(R.drawable.addtosave_buttonframe);
+                        toggleButton.setBackgroundResource(R.drawable.check_button_background);
                         toggleButton.setTextColor(Color.parseColor("#3890FF"));
 
                         preferenceCheck.add(preferences.get(position));
