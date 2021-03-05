@@ -33,10 +33,14 @@
         <activity android:name=".Activity.PasswordResetActivity" />
         <activity android:name=".Activity.EditProfileActivity" />
         <activity android:name=".Activity.MySaveItemActivity" />
+
         <activity
             android:name=".Activity.FullScreenImageActivity"
             android:label="@string/title_activity_full_screen_image"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar.SlidrActivityTheme">
+
+        </activity>
+
         <activity android:name=".Activity.CategoryListViewActivity" />
         <activity android:name=".Activity.SubCategoryListActivity" />
 

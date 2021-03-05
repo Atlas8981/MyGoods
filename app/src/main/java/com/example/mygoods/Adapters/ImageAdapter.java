@@ -107,6 +107,7 @@ public class ImageAdapter extends PagerAdapter {
                         .into(photoView);
             }
 
+
             container.addView(photoView,0);
 
             return photoView;
