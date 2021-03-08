@@ -51,6 +51,7 @@ public class User implements Serializable {
         this.address = address;
     }
 
+
     public Image getImage() {
         return image;
     }

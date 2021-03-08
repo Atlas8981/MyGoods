@@ -37,6 +37,7 @@ import com.example.mygoods.Activity.MySaveItemActivity;
 import com.example.mygoods.Activity.TermAndConditionActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
 import com.example.mygoods.Firewall.ForgotPasswordActivity;
+import com.example.mygoods.Firewall.SignUp.PersonalInformationActivity;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
@@ -47,7 +48,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -81,7 +81,7 @@ public class AboutMeFragment extends Fragment {
 
     private static User currentUser;
 
-    private final int placeHolder = R.drawable.account;
+    private static final int placeHolder = R.drawable.account;
 
     public AboutMeFragment() {/*Required empty public constructor*/}
 
@@ -91,11 +91,12 @@ public class AboutMeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (auth.getCurrentUser()!=null){
-            if (!auth.getCurrentUser().isAnonymous()) {
-                setHasOptionsMenu(true);
-            }
-        }
+//        if (auth.getCurrentUser()!=null){
+//            if (!auth.getCurrentUser().isAnonymous()) {
+//                setHasOptionsMenu(true);
+//            }
+//        }
+        setHasOptionsMenu(false);
     }
 
     @Override
@@ -121,9 +122,6 @@ public class AboutMeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 auth.signOut();
-//                Intent intent = new Intent(getContext(), WelcomeActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(intent);
 
                 // Create new fragment and transaction
                 FragmentManager fragmentManager = getFragmentManager();
@@ -136,8 +134,6 @@ public class AboutMeFragment extends Fragment {
 
                 // Commit the transaction
                 transaction.commit();
-
-
 
                 Toast.makeText(getContext(), "Sign Out Successfully", Toast.LENGTH_SHORT).show();
             }
@@ -155,7 +151,6 @@ public class AboutMeFragment extends Fragment {
 
 //        Put old data in if user is not change
         putOldDataIntoView(view);
-
 
 
 //        For Menu Items at the bottom
@@ -196,7 +191,9 @@ public class AboutMeFragment extends Fragment {
     private void getDataFromDatabase(){
 
         if (auth.getUid() != null){
-            userInfoRef.document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            userInfoRef.document(auth.getUid())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     User tempUser = documentSnapshot.toObject(User.class);
@@ -222,11 +219,30 @@ public class AboutMeFragment extends Fragment {
 
                             saveCurrentUser(tempUser);
 
+                            setHasOptionsMenu(true);
                         }
+                    }else{
 
+//                        currentUser = new User();
+//                        saveCurrentUser(null);
+
+
+//                        currentUser = new User();
+//                        if (auth.getCurrentUser() != null ){
+//                            if (auth.getCurrentUser().getEmail()!= null){
+//                                currentUser.setEmail(auth.getCurrentUser().getEmail());
+//                                currentUser.setUserId(auth.getUid());
+//                            }
+//                        }
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(), PersonalInformationActivity.class);
+                        startActivity(intent);
                     }
-
-
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
@@ -253,20 +269,21 @@ public class AboutMeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
+            if (data != null) {
+                //Pick one image
+                Uri uri = data.getData();
+                try {
+                    Bitmap tempBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                    Bitmap rotatedBitmap = checkOrientation(getContext(), uri, tempBitmap);
+                    userChosenProfileInBitmap = rotatedBitmap;
 
-            //Pick one image
-            Uri uri = data.getData();
-            try {
-                Bitmap tempBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-                Bitmap rotatedBitmap = checkOrientation(getContext(),uri,tempBitmap);
-                userChosenProfileInBitmap = rotatedBitmap;
+                    if (userChosenProfileInBitmap != null) {
+                        updateProfilePicture(userChosenProfileInBitmap);
+                    }
 
-                if (userChosenProfileInBitmap != null){
-                    updateProfilePicture(userChosenProfileInBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
         }else{
@@ -335,18 +352,11 @@ public class AboutMeFragment extends Fragment {
                     }
                 });
             }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Toast.makeText(getContext(), "Upload Fail, TRY AGAIN", Toast.LENGTH_LONG).show();
-                    }
-                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-
-            @Override
-            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-
-            }
+        }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                }
         });
     }
 
@@ -357,15 +367,17 @@ public class AboutMeFragment extends Fragment {
                 @Override
                 public void onSuccess(Void aVoid) {
                     saveCurrentUser(currentUser);
-                    Glide.with(getContext())
-                            .load(getBytesFromBitmap(userChosenProfileInBitmap,50))
-                            .placeholder(R.drawable.account)
-                            .into(myImage);
+                    if (getContext() != null) {
+                        Glide.with(getContext())
+                                .load(getBytesFromBitmap(userChosenProfileInBitmap, 25))
+                                .placeholder(R.drawable.account)
+                                .into(myImage);
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    e.printStackTrace();
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -444,7 +456,9 @@ public class AboutMeFragment extends Fragment {
             case R.id.resetPassword: {
                 Intent intent = new Intent();
                 intent.setClass(getContext(), ForgotPasswordActivity.class);
-                intent.putExtra("email",currentUser.getEmail());
+                if (currentUser != null && currentUser.getEmail() != null) {
+                    intent.putExtra("email", currentUser.getEmail());
+                }
                 startActivity(intent);
             }
             break;
@@ -500,35 +514,35 @@ public class AboutMeFragment extends Fragment {
                         startActivity(intent);
                     }
                 }
-//                Intent intent = new Intent();
-//                intent.setClass(getContext(), SubCategoryListActivity.class);
-//                intent.putExtra("MainCategory", arrMenusName[position]);
-//                startActivity(intent);
             }
         });
     }
 
     private void putOldDataIntoView(View view) {
 
+        if (currentUser != null) {
+            if (currentUser.getUserId() != null){
+                if (currentUser.getUserId().equals(auth.getUid())){
+                    if (currentUser.getImage() != null && currentUser.getImage().getImageURL() != null) {
+                        Glide.with(view)
+                                .load(currentUser.getImage().getImageURL())
+                                .placeholder(placeHolder)
+                                .into(myImage);
+                    }else{
+                        Glide.with(view)
+                                .load(R.drawable.account)
+                                .placeholder(placeHolder)
+                                .into(myImage);
+                    }
 
-        if (currentUser != null && currentUser.getUserId().equals(auth.getUid())) {
-            if (currentUser.getImage() != null && currentUser.getImage().getImageURL() != null) {
-                Glide.with(view)
-                        .load(currentUser.getImage().getImageURL())
-                        .placeholder(placeHolder)
-                        .into(myImage);
-            }else{
-                Glide.with(view)
-                        .load(R.drawable.account)
-                        .placeholder(placeHolder)
-                        .into(myImage);
+                    myName.setText(currentUser.getFirstname() + " " + currentUser.getLastname());
+                    myPhone.setText(currentUser.getPhoneNumber());
+                    myAddress.setText(currentUser.getAddress());
+                    setHasOptionsMenu(true);
+                }
+
             }
 
-            System.out.println("execute");
-
-            myName.setText(currentUser.getFirstname() + " " + currentUser.getLastname());
-            myPhone.setText(currentUser.getPhoneNumber());
-            myAddress.setText(currentUser.getAddress());
         }
     }
 
@@ -568,7 +582,9 @@ public class AboutMeFragment extends Fragment {
 
             User tempUser = (User) ois.readObject();
 
-            userData = new User(tempUser);
+            if (tempUser !=null) {
+                userData = new User(tempUser);
+            }
 
             ois.close();
             fileInputStream.close();
@@ -576,6 +592,8 @@ public class AboutMeFragment extends Fragment {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+
         return userData;
     }
 

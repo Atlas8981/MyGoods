@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mygoods.Adapters.RecyclerHorizontalScrollAdapter;
 import com.example.mygoods.David.others.Constant;
+import com.example.mygoods.Firewall.SignUp.PersonalInformationActivity;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
@@ -182,13 +183,18 @@ public class AddFragment extends Fragment {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     User currentUser = documentSnapshot.toObject(User.class);
+                    if (currentUser != null) {
+                        if (currentUser.getAddress() != null) {
+                            address.setText(currentUser.getAddress());
+                        }
 
-                    if (currentUser.getAddress() != null) {
-                        address.setText(currentUser.getAddress());
-                    }
-
-                    if (currentUser.getPhoneNumber() != null) {
-                        phone.setText(currentUser.getPhoneNumber());
+                        if (currentUser.getPhoneNumber() != null) {
+                            phone.setText(currentUser.getPhoneNumber());
+                        }
+                    }else{
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(), PersonalInformationActivity.class);
+                        startActivity(intent);
                     }
 
                 }

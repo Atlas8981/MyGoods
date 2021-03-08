@@ -75,14 +75,6 @@
             android:onClick="loginBtn"
             android:text="log in" />
 
-        <Button
-            android:id="@+id/guestButton"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:onClick="guestBtn"
-            android:text="continue as guest"
-            android:visibility="gone" />
 
     </LinearLayout>
 </LinearLayout>

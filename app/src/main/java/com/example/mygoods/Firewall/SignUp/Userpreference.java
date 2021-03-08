@@ -1,4 +1,4 @@
-package com.example.mygoods.Firewall;
+package com.example.mygoods.Firewall.SignUp;
 
 import java.util.List;
 

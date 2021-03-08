@@ -129,10 +129,6 @@ public class EditProfileActivity extends AppCompatActivity {
             emailEdt.setError(null);
         }
 
-
-
-
-
         return flag;
     }
 
@@ -176,6 +172,8 @@ public class EditProfileActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception e) {
                     saveBtn.setEnabled(true);
                     Toast.makeText(EditProfileActivity.this, "Can't Update User Email", Toast.LENGTH_SHORT).show();
+
+
                 }
             });
 

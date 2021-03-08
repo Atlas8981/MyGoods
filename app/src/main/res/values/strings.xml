@@ -103,10 +103,10 @@
     </string>
 
     <string name="emailVerificationMessageStart">
-        You\'ve entered&#032;
+        We have sent verification email to &#032;
     </string>
     <string name="emailVerificationMessageEnd">
-        &#032;as the email address for your account. Please verify email address by clicking button below
+        &#032; please check your inbox. If you do not receive any email, please "Resent Email " button.
     </string>
 
 

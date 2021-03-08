@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Firewall.EmailVerificationActivity">
+    tools:context=".Firewall.SignUp.EmailVerificationActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -58,13 +58,13 @@
             />
 
         <Button
-            android:id="@+id/skipVerifyEmailButton"
+            android:id="@+id/doneVerificationButton"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginTop="25dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="#00FFFFFF"
-            android:text="Verify Later"
-            android:textColor="@color/ActivityBar" />
+            android:text="I have verify my email"
+            android:textColor="@color/mainColor" />
 
     </LinearLayout>
 

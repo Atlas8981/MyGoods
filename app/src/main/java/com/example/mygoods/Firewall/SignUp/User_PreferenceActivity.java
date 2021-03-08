@@ -1,4 +1,4 @@
-package com.example.mygoods.Firewall;
+package com.example.mygoods.Firewall.SignUp;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,9 +65,23 @@ public class User_PreferenceActivity extends AppCompatActivity {
 
         List<String> selectedPreferences = new ArrayList<>();
 
+        selectedPreferences.addAll(gridViewAdapter.getCheckedItems());
+
         if (gridViewAdapter!=null) {
-            if(selectedPreferences.size()<=5 && selectedPreferences.size()>=1){
-                selectedPreferences.addAll(gridViewAdapter.getCheckedItems());
+            if(selectedPreferences.size()>=1 && selectedPreferences.size()<=5 ){
+                if (auth.getUid()!=null) {
+                    DocumentReference documentReference = firestore.collection("users").document(auth.getUid());
+                    documentReference.update("preferenceid", selectedPreferences)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    launchHomeActivity();
+                                }
+                            });
+                }else{
+                    Toast.makeText(this, "No Account", Toast.LENGTH_SHORT).show();
+                }
+
             }else if (selectedPreferences.size()==0){
                 Toast.makeText(this, "Please Select At Least 1", Toast.LENGTH_SHORT).show();
             }else{
@@ -75,21 +89,7 @@ public class User_PreferenceActivity extends AppCompatActivity {
             }
         }
 
-        if (auth.getUid()!=null) {
 
-            DocumentReference documentReference = firestore.collection("users").document(auth.getUid());
-
-            documentReference.update("preferenceid", selectedPreferences)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    launchHomeActivity();
-                }
-            });
-
-        }else{
-            Toast.makeText(this, "No Account", Toast.LENGTH_SHORT).show();
-        }
 
     }
 
