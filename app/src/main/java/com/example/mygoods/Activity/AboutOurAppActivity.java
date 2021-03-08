@@ -41,7 +41,7 @@ public class AboutOurAppActivity extends AppCompatActivity {
 
 
 
-    private static String description = "Mygoods  will be focusing on making a better digital marketplace for users to " +
+    private static String description = "MyGoods  will be focusing on making a better digital marketplace for users to " +
             "buy and sell used products. This application hope to help our sellers to sell their " +
             "products freely and easily with great profits while buyers able to find the products " +
             "they need quickly and easily. Moreover, this application is going to have a dynamic " +
