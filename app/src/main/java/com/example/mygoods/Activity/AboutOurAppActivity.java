@@ -1,5 +1,7 @@
 package com.example.mygoods.Activity;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -20,13 +22,26 @@ public class AboutOurAppActivity extends AppCompatActivity {
 
         aboutAppText = findViewById(R.id.aboutText);
 
-        aboutAppText.setText(description);
 
+        try {
+            PackageInfo pInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
+            String version = pInfo.versionName;
+
+            description = description + "\n\nVersion : " + version;
+
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+
+        aboutAppText.setText(description);
     }
 
 
 
-    private static final String description = "Mygoods  will be focusing on making a better digital marketplace for users to " +
+    private static String description = "Mygoods  will be focusing on making a better digital marketplace for users to " +
             "buy and sell used products. This application hope to help our sellers to sell their " +
             "products freely and easily with great profits while buyers able to find the products " +
             "they need quickly and easily. Moreover, this application is going to have a dynamic " +
