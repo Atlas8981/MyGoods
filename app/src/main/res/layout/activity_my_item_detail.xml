@@ -218,6 +218,7 @@
                     android:text="VIEW SELLER PROFILE"
                     android:textColor="@android:color/white">
                 </Button>
+
                 <ToggleButton
                     android:id="@+id/saveButton"
                     android:layout_width="match_parent"
@@ -231,6 +232,7 @@
                     android:textColor="@color/ActivityBar"
                     android:textOff="add to save"
                     android:textOn="saved" />
+
                 <TextView
                     android:id="@+id/similarText"
                     android:layout_width="match_parent"

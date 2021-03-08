@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,7 @@ import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.ViewPagerAdapter;
 import com.example.mygoods.David.others.collectionview.ItemDetail.SimilarItemCollectionView;
+import com.example.mygoods.Firewall.WelcomeActivity;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
@@ -32,6 +35,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
@@ -48,7 +52,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private ViewPager viewPager;
     private Intent intent = getIntent();
     private SQLiteManager sqLiteManager;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -57,6 +61,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private ArrayList<String> imageUrl = new ArrayList<String>();
     private ArrayList<User> users = new ArrayList<>();
     private String ownerID;
+
+    private boolean isSaved = false;
 
     //Views
     private TextView itemName;
@@ -68,7 +74,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private TextView sellerAddress;
     private ImageView sellerImage;
     private Button viewSellerProfileButton;
-    private Button addToSaveButton;
+//    private Button addToSaveButton;
+    private ToggleButton addToSaveButton;
     private ViewPagerAdapter viewPagerAdapter;
     private SimilarItemCollectionView similarItemAdapter;
 
@@ -158,14 +165,43 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 }
             }
         });
-        addToSaveButton = (Button)findViewById(R.id.itemDetailAddToSaveButton);
-        addToSaveButton.setOnClickListener(new View.OnClickListener() {
+//        addToSaveButton = (Button) findViewById(R.id.itemDetailAddToSaveButton);
+//        addToSaveButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //TODO: Add Item as user's favorite
+//                addToSaveItem();
+//            }
+//        });
+
+        addToSaveButton = findViewById(R.id.saveItemButton);
+
+        CheckIfItemSaved();
+
+        addToSaveButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                //TODO: Add Item as user's favorite
-                addToSaveItem();
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    if (mAuth.getCurrentUser()!=null){
+                        if (!mAuth.getCurrentUser().isAnonymous()) {
+                            addToSaveItem();
+
+                        }else{
+                            addToSaveButton.setChecked(false);
+                            Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+                            startActivity(intent);
+                        }
+                    }else{
+                        addToSaveButton.setChecked(false);
+                        Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+                        startActivity(intent);
+                    }
+                } else {
+                    unSaveItem();
+                }
             }
         });
+
 
         // Setup horizontal RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -340,16 +376,71 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         ref.set(saveItem).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(ItemDetailActivity.this, "Added to Favorite!", Toast.LENGTH_SHORT).show();
+                if (!isSaved){
+                    Toast.makeText(ItemDetailActivity.this, "Added to Save Items!", Toast.LENGTH_SHORT).show();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ItemDetailActivity.this, "Cannot Add to Favorite!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void unSaveItem(){
+        db.collection("users").whereEqualTo("userId",mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                    db.collection("users")
+                            .document(documentSnapshot.getId())
+                            .collection("saveItems")
+                            .document(item.getItemid())
+                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            isSaved = false;
+                            Toast.makeText(ItemDetailActivity.this, "Item remove from save item", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void CheckIfItemSaved(){
+        List<String> saveItems = new ArrayList<>();
+        db.collection("users").whereEqualTo("userId",mAuth.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                            db.collection("users")
+                                    .document(documentSnapshot.getId())
+                                    .collection("saveItems")
+                                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    for(QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                                        saveItems.add(documentSnapshot.get("itemid").toString());
+                                    }
+                                    for (String itemId:saveItems) {
+                                        if (item.getItemid().equals(itemId)) {
+                                            addToSaveButton.setChecked(true);
+                                            isSaved = true;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+                });
+
+    }
 
     private void moveToSellerProfileActivity() {
         Intent intent = new Intent();
