@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.mygoods">
 
-    <uses-permission
-        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
-        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -14,6 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.MyGoods">
+        <activity android:name=".Activity.InternetScreenActivity"></activity>
         <activity android:name=".Firewall.SignUp.PasswordActivity" />
         <activity android:name=".Firewall.SignUp.EmailActivity" />
         <activity android:name=".Firewall.SignUp.EmailVerificationActivity" />
@@ -45,9 +43,7 @@
         <activity android:name=".Activity.MyItemActivity" />
         <activity android:name=".Activity.MyItemDetailActivity" />
         <activity android:name=".Activity.EditMyItemActivity" />
-        <activity android:name=".Firewall.SignUp.User_PreferenceActivity">
-
-        </activity>
+        <activity android:name=".Firewall.SignUp.User_PreferenceActivity"></activity>
         <activity android:name=".Firewall.LoginActivity" />
         <activity android:name=".Firewall.SignUp.PersonalInformationActivity" />
         <activity android:name=".Firewall.WelcomeActivity" />

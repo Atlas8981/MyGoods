@@ -1,6 +1,8 @@
 package com.example.mygoods.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -38,8 +40,18 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
 
+        if (!isNetworkConnected()){
+            Intent intent = new Intent(getApplicationContext(), InternetScreenActivity.class);
+            startActivity(intent);
+        }
+
     }
 
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+    }
 
     private boolean confirmBack = false;
 
@@ -100,7 +112,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                         }
                     }else{
                         moveToWelcomeActivity();
-
                     }
                 }break;
             }
