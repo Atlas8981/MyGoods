@@ -214,19 +214,15 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchByItemName(String itemName) {
-        db.collection(Constant.itemCollection)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection(Constant.itemCollection).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(!queryDocumentSnapshots.isEmpty()){
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-
                     for(DocumentSnapshot doc : list) {
                         Item item = doc.toObject(Item.class);
                         filteredData.add(item);
                     }
-
                     if (filteredData.size() == list.size()) {
                         filterSearchData(itemName);
                     }
@@ -245,7 +241,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void filterSearchData(String text) {
-
         String st = replaceWhiteSpace(text).toLowerCase();
         Set<Character> charactersMatchCount = new HashSet<>();
 
@@ -253,7 +248,6 @@ public class SearchActivity extends AppCompatActivity {
             String data = replaceWhiteSpace(filteredData.get(f).getName()).toLowerCase();
 
             if (data.length() > st.length()) {
-
                 for (int s = 0; s<data.length(); s++) {
 
                     for (int t = 0; t<st.length(); t++) {
@@ -264,12 +258,7 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     } // End of third for loop
                 } // End of second for loop
-                if (charactersMatchCount.size() == st.length() || charactersMatchCount.size() > st.length()) {
-                    searchData.add(filteredData.get(f));
-                    charactersMatchCount.clear();
-                }else{
-                    charactersMatchCount.clear();
-                }
+
             } else {
                 for (int s = 0; s<st.length(); s++) {
 
@@ -281,13 +270,12 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     }  // End of third for loop
                 } // End of second for loop
-                if (charactersMatchCount.size() == st.length() || charactersMatchCount.size() > st.length()) {
-                    searchData.add(filteredData.get(f));
-                    charactersMatchCount.clear();
-                }else{
-                    charactersMatchCount.clear();
-                }
             } // End of length if else conditional check
+            if (charactersMatchCount.size() == st.length() || charactersMatchCount.size() > st.length() || charactersMatchCount.size() == (st.length() - 1)) {
+                searchData.add(filteredData.get(f));
+            }
+            charactersMatchCount.clear();
+
         } // End of FIRST for-loop
         if (searchData.isEmpty()) {
             progressDialog.hide();
@@ -319,21 +307,19 @@ public class SearchActivity extends AppCompatActivity {
                 return;
             }
         } else {
-            db.collection(Constant.userCollection)
-                    .document(currentUser.getUid().toString())
-                    .collection("recentSearch")
-                    .orderBy(Constant.dateField, Query.Direction.DESCENDING)
-                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentSearch").orderBy(Constant.dateField, Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if(!queryDocumentSnapshots.isEmpty()){
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                        for(DocumentSnapshot doc : list) {
-                            if (doc.get("itemid") != null){
-                                recentlySearchData.add(doc.get("itemid").toString());
+                        if (!list.isEmpty()) {
+                            for(DocumentSnapshot doc : list) {
+                                recentlySearchData.add(doc.get("itemId").toString());
                             }
+                            recentlySearchAdapter.notifyDataSetChanged();
+                        } else {
+                            return;
                         }
-                        recentlySearchAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -367,15 +353,14 @@ public class SearchActivity extends AppCompatActivity {
         if (currentUser.isAnonymous()) {
             sqLiteManager.deleteAllRows(Constant.recentSearchTable);
             recentlySearchData.clear();
-            recentlySearchAdapter.notifyDataSetChanged();
         } else {
             for (int i = 0; i<recentlySearchData.size(); i++) {
                 db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentSearch").document(
                         recentlySearchData.get(i)
                 ).delete();
             }
-            recentlySearchAdapter.notifyDataSetChanged();
         }
+        recentlySearchAdapter.notifyDataSetChanged();
     }
 
     private void addRecentSearchData(String searchText) {

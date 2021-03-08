@@ -374,6 +374,7 @@ public class AddFragment extends Fragment {
                 if (pd!=null) {
                     pd.dismiss();
                 }
+                clearDataAfterUpload();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -567,7 +568,7 @@ public class AddFragment extends Fragment {
             description.setError(errorMsg);
             flag = false;
         }
-        if (imagesUpload==null){
+        if (imagesUpload==null || imagesUpload.size()==0){
             Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }
@@ -689,6 +690,22 @@ public class AddFragment extends Fragment {
     }
 
     private void clearDataAfterUpload(){
+        itemName.setText(null);
+        amount.setText(null);
+        price.setText(null);
+        address.setText(null);
+        phone.setText(null);
+        description.setText(null);
+        mainCategoryText.setText("Category");
+        remainingImages.setText("(0/5)");
+        categorySelector.setText("(Select Category)");
+
+        subCategory = null;
+        mainCategory = null;
+
+        autoCompleteField();
+
+        initializeVariable();
 
     }
 

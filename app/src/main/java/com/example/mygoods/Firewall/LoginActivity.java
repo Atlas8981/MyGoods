@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,13 +26,14 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText eemail, ppassword;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button forgotPasswordBtn;
+    private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setTitle("Sign In");
 
-
+        progressBar = findViewById(R.id.progressBar2);
         eemail = findViewById(R.id. emaileditText);
         ppassword = findViewById(R.id. passwordeditText);
         forgotPasswordBtn = findViewById(R.id.forgotPasswordBtn);
@@ -52,21 +54,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void loginuser (){
+        progressBar.setVisibility(View.VISIBLE);
         String email = eemail.getText().toString().trim();
         String password = ppassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)){
             eemail.setError("Email is require");
+            progressBar.setVisibility(View.INVISIBLE);
+            return;
         }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             eemail.setError("Email is incorrect format");
+            progressBar.setVisibility(View.INVISIBLE);
+            return;
         }else if(TextUtils.isEmpty(password)) {
             ppassword.setError("Password is require");
+            progressBar.setVisibility(View.INVISIBLE);
+            return;
         }
 
         auth.signInWithEmailAndPassword(email,password)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+                        progressBar.setVisibility(View.INVISIBLE);
                         if(authResult.getUser().isEmailVerified()){
                             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -87,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

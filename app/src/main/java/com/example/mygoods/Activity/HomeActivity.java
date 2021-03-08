@@ -51,8 +51,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
 
     @Override
     public void onBackPressed() {
-
-
         if (!confirmBack){
             confirmBack = true;
             Toast.makeText(getApplicationContext(), "Press Back again to exit", Toast.LENGTH_SHORT).show();
@@ -68,14 +66,12 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                 confirmBack = false;
             }
         }, 2000);
-
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
 
             Fragment selectedFragment = null;
 
@@ -96,11 +92,9 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                             setTitle("Add Item");
                         }else{
                             moveToWelcomeActivity();
-
                         }
                     }else{
                         moveToWelcomeActivity();
-
                     }
                 } break;
                 case R.id.navigation_aboutMe: {
