@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,7 +8,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         >
 
         <LinearLayout
@@ -57,32 +58,37 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="2.5dp"
                         android:importantForAutofill="no"
                         android:text="Item Name"
                         android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                     <EditText
                         android:id="@+id/itemNameTextField"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/box_frame"
                         android:ems="10"
-
+                        android:textSize="18sp"
+                        android:padding="10dp"
                         android:importantForAutofill="no"
-                        android:inputType="text" />
+                        android:inputType="text"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -90,15 +96,20 @@
                         android:layout_height="wrap_content"
                         android:importantForAutofill="no"
                         android:text="Price"
+                        android:layout_marginBottom="2.5dp"
                         android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                     <EditText
                         android:id="@+id/priceTextField"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:digits="0123456789."
-                        android:drawableRight="@drawable/ic_baseline_attach_money_24"
+                        android:maxLength="15"
+                        android:textSize="18sp"
+                        android:padding="10dp"
+                        android:background="@drawable/box_frame"
+                        android:drawableEnd="@drawable/ic_baseline_attach_money_24"
                         android:drawableTint="#000000"
                         android:ems="10"
                         android:importantForAutofill="no"
@@ -123,12 +134,12 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@drawable/custom_text_box"
-                android:drawableRight="@drawable/ic_baseline_arrow_forward_ios_24"
+                android:background="@drawable/box_frame"
                 android:gravity="center_vertical"
                 android:padding="5dp"
                 android:text="(Select Category)"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -164,9 +175,12 @@
             <EditText
                 android:id="@+id/addressTextField"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
+                android:background="@drawable/box_frame"
                 android:ems="10"
+                android:textSize="18sp"
+                android:padding="10dp"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName" />
 
@@ -174,6 +188,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:importantForAutofill="no"
+                android:layout_marginTop="5dp"
                 android:text="Phone Number"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -184,6 +199,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:digits="0123456789*#+"
+                android:textSize="18sp"
+                android:padding="10dp"
+                android:background="@drawable/box_frame"
                 android:ems="10"
                 android:importantForAutofill="no"
                 android:inputType="phone"
@@ -193,6 +211,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:importantForAutofill="no"
+                android:layout_marginTop="5dp"
                 android:text="Description"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -203,7 +222,7 @@
                 android:layout_height="100dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="200dp"
-                android:background="@drawable/custom_text_box"
+                android:background="@drawable/box_frame"
                 android:ems="10"
                 android:gravity="clip_vertical"
                 android:hint="Description"
