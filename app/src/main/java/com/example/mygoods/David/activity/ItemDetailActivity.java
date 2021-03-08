@@ -93,8 +93,6 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             addToRecentView();
         }
 
-//        updateViewCount();
-
     }
 
 

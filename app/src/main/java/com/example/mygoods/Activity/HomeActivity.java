@@ -32,7 +32,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
         bottomNavigationView = findViewById(R.id.navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
@@ -41,11 +40,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
 
     private boolean confirmBack = false;
 
@@ -85,7 +79,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                     setTitle("Category");
                     break;
                 case R.id.navigation_add: {
-                    System.out.println(auth.getCurrentUser());
                     if (auth.getCurrentUser()!=null){
                         if (!auth.getCurrentUser().isAnonymous()) {
                             selectedFragment = new AddFragment();
@@ -98,7 +91,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                     }
                 } break;
                 case R.id.navigation_aboutMe: {
-
                     if (auth.getCurrentUser()!=null){
                         if (!auth.getCurrentUser().isAnonymous()) {
                             selectedFragment = new AboutMeFragment();
@@ -110,12 +102,8 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                         moveToWelcomeActivity();
 
                     }
-
                 }break;
-
             }
-
-
 
             if (selectedFragment != null && bottomNavigationView.getSelectedItemId() != item.getItemId()) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
@@ -123,7 +111,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
             return true;
         }
     };
-
     private void moveToWelcomeActivity(){
         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
         intent.putExtra("wantToSign","true");
