@@ -11,7 +11,7 @@ import com.example.mygoods.R;
 
 public class AboutOurAppActivity extends AppCompatActivity {
 
-    TextView aboutAppText;
+    private TextView aboutAppText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,20 +26,12 @@ public class AboutOurAppActivity extends AppCompatActivity {
         try {
             PackageInfo pInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
             String version = pInfo.versionName;
-
             description = description + "\n\nVersion : " + version;
-
-
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-
-
         aboutAppText.setText(description);
     }
-
-
 
     private static String description = "MyGoods  will be focusing on making a better digital marketplace for users to " +
             "buy and sell used products. This application hope to help our sellers to sell their " +
@@ -52,4 +44,5 @@ public class AboutOurAppActivity extends AppCompatActivity {
             "deal of the day. Overall, all the current features that going to be included on " +
             "deployment will help buyers and sellers get closer to each other virtually while they " +
             "are physically far apart.";
+
 }
