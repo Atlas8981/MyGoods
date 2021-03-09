@@ -72,7 +72,7 @@ public class MyItemActivity extends AppCompatActivity {
         itemList = new ArrayList<Item>();
 
         getDataFromFireStore();
-        
+
 
 //        myItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -126,70 +126,52 @@ public class MyItemActivity extends AppCompatActivity {
 //        whereEqualTo("userid", FirebaseAuth.getInstance().getUid())
 //        itemRef.whereEqualTo("userid", FirebaseAuth.getInstance().getUid()).limit(10)
         if (auth.getUid()!=null) {
-            itemRef.whereEqualTo("userid", auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    if (queryDocumentSnapshots.size()>0) {
-                        queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                    Item curItem = documentSnapshot.toObject(Item.class);
-                                    if (curItem.getUserid().equals(auth.getUid())) {
-                                        curItem.setItemid(documentSnapshot.getId());
-                                        itemList.add(curItem);
-                                        setUpItemRowAdapter();
-                                    }
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        Item curItem = documentSnapshot.toObject(Item.class);
+                        if (curItem.getUserid().equals(auth.getUid())) {
+                            curItem.setItemid(documentSnapshot.getId());
+                            itemList.add(curItem);
+                            setUpItemRowAdapter();
+                        }
 
-                                }
+                    }
 
-                                progressBar.setVisibility(ProgressBar.INVISIBLE);
-                                swipeRefreshLayout.setRefreshing(false);
+                    progressBar.setVisibility(ProgressBar.INVISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
 
-                                //                Function below was follow from the firebase documentation
+                    //                Function below was follow from the firebase documentation
 
-                                //                Get Ready for the next query
-                                if (queryDocumentSnapshots.size() > 0) {
-                                    DocumentSnapshot lastVisible = queryDocumentSnapshots.getDocuments()
-                                            .get(queryDocumentSnapshots.size() - 1);
+                    //                Get Ready for the next query
+                    if (queryDocumentSnapshots.size() > 0) {
+                        DocumentSnapshot lastVisible = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
 
-                                    // Construct a new query starting at this document,
-                                    // get the next 10 data.
-                                    //                    itemRef.whereEqualTo("userid", FirebaseAuth.getInstance().getUid())
-                                    next = queryStatement
-                                            .startAfter(lastVisible);
-                                } else {
-                                    //                  if cursor cannot go further no need to query anything
-                                    //                    user can still always refresh to do the same thing
-                                    isOutOfData = true;
-                                    Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
-                                }
-                                if (itemList.size() < 10 && !isOutOfData) {
-                                    isLoading = true;
-                                    Thread thread = new ThreadGetMoreData();
-                                    thread.start();
-                                }
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MyItemActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(ProgressBar.INVISIBLE);
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    }else{
-                        progressBar.setVisibility(ProgressBar.INVISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                        Toast.makeText(MyItemActivity.this, "You Don't Have Any Item", Toast.LENGTH_SHORT).show();
+                        // Construct a new query starting at this document,
+                        // get the next 10 data.
+                        //                    itemRef.whereEqualTo("userid", FirebaseAuth.getInstance().getUid())
+                        next = queryStatement
+                                .startAfter(lastVisible);
+                    } else {
+                        //                  if cursor cannot go further no need to query anything
+                        //                    user can still always refresh to do the same thing
+                        isOutOfData = true;
+                        Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
+                    }
+                    if (itemList.size() < 10 && !isOutOfData) {
+                        isLoading = true;
+                        Thread thread = new ThreadGetMoreData();
+                        thread.start();
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MyItemActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(ProgressBar.INVISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(MyItemActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
@@ -292,7 +274,7 @@ public class MyItemActivity extends AppCompatActivity {
         progressBar.setVisibility(ProgressBar.VISIBLE);
         swipeRefreshLayout = findViewById(R.id.pullToRefresh);
 
-        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,51,140,48));
+        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,56,144,255));
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footerView = layoutInflater.inflate(R.layout.footerview_myitem,null);

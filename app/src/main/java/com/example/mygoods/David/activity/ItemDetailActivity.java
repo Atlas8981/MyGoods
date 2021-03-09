@@ -40,6 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,10 +58,10 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private Item item;
-    private ArrayList<Item> similarItemArrayAdapter = new ArrayList<>();
+    private ArrayList<Item> similarItemData = new ArrayList<>();
+    private ArrayList<Item> filterSimilarItemData = new ArrayList<>();
     private ArrayList<String> imageUrl = new ArrayList<String>();
     private ArrayList<User> users = new ArrayList<>();
-    private String ownerID;
 
     private boolean isSaved = false;
 
@@ -93,6 +94,14 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             addToRecentView();
         }
 
+    }
+    // ADD THIS
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentUser.isAnonymous()) {
+            sqLiteManager.close();
+        }
     }
 
 
@@ -133,7 +142,10 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     }
 
     private void setupViews(){
+
         item = (Item) getIntent().getSerializableExtra("ItemData"); // get object
+
+
 
         // Views pager (Images slider)
         viewPager = (ViewPager) findViewById(R.id.imageViewPager);
@@ -205,7 +217,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.similarItemCollectionView);
         recyclerView.setLayoutManager(layoutManager);
-        similarItemAdapter = new SimilarItemCollectionView(this, similarItemArrayAdapter, this);
+        similarItemAdapter = new SimilarItemCollectionView(this, similarItemData, this);
         recyclerView.setAdapter(similarItemAdapter);
     }
 
@@ -213,7 +225,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     public void onItemClickListener(int pos) {
         Intent intent = new Intent();
         intent.setClass(this, ItemDetailActivity.class);
-        intent.putExtra("ItemData", similarItemArrayAdapter.get(pos));
+        intent.putExtra("ItemData", similarItemData.get(pos));
         startActivity(intent);
     }
 
@@ -245,25 +257,86 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 int count = 0;
                 List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                 ArrayList<Item> similarItemData = new ArrayList<>();
-                for(DocumentSnapshot doc : list) {
-                    count += 1;
-                    Item tempItem = doc.toObject(Item.class);
-                    tempItem.setItemid(doc.getId());
-
-                    if (!tempItem.getItemid().equals(item.getItemid())) {
-                        similarItemData.add(tempItem);
-                        if (count == list.size()) {
-                            for (int i = 0; i < similarItemData.size(); i++) {
-                                if (similarItemData.get(i).getSubCategory().equals(ItemDetailActivity.this.item.getSubCategory())) {
-                                    similarItemArrayAdapter.add(similarItemData.get(i));
+                if (!list.isEmpty()) {
+                    for(DocumentSnapshot doc : list) {
+                        count += 1;
+                        Item curItem = doc.toObject(Item.class);
+                        if (curItem != null) {
+                            if (!curItem.equals(item)){
+                                curItem.setItemid(doc.getId());
+                                similarItemData.add(curItem);
+                                if (count == list.size()){
+                                    for(int i = 0; i<similarItemData.size(); i++) {
+                                        if (similarItemData.get(i).getSubCategory().equals(curItem.getSubCategory()) &&
+                                                similarItemData.get(i).getMainCategory().equals(curItem.getMainCategory())) {
+                                            filterSimilarItemData.add(similarItemData.get(i));
+                                        }
+                                    }
+                                    filterSimilarItem(filterSimilarItemData, item.getName());
                                 }
                             }
-                            similarItemAdapter.notifyDataSetChanged();
                         }
                     }
+                } else {
+                    return;
                 }
             }
         });
+    }
+
+    private String replaceWhiteSpace(String text) {
+        return text.replace(" ", "");
+    }
+
+    private void filterSimilarItem(ArrayList<Item> rawData, String currentItemName) {
+        Set<Character> charactersMatchCount = new HashSet<>();
+        String itemName = replaceWhiteSpace(currentItemName).toLowerCase();
+
+        for (int f = 0; f<rawData.size(); f++) {
+            String data = replaceWhiteSpace(rawData.get(f).getName()).toLowerCase();
+
+            if (data.length() > itemName.length()) {
+                for (int s = 0; s<data.length(); s++) {
+
+                    for (int t = 0; t<itemName.length(); t++) {
+
+                        if (itemName.charAt(t) == data.charAt(s)) {
+
+                            charactersMatchCount.add(data.charAt(s));
+                        }
+                    } // End of third for loop
+                } // End of second for loop
+
+            } else {
+                for (int s = 0; s<itemName.length(); s++) {
+
+                    for (int t = 0; t<data.length(); t++) {
+
+                        if (data.charAt(t) == itemName.charAt(s)) {
+
+                            charactersMatchCount.add(itemName.charAt(s));
+                        }
+                    }  // End of third for loop
+                } // End of second for loop
+            } // End of length if else conditional check
+            if (charactersMatchCount.size() == itemName.length() || charactersMatchCount.size() > itemName.length() || charactersMatchCount.size() == (itemName.length() - 1)) {
+                similarItemData.add(rawData.get(f));
+                filterSimilarItemData.remove(f);
+            }
+            charactersMatchCount.clear();
+        } // End of FIRST for-loop
+
+        if (similarItemData.isEmpty()) {
+            Collections.copy(similarItemData, filterSimilarItemData);
+            similarItemAdapter.notifyDataSetChanged();
+        }else if (similarItemData.size() < 3) {
+            if (!filterSimilarItemData.isEmpty()) {
+                for (int i = 0; i<filterSimilarItemData.size(); i++) {
+                    similarItemData.add(filterSimilarItemData.get(i));
+                }
+            }
+            similarItemAdapter.notifyDataSetChanged();
+        }
     }
 
     private void getSellerProfile() {
@@ -371,6 +444,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("saveItems").document(item.getItemid());
         Map<String, Object> saveItem = new HashMap<>();
         saveItem.put("itemid", item.getItemid());
+        saveItem.put("date", new Date());
         ref.set(saveItem).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -422,9 +496,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                                     .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                 @Override
                                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
                                     for(QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
                                         saveItems.add(documentSnapshot.get("itemid").toString());
                                     }
+
                                     for (String itemId:saveItems) {
                                         if (item.getItemid().equals(itemId)) {
                                             addToSaveButton.setChecked(true);

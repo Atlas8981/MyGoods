@@ -5,6 +5,7 @@ package com.example.mygoods.Model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Item implements Serializable , Comparable<Item>{
@@ -174,6 +175,33 @@ public class Item implements Serializable , Comparable<Item>{
                 ", views=" + views +
                 ", date=" + date +
                 '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return amount == item.amount &&
+                Double.compare(item.price, price) == 0 &&
+                views == item.views &&
+                Objects.equals(itemid, item.itemid) &&
+                Objects.equals(name, item.name) &&
+                Objects.equals(address, item.address) &&
+                Objects.equals(subCategory, item.subCategory) &&
+                Objects.equals(mainCategory, item.mainCategory) &&
+                Objects.equals(description, item.description) &&
+                Objects.equals(userid, item.userid) &&
+                Objects.equals(phone, item.phone) &&
+                Objects.equals(images, item.images) &&
+                Objects.equals(viewers, item.viewers) &&
+                Objects.equals(date, item.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(itemid, name, address, subCategory, mainCategory, description, userid, phone, images, amount, price, viewers, views, date);
     }
 
     @Override

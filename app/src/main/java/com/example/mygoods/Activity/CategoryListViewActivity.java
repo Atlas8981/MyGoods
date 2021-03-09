@@ -121,22 +121,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
         });
     }
 
-    private void testingGetDataFromFireStore() {
-        getCategoryItemId();
-    }
 
-    private void getCategoryItemId() {
-        itemRef.orderBy("date")
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot q: queryDocumentSnapshots){
-                    System.out.println(q.toObject(Item.class).toString());
-                }
-            }
-        });
-    }
 
     private final Query queryStatement = itemRef.orderBy("date", Query.Direction.DESCENDING)
             .limit(10);

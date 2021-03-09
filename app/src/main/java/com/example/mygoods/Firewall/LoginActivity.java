@@ -85,12 +85,20 @@ public class LoginActivity extends AppCompatActivity {
 
                             Toast.makeText(LoginActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
                         }else{
+
+//                            Event if user have account but account not verify
+
                             Toast.makeText(LoginActivity.this,
                                     "Please verify your email first" +
                                     "\nVerification Email have been sent to "
                                     + email, Toast.LENGTH_SHORT).show();
+                            auth.signOut();
                             Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
+//                            Skip to password mean that user have a password of their own and they can forgot password / Email is real
+//                            So they don't need to enter password
                             intent.putExtra("skipToPassword","true");
+                            intent.putExtra("email",email);
+                            intent.putExtra("password",password);
                             startActivity(intent);
                         }
                     }
