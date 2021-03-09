@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText eemail, ppassword;
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button forgotPasswordBtn;
     private ProgressBar progressBar;
     @Override

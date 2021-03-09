@@ -20,13 +20,8 @@ import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
@@ -63,6 +58,11 @@ public class PersonalInformationActivity extends AppCompatActivity {
         signUpBtn = findViewById(R.id.signUpButton);
 
         progressBar = findViewById(R.id.signUpProgressBar3);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
     public void signUpBtn(View v) {
@@ -132,8 +132,6 @@ public class PersonalInformationActivity extends AppCompatActivity {
                     Toast.makeText(PersonalInformationActivity.this, e.getMessage() , Toast.LENGTH_SHORT).show();
                 }
             });
-
-
     }
 
     private void moveToPreference() {
@@ -145,56 +143,6 @@ public class PersonalInformationActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential credential) {
-            // This callback will be invoked in two situations:
-            // 1 - Instant verification. In some cases the phone number can be instantly
-            //     verified without needing to send or enter a verification code.
-            // 2 - Auto-retrieval. On some devices Google Play services can automatically
-            //     detect the incoming verification SMS and perform verification without
-            //     user action.
-
-            System.out.println( "onVerificationCompleted:" + credential);
-
-//            signInWithPhoneAuthCredential(credential);
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            System.out.println( "onVerificationFailed:" + e.toString());
-
-            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-                // ...
-            } else if (e instanceof FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-                // ...
-            }
-
-            // Show a message and update the UI
-            // ...
-        }
-
-        @Override
-        public void onCodeSent(@NonNull String verificationId,
-                @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            // The SMS verification code has been sent to the provided phone number, we
-            // now need to ask the user to enter the code and then construct a credential
-            // by combining the code with a verification ID.
-            System.out.println("onCodeSent:" + verificationId);
-
-            // Save verification ID and resending token so we can use them later
-//            mVerificationId = verificationId;
-//            mResendToken = token;
-
-            // ...
-        }
-    };
 
     private void uploadLocalDataToFirestore(User user){
         documentReference = firestore.collection("users").document(auth.getUid());

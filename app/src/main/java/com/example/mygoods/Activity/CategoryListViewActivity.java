@@ -71,7 +71,6 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
         getDataFromFireStore();
 
-//        testingGetDataFromFireStore();
 
 
 
@@ -127,7 +126,6 @@ public class CategoryListViewActivity extends AppCompatActivity {
             .limit(10);
 
     private void getDataFromFireStore(){
-//        queryStatement.limit(10).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
         queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -355,7 +353,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
         progressBar.setVisibility(ProgressBar.VISIBLE);
         swipeRefreshLayout = findViewById(R.id.pullToRefresh);
 
-        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,51,140,48));
+        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,56,144,255));
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footerView = layoutInflater.inflate(R.layout.footerview_myitem,null);

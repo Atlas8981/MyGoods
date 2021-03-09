@@ -145,7 +145,6 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
         setupFirebase();
         viewAllButtonAction();
 
-
         return v;
     }
 

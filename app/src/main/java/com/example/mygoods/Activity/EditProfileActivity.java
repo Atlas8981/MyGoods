@@ -1,7 +1,6 @@
 package com.example.mygoods.Activity;
 
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -55,7 +54,7 @@ public class EditProfileActivity extends AppCompatActivity {
         usernameEdt = findViewById(R.id.usernameProfile);
         addressEdt = findViewById(R.id.addressProfile);
         phoneEdt = findViewById(R.id.phoneProfile);
-        emailEdt = findViewById(R.id.emailProfile);
+//        emailEdt = findViewById(R.id.emailProfile);
         saveBtn = findViewById(R.id.saveProfileBtn);
 
 
@@ -119,15 +118,15 @@ public class EditProfileActivity extends AppCompatActivity {
             phoneEdt.setError(null);
         }
 
-        if (emailEdt.getEditText().getText().toString().trim().isEmpty()){
-            emailEdt.setError(errorMsg);
-            flag=false;
-        }else if (!Patterns.EMAIL_ADDRESS.matcher(emailEdt.getEditText().getText().toString().trim()).matches()){
-            emailEdt.setError("Invalid Email");
-        }
-        else {
-            emailEdt.setError(null);
-        }
+//        if (emailEdt.getEditText().getText().toString().trim().isEmpty()){
+//            emailEdt.setError(errorMsg);
+//            flag=false;
+//        }else if (!Patterns.EMAIL_ADDRESS.matcher(emailEdt.getEditText().getText().toString().trim()).matches()){
+//            emailEdt.setError("Invalid Email");
+//        }
+//        else {
+//            emailEdt.setError(null);
+//        }
 
         return flag;
     }
@@ -138,44 +137,32 @@ public class EditProfileActivity extends AppCompatActivity {
         String address = addressEdt.getEditText().getText().toString().trim();
         String username = usernameEdt.getEditText().getText().toString().trim();
         String phone = phoneEdt.getEditText().getText().toString().trim();
-        String email = emailEdt.getEditText().getText().toString().trim();
+//        String email = emailEdt.getEditText().getText().toString().trim();
 
         currentUser.setFirstname(firstname);
         currentUser.setLastname(lastname);
         currentUser.setAddress(address);
         currentUser.setUsername(username);
         currentUser.setPhoneNumber(phone);
-        currentUser.setEmail(email);
+//        currentUser.setEmail(email);
 
         if (auth.getUid() != null) {
-            firebaseUser.updateEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
+            userRef.document(auth.getUid()).set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    userRef.document(auth.getUid()).set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
+                    saveBtn.setEnabled(true);
+                    Toast.makeText(EditProfileActivity.this, "Information Update Successfully", Toast.LENGTH_SHORT).show();
+                    EditProfileActivity.super.onBackPressed();
 
-                            saveBtn.setEnabled(true);
-                            Toast.makeText(EditProfileActivity.this, "Information Update Successfully", Toast.LENGTH_SHORT).show();
-                            onBackPressed();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            saveBtn.setEnabled(true);
-                            Toast.makeText(EditProfileActivity.this, "Cannot Update Information in Database", Toast.LENGTH_SHORT).show();
-                        }
-                    });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     saveBtn.setEnabled(true);
-                    Toast.makeText(EditProfileActivity.this, "Can't Update User Email", Toast.LENGTH_SHORT).show();
-
-
+                    Toast.makeText(EditProfileActivity.this, "Cannot Update Information in Database", Toast.LENGTH_SHORT).show();
                 }
             });
+
 
         }else {
             Toast.makeText(this, "No User Login", Toast.LENGTH_SHORT).show();
@@ -194,7 +181,6 @@ public class EditProfileActivity extends AppCompatActivity {
             usernameEdt.getEditText().setText(currentUser.getUsername());
             addressEdt.getEditText().setText(currentUser.getAddress());
             phoneEdt.getEditText().setText(currentUser.getPhoneNumber());
-            emailEdt.getEditText().setText(currentUser.getEmail());
         }
     }
 }

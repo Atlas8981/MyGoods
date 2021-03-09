@@ -21,6 +21,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
     private TextView verifyEmailText;
     private Button verifyEmailBtn,doneVerificationBtn;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
+
     private String email,password;
     @SuppressLint("SetTextI18n")
 

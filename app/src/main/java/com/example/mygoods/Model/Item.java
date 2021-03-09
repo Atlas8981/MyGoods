@@ -181,7 +181,7 @@ public class Item implements Serializable , Comparable<Item>{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Item)) return false;
         Item item = (Item) o;
         return amount == item.amount &&
                 Double.compare(item.price, price) == 0 &&

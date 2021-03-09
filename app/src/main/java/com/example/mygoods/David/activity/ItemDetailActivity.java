@@ -40,7 +40,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -262,8 +261,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                         count += 1;
                         Item curItem = doc.toObject(Item.class);
                         if (curItem != null) {
+                            curItem.setItemid(doc.getId());
                             if (!curItem.equals(item)){
-                                curItem.setItemid(doc.getId());
                                 similarItemData.add(curItem);
                                 if (count == list.size()){
                                     for(int i = 0; i<similarItemData.size(); i++) {
@@ -319,7 +318,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                     }  // End of third for loop
                 } // End of second for loop
             } // End of length if else conditional check
-            if (charactersMatchCount.size() == itemName.length() || charactersMatchCount.size() > itemName.length() || charactersMatchCount.size() == (itemName.length() - 1)) {
+            if (charactersMatchCount.size() == itemName.length()
+                    || charactersMatchCount.size() > itemName.length()
+                    || charactersMatchCount.size() == (itemName.length() - 1)) {
                 similarItemData.add(rawData.get(f));
                 filterSimilarItemData.remove(f);
             }
@@ -327,13 +328,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         } // End of FIRST for-loop
 
         if (similarItemData.isEmpty()) {
-            Collections.copy(similarItemData, filterSimilarItemData);
+//            Collections.copy(similarItemData, filterSimilarItemData);
+
+            similarItemData.addAll(filterSimilarItemData);
             similarItemAdapter.notifyDataSetChanged();
         }else if (similarItemData.size() < 3) {
             if (!filterSimilarItemData.isEmpty()) {
-                for (int i = 0; i<filterSimilarItemData.size(); i++) {
-                    similarItemData.add(filterSimilarItemData.get(i));
-                }
+                similarItemData.addAll(filterSimilarItemData);
             }
             similarItemAdapter.notifyDataSetChanged();
         }

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +71,7 @@ public class AboutMeFragment extends Fragment {
     private ImageView myImage;
     private TextView myName, myPhone,myAddress;
     private Button signOutBtn;
+    private ProgressBar imageProgress;
 
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private final CollectionReference userInfoRef = firestore.collection("users");
@@ -117,6 +119,7 @@ public class AboutMeFragment extends Fragment {
         myPhone = view.findViewById(R.id.myPhone);
         myAddress = view.findViewById(R.id.myAddress);
         signOutBtn = view.findViewById(R.id.signOutBtn);
+        imageProgress = view.findViewById(R.id.imageProgress);
 
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,6 +297,7 @@ public class AboutMeFragment extends Fragment {
     }
 
     private void updateProfilePicture(Bitmap bitmap) {
+        imageProgress.setVisibility(View.VISIBLE);
         new CompressAndUpload().execute(bitmap);
     }
 
@@ -345,9 +349,8 @@ public class AboutMeFragment extends Fragment {
                             firebaseStorage.getReference().child("images/" + currentUser.getImage().getImageName()).delete();
                         }
 
-                        updateDataToFirestore(imageData);
-                        Toast.makeText(getContext(), "Image Update Successfully", Toast.LENGTH_LONG).show();
 
+                        updateDataToFirestore(imageData);
 
                     }
                 });
@@ -372,6 +375,8 @@ public class AboutMeFragment extends Fragment {
                                 .load(getBytesFromBitmap(userChosenProfileInBitmap, 25))
                                 .placeholder(R.drawable.account)
                                 .into(myImage);
+                        Toast.makeText(getContext(), "Image Update Successfully", Toast.LENGTH_LONG).show();
+                        imageProgress.setVisibility(View.INVISIBLE);
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {

@@ -89,7 +89,10 @@ public class User_PreferenceActivity extends AppCompatActivity {
             }
         }
 
+    }
 
+    @Override
+    public void onBackPressed() {
 
     }
 

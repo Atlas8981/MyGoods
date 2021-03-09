@@ -57,6 +57,10 @@ public class PasswordActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
 
     private boolean checkViews() {
         newPassword = passwordEdt.getEditText().getText().toString().trim();

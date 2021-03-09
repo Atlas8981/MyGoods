@@ -529,6 +529,7 @@ public class AddFragment extends Fragment {
             if (checkView()) {
                 pd = new ProgressDialog(addFragmentContext);
                 pd.setTitle("Uploading...");
+                pd.setCancelable(false);
                 pd.show();
                 new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
             }
@@ -569,7 +570,7 @@ public class AddFragment extends Fragment {
             description.setError(errorMsg);
             flag = false;
         }
-        if (imagesUpload==null || imagesUpload.size()==0){
+        if (imageBitmap==null || imageBitmap.size()==0){
             Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }
