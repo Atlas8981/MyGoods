@@ -249,8 +249,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         float avgPrice = (float) (item.getPrice() + 50);
 
         db.collection(Constant.itemCollection)
-                .whereGreaterThanOrEqualTo(Constant.priceField, item.getPrice())
-                .whereLessThanOrEqualTo(Constant.priceField, avgPrice)
+                .whereGreaterThan(Constant.priceField, item.getPrice())
+                .whereLessThan(Constant.priceField, avgPrice)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -263,18 +263,15 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                         count += 1;
                         Item curItem = doc.toObject(Item.class);
                         if (curItem != null) {
-                            curItem.setItemid(doc.getId());
-                            if (!curItem.equals(item)){
-                                similarItemData.add(curItem);
-                                if (count == list.size()){
-                                    for(int i = 0; i<similarItemData.size(); i++) {
-                                        if (similarItemData.get(i).getSubCategory().equals(curItem.getSubCategory()) &&
-                                                similarItemData.get(i).getMainCategory().equals(curItem.getMainCategory())) {
-                                            filterSimilarItemData.add(similarItemData.get(i));
-                                        }
+                            similarItemData.add(curItem);
+                            if (count == list.size()){
+                                for(int i = 0; i<similarItemData.size(); i++) {
+                                    if (similarItemData.get(i).getSubCategory().equals(item.getSubCategory()) &&
+                                            similarItemData.get(i).getMainCategory().equals(item.getMainCategory())) {
+                                        filterSimilarItemData.add(similarItemData.get(i));
                                     }
-                                    filterSimilarItem(filterSimilarItemData, item.getName());
                                 }
+                                filterSimilarItem(filterSimilarItemData, item.getName());
                             }
                         }
                     }
@@ -320,9 +317,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                     }  // End of third for loop
                 } // End of second for loop
             } // End of length if else conditional check
-            if (charactersMatchCount.size() == itemName.length()
-                    || charactersMatchCount.size() > itemName.length()
-                    || charactersMatchCount.size() == (itemName.length() - 1)) {
+            if (charactersMatchCount.size() == itemName.length() || charactersMatchCount.size() > itemName.length() || charactersMatchCount.size() == (itemName.length() - 1)) {
                 similarItemData.add(rawData.get(f));
                 filterSimilarItemData.remove(f);
             }
@@ -331,12 +326,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
         if (similarItemData.isEmpty()) {
 //            Collections.copy(similarItemData, filterSimilarItemData);
-
             similarItemData.addAll(filterSimilarItemData);
             similarItemAdapter.notifyDataSetChanged();
         }else if (similarItemData.size() < 3) {
             if (!filterSimilarItemData.isEmpty()) {
-                similarItemData.addAll(filterSimilarItemData);
+                for (int i = 0; i<filterSimilarItemData.size(); i++) {
+                    similarItemData.add(filterSimilarItemData.get(i));
+                }
             }
             similarItemAdapter.notifyDataSetChanged();
         }

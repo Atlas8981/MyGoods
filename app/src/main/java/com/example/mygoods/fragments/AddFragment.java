@@ -504,7 +504,7 @@ public class AddFragment extends Fragment {
 
         @Override
         protected byte[] doInBackground(Bitmap... bitmaps) {
-
+//            Maybe wanna change the quality
             return getBytesFromBitmap(imageBitmap.get(uploadNumber), 25);
         }
 
