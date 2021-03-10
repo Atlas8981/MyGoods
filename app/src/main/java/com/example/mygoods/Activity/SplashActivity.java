@@ -36,14 +36,15 @@ public class SplashActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(SplashActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     });
                 }else {
                     moveToHomeActivity();
                 }
-                finish();
+
             }
-        }, 2000);
+        }, 3000);
     }
 
     private void moveToHomeActivity(){
