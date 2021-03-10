@@ -3,6 +3,7 @@ package com.example.mygoods.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            e.printStackTrace();
+                            Toast.makeText(SplashActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }else {
@@ -48,5 +49,6 @@ public class SplashActivity extends AppCompatActivity {
     private void moveToHomeActivity(){
         Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
         startActivity(mainIntent);
+        finish();
     }
 }

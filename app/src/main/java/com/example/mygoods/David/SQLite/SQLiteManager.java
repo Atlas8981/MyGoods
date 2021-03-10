@@ -41,7 +41,7 @@ public class SQLiteManager {
         contentValue.put(SQLite.ITEM_ID, item);
         contentValue.put(SQLite.DATE, System.currentTimeMillis());
         Cursor cursor = fetch(table);
-        if (cursor.getCount() != 0 && cursor != null) {
+        if (cursor != null && cursor.getCount() != 0  ) {
             do {
                 String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
 
@@ -61,7 +61,9 @@ public class SQLiteManager {
         String[] columns = new String[]{SQLite._ID, SQLite.ITEM_ID, SQLite.DATE};
 
         String query = "SELECT * FROM "+table+" ORDER BY "+SQLite.DATE+" DESC";
+
         cursor = database.rawQuery(query, null);
+
         //cursor = database.query(table, columns, null, null, null, null, SQLite.DATE+" DESC");
         if (cursor != null) {
             cursor.moveToFirst();

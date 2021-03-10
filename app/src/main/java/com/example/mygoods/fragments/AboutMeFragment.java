@@ -24,8 +24,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.example.mygoods.Activity.AboutOurAppActivity;
 import com.example.mygoods.Activity.EditProfileActivity;
 import com.example.mygoods.Activity.FullScreenImageActivity;
+import com.example.mygoods.Activity.HomeActivity;
 import com.example.mygoods.Activity.MyItemActivity;
 import com.example.mygoods.Activity.MySaveItemActivity;
 import com.example.mygoods.Activity.TermAndConditionActivity;
@@ -126,17 +125,20 @@ public class AboutMeFragment extends Fragment {
             public void onClick(View view) {
                 auth.signOut();
 
-                // Create new fragment and transaction
-                FragmentManager fragmentManager = getFragmentManager();
-                assert fragmentManager != null;
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setReorderingAllowed(true);
-
-                // Replace whatever is in the fragment_container view with this fragment
-                transaction.replace(R.id.fragment_container, HomeFragment.class, null);
-
-                // Commit the transaction
-                transaction.commit();
+//                // Create new fragment and transaction
+//                FragmentManager fragmentManager = getFragmentManager();
+//                assert fragmentManager != null;
+//                FragmentTransaction transaction = fragmentManager.beginTransaction();
+//                transaction.setReorderingAllowed(true);
+//
+//                // Replace whatever is in the fragment_container view with this fragment
+//                transaction.replace(R.id.fragment_container, HomeFragment.class, null);
+//
+//                // Commit the transaction
+//                transaction.commit();
+                Intent intent = new Intent();
+                intent.setClass(getContext(), HomeActivity.class);
+                startActivity(intent);
 
                 Toast.makeText(getContext(), "Sign Out Successfully", Toast.LENGTH_SHORT).show();
             }

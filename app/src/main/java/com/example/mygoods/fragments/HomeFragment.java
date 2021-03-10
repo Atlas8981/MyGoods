@@ -255,6 +255,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
         getRecentViewItemID();
 
+
         // Setup horizontal RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(homeFragmentContext, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = v.findViewById(R.id.recentlyViewCollectionView);
@@ -267,7 +268,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
         if (currentUser.isAnonymous()) {
             Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
-            if (cursor.getCount() != 0 && cursor != null) {
+            if (cursor != null && cursor.getCount() != 0  ) {
                 do{
                     String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
                     itemID.add(getItemID);
