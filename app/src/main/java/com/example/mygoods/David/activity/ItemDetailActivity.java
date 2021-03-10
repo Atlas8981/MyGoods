@@ -99,7 +99,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     protected void onDestroy() {
         super.onDestroy();
         if (currentUser.isAnonymous()) {
-            sqLiteManager.close();
+            if (sqLiteManager !=null){
+                sqLiteManager.close();
+            }
         }
     }
 
@@ -350,6 +352,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User tempUser = documentSnapshot.toObject(User.class);
                 users.add(tempUser);
+
 
                 if (tempUser != null) {
                     if (tempUser.getImage() != null && tempUser.getImage().getImageURL() != null) {

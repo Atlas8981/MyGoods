@@ -39,7 +39,7 @@ public class SellerProfileActivity extends AppCompatActivity {
     private ListView sellerItem;
     private CustomProgressDialog progressDialog;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private ArrayList<User> seller;
     private ArrayList<Item> sellerItems = new ArrayList<>();
@@ -78,6 +78,7 @@ public class SellerProfileActivity extends AppCompatActivity {
         progressDialog = new CustomProgressDialog(SellerProfileActivity.this);
         progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
         progressDialog.show();
+
         seller = (ArrayList<User>) getIntent().getSerializableExtra("sellerData");
 
         Glide.with(SellerProfileActivity.this)
