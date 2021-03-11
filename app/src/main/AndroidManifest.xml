@@ -44,7 +44,7 @@
         <activity android:name=".Activity.MyItemActivity" />
         <activity android:name=".Activity.MyItemDetailActivity" />
         <activity android:name=".Activity.EditMyItemActivity" />
-        <activity android:name=".Firewall.SignUp.User_PreferenceActivity"></activity>
+        <activity android:name=".Firewall.SignUp.User_PreferenceActivity"/>
         <activity android:name=".Firewall.LoginActivity" />
         <activity android:name=".Firewall.SignUp.PersonalInformationActivity" />
         <activity android:name=".Firewall.WelcomeActivity" />

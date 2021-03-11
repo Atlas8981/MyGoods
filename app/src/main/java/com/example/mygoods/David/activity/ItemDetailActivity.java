@@ -278,7 +278,34 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     }
 
     private void getMoreSimilarItem() {
+        db.collection(Constant.itemCollection)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                            Item tempItem = documentSnapshot.toObject(Item.class);
+                            if (tempItem!= null){
+                                if (tempItem.getName().toLowerCase().contains(item.getName().toLowerCase())){
 
+                                }
+                            }
+                        }
+                        similarItemData.remove(item);
+                        similarItemAdapter.notifyDataSetChanged();
+
+                        if (similarItemData.size()<7){
+//                            Query for more data similar
+
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println(e.getMessage());
+                Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
