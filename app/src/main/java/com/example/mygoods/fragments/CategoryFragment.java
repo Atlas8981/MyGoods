@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,12 +16,27 @@ import com.bumptech.glide.Glide;
 import com.example.mygoods.Activity.CategoryListViewActivity;
 import com.example.mygoods.Activity.SubCategoryListActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
+import com.example.mygoods.David.others.CustomProgressDialog;
+import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.PopularCategory;
 import com.example.mygoods.Model.PopularCategoryView;
 import com.example.mygoods.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,6 +61,14 @@ public class CategoryFragment extends Fragment {
     private RecyclerView categoryRecyclerView;
     private PopularCategoryView[] popularCategoryView;
 
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference itemRef = db.collection("items");
+
+    private List<String> arrSubCat;
+    private static List<PopularCategory> popularCategories;
+
+    private CustomProgressDialog progressDialog;
+
     public CategoryFragment() {
         // Required empty public constructor
     }
@@ -65,7 +90,7 @@ public class CategoryFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
+    long start;
 
 
     @Override
@@ -74,64 +99,139 @@ public class CategoryFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_category, container, false);
 
+        initializePopularCategoryView();
 
-        setUpPopularCategory();
+        arrSubCat = new ArrayList<>();
+        mapAmoutViewPerSubCategory = new HashMap<>();
+        arrSubCat.addAll(Arrays.asList(getResources().getStringArray(R.array.furiture)));
+        arrSubCat.addAll(Arrays.asList(getResources().getStringArray(R.array.vehicle)));
+        arrSubCat.addAll(Arrays.asList(getResources().getStringArray(R.array.electronic)));
+        arrSubCat.removeIf(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.equalsIgnoreCase("other");
+            }
+        });
+
+        if (popularCategories != null){
+            putDataintoPopularCategoryViews(popularCategories);
+        }else{
+            progressDialog = new CustomProgressDialog(getContext());
+            progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+            progressDialog.show();
+            getPopularCategories();
+        }
 
         ActivateListCategory();
 
         return v;
     }
 
-    private void setUpPopularCategory(){
-        List<PopularCategory> popularCategory = new ArrayList<>();
-        popularCategory.add(new PopularCategory(
-                "Phone",
-                R.drawable.phonepicture
-        ));
-        popularCategory.add(new PopularCategory(
-                "Parts & Accessories",
-                R.drawable.pc
+    private void getPopularCategories() {
+//        1. Get The Total amount of views per item in Each Sub Category
+        getPopularCategoryFromFirestore();
+    }
 
-        ));
-        popularCategory.add(new PopularCategory(
-                "Smart Watches",
-                R.drawable.watches
-        ));
-        popularCategory.add(new PopularCategory(
-                "Bicycle",
-                R.drawable.bikepicture
-        ));
-        popularCategory.add(new PopularCategory(
-                "Laptop",
-                R.drawable.laptoppicture
 
-        ));
-        popularCategory.add(new PopularCategory(
-                "Table & Desk",
-                R.drawable.desk
-        ));
+    private int i = 0;
+    private HashMap<String, Integer> mapAmoutViewPerSubCategory;
+    private void getPopularCategoryFromFirestore() {
+//        We loop it for each subCategory
+        itemRef.whereEqualTo("subCategory",arrSubCat.get(i)).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                int totalViewsPerSubCategory = 0;
+//                top6PopularCategories.put(arrSubCat.get(i),queryDocumentSnapshots.size());
+                for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                    Item tempItem = documentSnapshot.toObject(Item.class);
+                    if (tempItem.getViewers()!=null){
+                        totalViewsPerSubCategory = totalViewsPerSubCategory + tempItem.getViews();
+                    }
+                }
+//                For Each category we put the category name in key
+//                and total amount of View per Sub Cat in the value
+                mapAmoutViewPerSubCategory.put(arrSubCat.get(i),totalViewsPerSubCategory);
 
-//        initialize array
-        popularCategoryView = new PopularCategoryView[6];
+//                Check When the loop end
 
-        for (int i = 0; i< popularCategoryView.length; i++){
-            popularCategoryView[i] = new PopularCategoryView();
+                if (i<arrSubCat.size()-1) {
+                    i++;
+                    getPopularCategoryFromFirestore();
+                }else{
+                    //2. Then determine the top 6 popular category
+                    setUpPopularCategory();
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private Map<String, Integer> SortHashMap(HashMap<String, Integer> unSortedMap){
+        //convert HashMap into List
+        List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(unSortedMap.entrySet());
+        //sorting the list elements
+        list.sort(new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> t1, Map.Entry<String, Integer> t2) {
+//                if (order){
+                    return t2.getValue().compareTo(t1.getValue());
+//                else{
+//                    return o2.getValue().compareTo(o1.getValue());
+//                }
+
+            }
+        });
+
+        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> entry : list){
+            sortedMap.put(entry.getKey(), entry.getValue());
         }
 
-//      Initialize view findViewby id
-        initializePopularCategoryView();
+
+        return sortedMap;
+    }
 
 
-//        populate Data into View
+    private void setUpPopularCategory(){
+
+//        3. Sort data we get from firestore then put it in a list so that we can easily view
+        populatePopularCategoriesList(SortHashMap(mapAmoutViewPerSubCategory));
+
+    }
+
+    private void populatePopularCategoriesList(Map<String, Integer> sortedMap) {
+        popularCategories = new ArrayList<>();
+
+//        We get that sorted hashmap which is the data
+        sortedMap.entrySet().forEach(entry->{
+            popularCategories.add(new PopularCategory(entry.getKey(),findImageForSubCategory(entry.getKey())));
+//            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
+
+        putDataintoPopularCategoryViews(popularCategories);
+    }
+
+
+
+    private void putDataintoPopularCategoryViews(List<PopularCategory> popularCategories){
+//        initialize array of PopularCategory Views (Card Findview by id)
+
         for (int i = 0; i< popularCategoryView.length; i++){
             int position = i;
-            PopularCategory currentPopCat = popularCategory.get(i);
+            PopularCategory currentPopCat = popularCategories.get(i);
 
-            Glide.with(getContext())
-                    .load(currentPopCat.getCategoryImageRes())
-                    .placeholder(R.drawable.ic_camera)
-                    .into(popularCategoryView[i].popularCategoryImage);
-
+            if (getContext()!=null) {
+                Glide.with(getContext())
+                        .load(currentPopCat.getCategoryImageRes())
+                        .placeholder(R.drawable.ic_camera)
+                        .into(popularCategoryView[i].popularCategoryImage);
+            }
             popularCategoryView[i].popularCategoryText.setText(currentPopCat.getCategoryName());
 
             popularCategoryView[i].cardView.setOnClickListener(new View.OnClickListener() {
@@ -139,14 +239,53 @@ public class CategoryFragment extends Fragment {
                 public void onClick(View view) {
                     Intent intent = new Intent();
                     intent.setClass(getContext(), CategoryListViewActivity.class);
-                    intent.putExtra("SubCategory", popularCategory.get(position).getCategoryName());
+                    intent.putExtra("SubCategory", popularCategories.get(position).getCategoryName());
                     startActivity(intent);
                 }
             });
         }
+        if (progressDialog!=null){
+            progressDialog.dismiss();
+        }
+
+    }
+
+    private int findImageForSubCategory(String subCategoryName) {
+        if (subCategoryName.equalsIgnoreCase("Bicycle")){
+            return R.drawable.bikepicture;
+        }else if (subCategoryName.equalsIgnoreCase("phone")){
+            return R.drawable.phonepicture;
+        }else if (subCategoryName.equalsIgnoreCase("Parts & Accessories")
+                || subCategoryName.toLowerCase().contains("Parts".toLowerCase())){
+            return R.drawable.pc;
+        }else if (subCategoryName.equalsIgnoreCase("Desktop")){
+            return R.drawable.desktoppic;
+        }else if (subCategoryName.equalsIgnoreCase("cars")){
+            return R.drawable.carpic;
+        }else if (subCategoryName.equalsIgnoreCase("laptop")){
+            return R.drawable.laptoppicture;
+        }else if (subCategoryName.contains("Chair & Sofa") ||
+                subCategoryName.toLowerCase().contains("Chair".toLowerCase())){
+            return R.drawable.sofapic;
+        }else if (subCategoryName.equalsIgnoreCase("Table & Desk")
+                || subCategoryName.toLowerCase().contains("Table".toLowerCase())){
+            return R.drawable.desk;
+        }else if (subCategoryName.equalsIgnoreCase("Household item")
+                || subCategoryName.toLowerCase().contains("Household".toLowerCase())){
+            return R.drawable.householdpic;
+        }else if (subCategoryName.equalsIgnoreCase("Motobikes")
+                ||subCategoryName.toLowerCase().contains("Moto".toLowerCase())){
+            return R.drawable.motopic;
+        }else{
+            return R.drawable.camera;
+        }
     }
 
     private void initializePopularCategoryView() {
+        popularCategoryView = new PopularCategoryView[6];
+        for (int i = 0; i< popularCategoryView.length; i++){
+            popularCategoryView[i] = new PopularCategoryView();
+        }
         popularCategoryView[0].cardView = v.findViewById(R.id.card1);
         popularCategoryView[1].cardView = v.findViewById(R.id.card2);
         popularCategoryView[2].cardView = v.findViewById(R.id.card3);
@@ -170,6 +309,7 @@ public class CategoryFragment extends Fragment {
     }
 
 
+//    Normal Main Category To SubCategory
     private void ActivateListCategory(){
         populateListCategory();
 
