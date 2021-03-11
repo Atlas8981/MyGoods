@@ -242,9 +242,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         sellerAddress.setText("Address: " + item.getAddress());
         getSellerProfile();
         viewPagerAdapter.notifyDataSetChanged();
-//        getSimilarItems();
+        getSimilarItems();
 //        TODO: Testing New Similar Item with Price (Percentage), Category, Name
-        testNewSimilarItem();
+//        testNewSimilarItem();
     }
 
     private void testNewSimilarItem() {
