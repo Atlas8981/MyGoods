@@ -94,7 +94,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         }
 
     }
-    // ADD THIS
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -131,8 +131,6 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
                 currentItem.setViewers(toFirebase);
                 currentItem.setViews(currentViewers.size());
-
-
 
                 db.collection("items").document(item.getItemid()).set(currentItem);
             }
@@ -244,8 +242,45 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         sellerAddress.setText("Address: " + item.getAddress());
         getSellerProfile();
         viewPagerAdapter.notifyDataSetChanged();
-        getSimilarItems();
+//        getSimilarItems();
+//        TODO: Testing New Similar Item with Price (Percentage), Category, Name
+        testNewSimilarItem();
     }
+
+    private void testNewSimilarItem() {
+//        testing priceRange of +10%
+        int percentage = 25;
+        float priceRange = (float) (item.getPrice() + (item.getPrice()*percentage/100));
+
+//        Get Similar Item with a certain price point with the same name
+        db.collection(Constant.itemCollection)
+                .whereGreaterThanOrEqualTo("price",item.getPrice())
+                .whereLessThanOrEqualTo("price",priceRange)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        similarItemData.addAll(queryDocumentSnapshots.toObjects(Item.class));
+                        similarItemData.remove(item);
+                        similarItemAdapter.notifyDataSetChanged();
+                        if (similarItemData.size()<7){
+//                            Query for more data similar
+                            getMoreSimilarItem();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println(e.getMessage());
+                Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getMoreSimilarItem() {
+
+    }
+
 
     private void getSimilarItems() {
         float avgPrice = (float) (item.getPrice() + 50);

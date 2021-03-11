@@ -87,7 +87,7 @@ public class AddFragment extends Fragment {
     private List<Bitmap> imageBitmap;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageRef;
-    private final DocumentReference ref = db.collection(Constant.itemCollection).document();
+    private DocumentReference ref;
 
     // Views
     private View v;
@@ -425,7 +425,7 @@ public class AddFragment extends Fragment {
                 Double.parseDouble(price.getText().toString().trim()),
                 date
         );
-
+        ref = db.collection(Constant.itemCollection).document();
         item.setItemid(ref.getId());
 
         return item;
@@ -525,13 +525,14 @@ public class AddFragment extends Fragment {
 
         switch (item.getItemId()){
             case R.id.confirmPost: {
-            if (checkView()) {
-                pd = new ProgressDialog(addFragmentContext);
-                pd.setTitle("Uploading...");
-                pd.setCancelable(false);
-                pd.show();
-                new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
-            }
+                if (checkView()) {
+                    pd = new ProgressDialog(addFragmentContext);
+                    pd.setTitle("Uploading...");
+                    pd.setCancelable(false);
+                    pd.show();
+                    new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
+                }
+
             }break;
         }
 
