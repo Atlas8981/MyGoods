@@ -64,9 +64,9 @@ public class SearchActivity extends AppCompatActivity {
     private ArrayList<String> time  = new ArrayList<>();
     private ArrayList<Item> filteredData = new ArrayList<>();
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

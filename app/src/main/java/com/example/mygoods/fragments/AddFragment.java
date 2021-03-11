@@ -80,14 +80,14 @@ public class AddFragment extends Fragment {
     // Firebase
 
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
     // Variables
 
     private List<Bitmap> imageBitmap;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageRef;
-    private DocumentReference ref = db.collection(Constant.itemCollection).document();
+    private final DocumentReference ref = db.collection(Constant.itemCollection).document();
 
     // Views
     private View v;
