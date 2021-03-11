@@ -17,13 +17,13 @@ import com.example.mygoods.Firewall.SignUp.EmailVerificationActivity;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText eemail, ppassword;
+    private TextInputLayout eemail, ppassword;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button forgotPasswordBtn;
     private ProgressBar progressBar;
@@ -55,63 +55,79 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginuser (){
         progressBar.setVisibility(View.VISIBLE);
-        String email = eemail.getText().toString().trim();
-        String password = ppassword.getText().toString().trim();
+        String email = eemail.getEditText().getText().toString().trim();
+        String password = ppassword.getEditText().getText().toString().trim();
 
+
+        if(checkViews(email,password)) {
+            auth.signInWithEmailAndPassword(email, password)
+                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                        @Override
+                        public void onSuccess(AuthResult authResult) {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            if (authResult.getUser().isEmailVerified()) {
+                                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                finish();
+
+                                Toast.makeText(LoginActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+                            } else {
+
+                                //                            Event if user have account but account not verify
+
+                                Toast.makeText(LoginActivity.this,
+                                        "Please verify your email first" +
+                                                "\nVerification Email have been sent to "
+                                                + email, Toast.LENGTH_SHORT).show();
+                                auth.signOut();
+                                Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
+                                //                            Skip to password mean that user have a password of their own and they can forgot password / Email is real
+                                //                            So they don't need to enter password
+                                intent.putExtra("skipToPassword", "true");
+                                intent.putExtra("email", email);
+                                intent.putExtra("password", password);
+                                startActivity(intent);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private boolean checkViews(String email, String password) {
+        boolean flag = true;
         if (TextUtils.isEmpty(email)){
             eemail.setError("Email is require");
+            eemail.setErrorIconDrawable(null);
             progressBar.setVisibility(View.INVISIBLE);
-            return;
+            flag =false;
         }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             eemail.setError("Email is incorrect format");
+            eemail.setErrorIconDrawable(null);
             progressBar.setVisibility(View.INVISIBLE);
-            return;
-        }else if(TextUtils.isEmpty(password)) {
+            flag =false;
+        }
+        if(TextUtils.isEmpty(password)) {
             ppassword.setError("Password is require");
+            ppassword.setErrorIconDrawable(null);
             progressBar.setVisibility(View.INVISIBLE);
-            return;
+            flag =false;
         }
 
-        auth.signInWithEmailAndPassword(email,password)
-                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                    @Override
-                    public void onSuccess(AuthResult authResult) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        if(authResult.getUser().isEmailVerified()){
-                            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                            finish();
-
-                            Toast.makeText(LoginActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
-                        }else{
-
-//                            Event if user have account but account not verify
-
-                            Toast.makeText(LoginActivity.this,
-                                    "Please verify your email first" +
-                                    "\nVerification Email have been sent to "
-                                    + email, Toast.LENGTH_SHORT).show();
-                            auth.signOut();
-                            Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
-//                            Skip to password mean that user have a password of their own and they can forgot password / Email is real
-//                            So they don't need to enter password
-                            intent.putExtra("skipToPassword","true");
-                            intent.putExtra("email",email);
-                            intent.putExtra("password",password);
-                            startActivity(intent);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        return flag;
     }
+
 
     public void loginBtn (View V){
         loginuser();
     }
+
 }

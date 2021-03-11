@@ -504,7 +504,6 @@ public class AddFragment extends Fragment {
 
         @Override
         protected byte[] doInBackground(Bitmap... bitmaps) {
-//            Maybe wanna change the quality
             return getBytesFromBitmap(imageBitmap.get(uploadNumber), 25);
         }
 
@@ -539,17 +538,20 @@ public class AddFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean checkView() {
+    private boolean checkView (){
         String errorMsg = "Here";
         boolean flag = true;
 
         if (itemName.getText().toString().isEmpty()){
             itemName.setError(errorMsg);
             flag = false;
+        }else{
+            itemName.setError(null);
         }
         if (!price.getText().toString().isEmpty()) {
             try {
                 Double.parseDouble(price.getText().toString());
+                price.setError(null);
             } catch (NumberFormatException e) {
                 price.setError("Number Format Error");
                 flag = false;
@@ -558,19 +560,29 @@ public class AddFragment extends Fragment {
             price.setError(errorMsg);
             flag = false;
         }
+
         if (address.getText().toString().isEmpty()){
             address.setError(errorMsg);
             flag = false;
+        }else{
+            address.setError(null);
         }
         if (phone.getText().toString().isEmpty()){
             phone.setError(errorMsg);
             flag = false;
+        }else{
+            phone.setError(null);
         }
         if (description.getText().toString().isEmpty()){
             description.setError(errorMsg);
             flag = false;
+        }else if (description.getLineCount()>10){
+            description.setError("Description Too Long");
+            flag = false;
+        }else{
+            description.setError(null);
         }
-        if (imageBitmap==null || imageBitmap.size()==0){
+        if (imagesUpload==null){
             Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }

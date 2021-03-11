@@ -224,8 +224,11 @@
                 android:layout_marginBottom="200dp"
                 android:background="@drawable/box_frame"
                 android:ems="10"
-                android:gravity="clip_vertical"
+                android:lines="6"
+                android:maxLines="10"
+                android:gravity="top|left"
                 android:hint="Description"
+                android:scrollbars="vertical"
                 android:inputType="textMultiLine"
                 android:padding="5dp"
                 android:textAlignment="gravity" />

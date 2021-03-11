@@ -32,6 +32,7 @@
             android:textStyle="bold" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emaileditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
@@ -40,25 +41,26 @@
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/emaileditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordeditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             app:boxBackgroundColor="#00FFFFFF"
             app:boxBackgroundMode="outline"
-            app:errorEnabled="true"
-            app:passwordToggleEnabled="true">
+            app:passwordToggleEnabled="true"
+            app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/passwordeditText"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:hint="Password"
                 android:inputType="textPassword" />
 

@@ -200,11 +200,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                         }else{
                             addToSaveButton.setChecked(false);
                             Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+                            intent.putExtra("wantToSign","true");
                             startActivity(intent);
                         }
                     }else{
                         addToSaveButton.setChecked(false);
                         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+                        intent.putExtra("wantToSign","true");
                         startActivity(intent);
                     }
                 } else {

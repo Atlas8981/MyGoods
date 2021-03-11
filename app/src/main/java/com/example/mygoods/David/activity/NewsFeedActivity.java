@@ -2,6 +2,7 @@ package com.example.mygoods.David.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.CustomProgressDialog;
 import com.example.mygoods.Model.Item;
@@ -28,6 +30,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -46,7 +50,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private CustomAdapter customAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private CustomProgressDialog progressDialog;
-
+    private SQLiteManager sqLiteManager;
     private Bundle dataBundle;
     private Intent newsFeedIntent;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -107,6 +111,14 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     protected void onPause() {
         super.onPause();
         progressDialog.dismiss();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sqLiteManager!=null){
+            sqLiteManager.close();
+        }
     }
 
     private void setupViews() {
@@ -274,32 +286,53 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     private void getRecentViewItemID() {
-        db.collection(Constant.userCollection)
-                .document(currentUserID)
-                .collection("recentView")
-                .orderBy("date", Query.Direction.DESCENDING)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if(task.getResult().size()>0) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            recentlyViewItemID.add(document.getId());
-                            if (recentlyViewItemID.size() == task.getResult().size()) {
-                                getRecentViewItem();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null&&currentUser.isAnonymous()) {
+            sqLiteManager = new SQLiteManager(NewsFeedActivity.this);
+            sqLiteManager.open();
+            Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
+            if (cursor != null && cursor.getCount() != 0  ) {
+                do{
+                    String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
+                    recentlyViewItemID.add(getItemID);
+                    if (recentlyViewItemID.size() == 7) {
+                        break;
+                    }
+                }while (cursor.moveToNext());
+                getRecentViewItem();
+            }else{
+                return;
+            }
+        }else {
+
+            db.collection(Constant.userCollection)
+                    .document(currentUserID)
+                    .collection("recentView")
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().size() > 0) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        recentlyViewItemID.add(document.getId());
+                                        if (recentlyViewItemID.size() == task.getResult().size()) {
+                                            getRecentViewItem();
+                                        }
+                                    }
+                                } else {
+                                    progressDialog.hide();
+                                    Toast.makeText(NewsFeedActivity.this, "No Recently View Data", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(NewsFeedActivity.this, "Error getting document", Toast.LENGTH_SHORT).show();
+                                progressDialog.hide();
                             }
                         }
-                    }else{
-                        progressDialog.hide();
-                        Toast.makeText(NewsFeedActivity.this, "No Recently View Data", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(NewsFeedActivity.this, "Error getting document", Toast.LENGTH_SHORT).show();
-                    progressDialog.hide();
-                }
-            }
-        });
+                    });
+        }
+
     }
 
     private int i = 0;

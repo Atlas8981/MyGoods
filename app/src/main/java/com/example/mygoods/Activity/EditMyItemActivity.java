@@ -118,21 +118,15 @@ public class EditMyItemActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.confirmPost) {
-            if (preImageBitmaps.equals(currentImageBitmaps)){
-                uploadDataToFirestore(mitem.getImages());
-            }else{
-//            Start Showing the dialog box when update button is click
+            if (checkView()) {
                 progressDialog.setTitle("Updating...");
                 progressDialog.show();
-//            Check view isEmpty, NumberFormatException
-                if (checkView()) {
-//                new AddFragment.BackgroundImageResize(bitmap.get(uploadNumber)).execute(imageUri.get(uploadNumber));
+                if (preImageBitmaps.equals(currentImageBitmaps)) {
+                    uploadDataToFirestore(mitem.getImages());
+                } else {
                     new CompressAndUpload().execute(currentImageBitmaps.get(uploadNumber));
 
-                }else {
-                    progressDialog.dismiss();
                 }
-
             }
 
         }
@@ -330,11 +324,11 @@ public class EditMyItemActivity extends AppCompatActivity {
     private void uploadDataToFirestore(List<Image> images){
 
         String itemid = mitem.getItemid();
-        String name = itemName.getText().toString();
-        String addressString = itemAddress.getText().toString();
-        String descriptionString = itemDescription.getText().toString();
-        String phoneString = itemPhone.getText().toString();
-        double priceDouble = Double.parseDouble(itemPrice.getText().toString());
+        String name = itemName.getText().toString().trim();
+        String addressString = itemAddress.getText().toString().trim();
+        String descriptionString = itemDescription.getText().toString().trim();
+        String phoneString = itemPhone.getText().toString().trim();
+        double priceDouble = Double.parseDouble(itemPrice.getText().toString().trim());
         if (subCategory == null){
             subCategory = mitem.getSubCategory();
         }
@@ -585,10 +579,13 @@ public class EditMyItemActivity extends AppCompatActivity {
         if (itemName.getText().toString().isEmpty()){
             itemName.setError(errorMsg);
             flag = false;
+        }else{
+            itemName.setError(null);
         }
         if (!itemPrice.getText().toString().isEmpty()) {
             try {
                 Double.parseDouble(itemPrice.getText().toString());
+                itemPrice.setError(null);
             } catch (NumberFormatException e) {
                 itemPrice.setError("Number Format Error");
                 flag = false;
@@ -601,14 +598,23 @@ public class EditMyItemActivity extends AppCompatActivity {
         if (itemAddress.getText().toString().isEmpty()){
             itemAddress.setError(errorMsg);
             flag = false;
+        }else{
+            itemAddress.setError(null);
         }
         if (itemPhone.getText().toString().isEmpty()){
             itemPhone.setError(errorMsg);
             flag = false;
+        }else{
+            itemPhone.setError(null);
         }
         if (itemDescription.getText().toString().isEmpty()){
             itemDescription.setError(errorMsg);
             flag = false;
+        }else if (itemDescription.getLineCount()>10){
+            itemDescription.setError("Description Too Long");
+            flag = false;
+        }else{
+            itemDescription.setError(null);
         }
         if (imagesUpload==null){
             Toast.makeText(this, "No Image Selected", Toast.LENGTH_SHORT).show();
