@@ -47,7 +47,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
     private ListItemRowAdapter listItemRowAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Item> itemList;
-    private List<String> userName;
+    private List<User> users;
     private Handler handler;
     private View footerView;
     boolean isLoading = false;
@@ -67,7 +67,9 @@ public class CategoryListViewActivity extends AppCompatActivity {
         initializeUI();
 
         itemList = new ArrayList<Item>();
-        userName = new ArrayList<>();
+        users = new ArrayList<>();
+
+        setUpItemRowAdapter();
 
         getDataFromFireStore();
 
@@ -112,7 +114,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
             public void onRefresh() {
                 isOutOfData = false;
                 itemList = new ArrayList<>();
-                userName = new ArrayList<>();
+                users = new ArrayList<>();
                 setUpItemRowAdapter();
                 getDataFromFireStore();
 
@@ -143,18 +145,15 @@ public class CategoryListViewActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         User user = documentSnapshot.toObject(User.class);
-                                        if (user != null && user.getUsername() != null) {
-                                            userName.add(user.getUsername());
-                                        } else {
-                                            userName.add("Someone");
+                                        if (user != null) {
+                                            users.add(user);
                                         }
-                                        setUpItemRowAdapter();
+                                        listItemRowAdapter.notifyDataSetChanged();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                userName.add("Someone");
-                                setUpItemRowAdapter();
+                                listItemRowAdapter.notifyDataSetChanged();
                             }
                         });
                     }
@@ -221,7 +220,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
 
     private void setUpItemRowAdapter(){
-        listItemRowAdapter = new ListItemRowAdapter(CategoryListViewActivity.this,itemList,userName);
+        listItemRowAdapter = new ListItemRowAdapter(CategoryListViewActivity.this,itemList, users);
         myItemListView.setAdapter(listItemRowAdapter);
         listItemRowAdapter.notifyDataSetChanged();
         myItemListView.setOnItemClickListener(recyclerViewListener);
@@ -257,7 +256,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
                     if (listItemRowAdapter == null){
                         setUpItemRowAdapter();
                     }
-                    listItemRowAdapter.addListItemToAdapter((ArrayList<Item>)msg.obj,userName);
+                    listItemRowAdapter.addListItemToAdapter((ArrayList<Item>)msg.obj, users);
                     myItemListView.removeFooterView(footerView);
                     isLoading = false;
                     break;
@@ -290,19 +289,16 @@ public class CategoryListViewActivity extends AppCompatActivity {
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                 User user = documentSnapshot.toObject(User.class);
                                                 if (user != null && user.getUsername() != null) {
-                                                    userName.add(user.getUsername());
-                                                } else {
-                                                    userName.add("Someone");
+                                                    users.add(user);
                                                 }
 
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        userName.add("Someone");
+                                        Toast.makeText(CategoryListViewActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-
                                 anotherListItem.add(curItem);
                             }
                         }

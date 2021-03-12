@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.example.mygoods.Model.Item;
+import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,7 +26,7 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
 
     private Activity context;
     private List<Item> items;
-    private List<String> userNames;
+    private List<User> users;
     private ListMyItemRowAdapter.OnItemClickListener listener;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -47,17 +48,17 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
     }
 
 
-    public ListItemRowAdapter(Activity context, List<Item> items,List<String> userNames){
+    public ListItemRowAdapter(Activity context, List<Item> items,List<User> users){
         super(context,R.layout.row_item,items);
 //        super(context, R.layout.row_item, items);
         this.context = context;
         this.items = items;
-        this.userNames = userNames;
+        this.users = users;
     }
 
-    public void addListItemToAdapter (List<Item> listItem,List<String> listUserNames){
+    public void addListItemToAdapter (List<Item> listItem,List<User> users){
         items.addAll(listItem);
-        userNames.addAll(listUserNames);
+        users.addAll(users);
         this.notifyDataSetChanged();
     }
 
@@ -95,11 +96,17 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
         if (currentItem.getDate() != null) {
             itemDate.setText("Posted " + calculateDate(currentItem.getDate()) + "ago");
         }
-        if (position<userNames.size()) {
-            itemOwner.setText("Posted by " + userNames.get(position));
+        if (position<users.size()) {
+            for (User u: users){
+                if (u.getUserId().equals(currentItem.getUserid())){
+                    itemOwner.setText("Posted by " + u.getUsername());
+                }
+            }
+
         }
 
-        System.out.println(currentItem.getName());
+
+
 
         return rowView;
     }
