@@ -25,6 +25,7 @@ import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.CustomProgressDialog;
 import com.example.mygoods.Model.Item;
+import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,7 +61,7 @@ public class SearchActivity extends AppCompatActivity {
     private ArrayList<String>recentlySearchData = new ArrayList<String>();
     private ArrayList<Item> searchData = new ArrayList<>();
     private ArrayList<String> ownerID = new ArrayList<>();
-    private ArrayList<String> ownerName = new ArrayList<>();
+    private ArrayList<User> ownerName = new ArrayList<>();
     private ArrayList<String> time  = new ArrayList<>();
     private ArrayList<Item> filteredData = new ArrayList<>();
 
@@ -401,7 +402,8 @@ public class SearchActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if (documentSnapshot.getString(Constant.usernameField) != null) {
-                        ownerName.add(documentSnapshot.getString(Constant.usernameField));
+//                        ownerName.add(documentSnapshot.getString(Constant.usernameField));
+                        ownerName.add(documentSnapshot.toObject(User.class));
                     }
                     if (num == (ownerID.size()-1)){
                         progressDialog.hide();

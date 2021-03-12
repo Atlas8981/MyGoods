@@ -65,7 +65,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     //private Set<ItemData> rawData = new HashSet<>();
     private ArrayList<Item> newsFeedData = new ArrayList<Item>();
     private ArrayList<String> ownerID = new ArrayList<String>();
-    private ArrayList<String> ownerName = new ArrayList<>();
+    private ArrayList<User> owners = new ArrayList<>();
     private ArrayList<String> time = new ArrayList<String>();
     private ArrayList<String> preferences;
     private ArrayList<String> recentlyViewItemID = new ArrayList<>();
@@ -195,7 +195,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             NewsFeedActivity.this.setTitle("Results");
             ArrayList<Item> searchData = (ArrayList<Item>) getIntent().getSerializableExtra("SearchData");
             time = (ArrayList<String>) getIntent().getSerializableExtra("SearchDataItemDuration");
-            ownerName = (ArrayList<String>) getIntent().getSerializableExtra("SearchDataItemOwnerName");
+            owners = (ArrayList<User>) getIntent().getSerializableExtra("SearchDataItemOwnerName");
             newsFeedData = searchData;
             Collections.sort(newsFeedData);
             if (progressDialog != null) {
@@ -458,7 +458,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         newsFeedData.clear();
         time.clear();
         ownerID.clear();
-        ownerName.clear();
+        owners.clear();
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -491,13 +491,13 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         }
 
                         if (owner != null) {
-                            ownerName.add(owner);
-                            if (ownerName.size() == (ownerID.size() - noOwner)) {
+                            owners.add(user);
+                            if (owners.size() == (ownerID.size() - noOwner)) {
                                 progressDialog.hide();
                                 customAdapter.notifyDataSetChanged();
                             }
                         }else{
-                            ownerName.add("Someone");
+
                             noOwner += 1;
                         }
                     }
@@ -582,8 +582,13 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             viewHolder.itemPrice.setText("USD "+dataObjects.get(pos).getPrice());
 
 
-            if (pos<ownerName.size()) {
-                viewHolder.itemOwner.setText("Posted by: " + ownerName.get(pos));
+            if (pos< owners.size()) {
+                for (User user: owners){
+                    if (user.getUserId().equals(dataObjects.get(pos).getUserid())){
+                        viewHolder.itemOwner.setText("Posted by: " + user.getUsername());
+                    }
+                }
+
             }
 
             if (pos<time.size()) {
