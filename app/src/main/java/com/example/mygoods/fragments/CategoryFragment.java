@@ -1,22 +1,24 @@
 package com.example.mygoods.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.mygoods.Activity.CategoryListViewActivity;
 import com.example.mygoods.Activity.SubCategoryListActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
-import com.example.mygoods.David.others.CustomProgressDialog;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.PopularCategory;
 import com.example.mygoods.Model.PopularCategoryView;
@@ -67,7 +69,8 @@ public class CategoryFragment extends Fragment {
     private List<String> arrSubCat;
     private static List<PopularCategory> popularCategories;
 
-    private CustomProgressDialog progressDialog;
+    private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public CategoryFragment() {
         // Required empty public constructor
@@ -90,7 +93,6 @@ public class CategoryFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    long start;
 
 
     @Override
@@ -98,6 +100,20 @@ public class CategoryFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_category, container, false);
+
+        progressBar = v.findViewById(R.id.categoryProgress);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,56,144,255));
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                progressBar.setVisibility(View.VISIBLE);
+                getPopularCategories();
+            }
+        });
 
         initializePopularCategoryView();
 
@@ -116,9 +132,12 @@ public class CategoryFragment extends Fragment {
         if (popularCategories != null){
             putDataintoPopularCategoryViews(popularCategories);
         }else{
-            progressDialog = new CustomProgressDialog(getContext());
-            progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
-            progressDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
+//            progressDialog = new CustomProgressDialog(getContext());
+//            progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+//            progressDialog.setCancelable(true);
+//            progressDialog.show();
+
             getPopularCategories();
         }
 
@@ -166,7 +185,10 @@ public class CategoryFragment extends Fragment {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.INVISIBLE);
+                if (swipeRefreshLayout.isRefreshing()){
+                    swipeRefreshLayout.setRefreshing(false);
+                }
                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -244,8 +266,9 @@ public class CategoryFragment extends Fragment {
                 }
             });
         }
-        if (progressDialog!=null){
-            progressDialog.dismiss();
+        progressBar.setVisibility(View.INVISIBLE);
+        if (swipeRefreshLayout.isRefreshing()){
+            swipeRefreshLayout.setRefreshing(false);
         }
 
     }
