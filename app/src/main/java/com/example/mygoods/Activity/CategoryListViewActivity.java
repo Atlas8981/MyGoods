@@ -142,7 +142,6 @@ public class CategoryListViewActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-
                                         User user = documentSnapshot.toObject(User.class);
                                         if (user != null && user.getUsername() != null) {
                                             userName.add(user.getUsername());
@@ -188,7 +187,7 @@ public class CategoryListViewActivity extends AppCompatActivity {
 
 
                 if (itemList.size()<10 && !isOutOfData){
-                    System.out.println("execute");
+
                     isLoading=true;
 
                     Thread thread = new ThreadGetMoreData();

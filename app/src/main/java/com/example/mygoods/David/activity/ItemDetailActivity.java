@@ -50,7 +50,7 @@ import java.util.Set;
 public class ItemDetailActivity extends AppCompatActivity implements SimilarItemCollectionView.SimilarItemOnClickListener, Serializable, ViewPagerAdapter.OnViewPagerItemClick {
 
     private ViewPager viewPager;
-    private Intent intent = getIntent();
+//    private Intent intent = getIntent();
     private SQLiteManager sqLiteManager;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();

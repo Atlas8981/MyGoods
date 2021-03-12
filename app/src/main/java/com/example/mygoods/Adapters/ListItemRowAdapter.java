@@ -99,33 +99,37 @@ public class ListItemRowAdapter extends ArrayAdapter<Item> {
             itemOwner.setText("Posted by " + userNames.get(position));
         }
 
+        System.out.println(currentItem.getName());
+
         return rowView;
     }
 
     private String calculateDate(Date itemDate){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date dateOfItem = itemDate;
-        dateFormat.format(dateOfItem);
+        dateFormat.format(itemDate);
 
 
         Date currentDate = new Date();
         String timeEnd = " minute(s) ";
 
-        long date = (currentDate.getTime() - dateOfItem.getTime()) / 60000;
+        double date = (currentDate.getTime() - itemDate.getTime()) / 60000;
 
         if (date > 0) {
             if (date >= 60) {
                 date = date / 60;
                 timeEnd = " hour(s) ";
+
                 if (date >= 24) {
                     date = date/24;
+                    date = Math.round(date);
                     timeEnd = " day(s) ";
+
                 }
             }
         }
 
 
-        return date + timeEnd;
+        return ((int) date) + timeEnd;
     }
 
 }

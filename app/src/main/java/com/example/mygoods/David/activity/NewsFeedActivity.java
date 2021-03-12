@@ -471,7 +471,8 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
             for (int o = 0; o<ownerID.size(); o++) {
                 // Convert date
-                String duration = calculateDate(newsFeedData.get(o).getDate());
+//                String duration = calculateDate(newsFeedData.get(o).getDate());
+                String duration = Constant.calculateDate(newsFeedData.get(o).getDate());
                 time.add(duration);
 
                 db.collection(Constant.userCollection)

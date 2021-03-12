@@ -14,11 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class ListMyItemRowAdapter extends ArrayAdapter<Item> {
@@ -86,34 +85,35 @@ public class ListMyItemRowAdapter extends ArrayAdapter<Item> {
                 .load(currentItem.getImages().get(0).getImageURL())
                 .placeholder(R.drawable.ic_camera)
                 .into(myItemImage);
-        myItemViews.setText("Views " + String.valueOf(currentItem.getViews()));
+        myItemViews.setText("Views " + currentItem.getViews());
         myItemName.setText(currentItem.getName());
         myItemPrice.setText("USD $" + String.valueOf(currentItem.getPrice()));
 
-        if (currentItem.getDate() !=null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            Date itemDate = currentItem.getDate();
-            dateFormat.format(itemDate);
-
-
-            Date currentDate = new Date();
-            String timeEnd = " minute(s) ";
-            long date = (currentDate.getTime() - itemDate.getTime()) / 60000;
-            if (date!=0) {
-                if (date >= 60) {
-                    date = date / 60;
-                    timeEnd = " hour(s) ";
-                    if (date >= 24) {
-                        date = date/24;
-                        timeEnd = " day(s) ";
-                    }
-                }
-            }
-
-            myItemDate.setText("Posted " + String.valueOf(date) + timeEnd + "ago");
-        }else{
-
-        }
+        myItemDate.setText("Posted : " + Constant.calculateDate(currentItem.getDate()));
+//        if (currentItem.getDate() !=null) {
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+//            Date itemDate = currentItem.getDate();
+//            dateFormat.format(itemDate);
+//
+//
+//            Date currentDate = new Date();
+//            String timeEnd = " minute(s) ";
+//            long date = (currentDate.getTime() - itemDate.getTime()) / 60000;
+//            if (date!=0) {
+//                if (date >= 60) {
+//                    date = date / 60;
+//                    timeEnd = " hour(s) ";
+//                    if (date >= 24) {
+//                        date = date/24;
+//                        timeEnd = " day(s) ";
+//                    }
+//                }
+//            }
+//
+//            myItemDate.setText("Posted " + String.valueOf(date) + timeEnd + "ago");
+//        }else{
+//
+//        }
 
         myItemDelete.setOnClickListener(new View.OnClickListener() {
             @Override

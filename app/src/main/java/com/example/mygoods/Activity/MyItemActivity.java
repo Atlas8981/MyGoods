@@ -74,13 +74,6 @@ public class MyItemActivity extends AppCompatActivity {
         getDataFromFireStore();
 
 
-//        myItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//
-//            }
-//        });
-
         myItemListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -122,9 +115,7 @@ public class MyItemActivity extends AppCompatActivity {
 
 
     private void getDataFromFireStore(){
-//        This commented function is for querying the specific item of the user
-//        whereEqualTo("userid", FirebaseAuth.getInstance().getUid())
-//        itemRef.whereEqualTo("userid", FirebaseAuth.getInstance().getUid()).limit(10)
+
         if (auth.getUid()!=null) {
             queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
