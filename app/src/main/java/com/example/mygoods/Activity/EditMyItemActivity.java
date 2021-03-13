@@ -610,7 +610,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         if (itemDescription.getText().toString().isEmpty()){
             itemDescription.setError(errorMsg);
             flag = false;
-        }else if (itemDescription.getLineCount()>10){
+        }else if (itemDescription.getLineCount()>20){
             itemDescription.setError("Description Too Long");
             flag = false;
         }else{

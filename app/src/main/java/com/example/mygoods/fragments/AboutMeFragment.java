@@ -1,6 +1,8 @@
 package com.example.mygoods.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,6 +92,7 @@ public class AboutMeFragment extends Fragment {
     private View view;
     private Context context;
 
+    private ProgressDialog progressDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +127,17 @@ public class AboutMeFragment extends Fragment {
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                auth.signOut();
+                progressDialog = new ProgressDialog(getContext());
+
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                alertDialog.setTitle("Are you sure you want to sign out ?");
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        progressDialog.setTitle("Signing Out...");
+                        progressDialog.show();
+
+                        auth.signOut();
 
 //                // Create new fragment and transaction
 //                FragmentManager fragmentManager = getFragmentManager();
@@ -136,11 +150,22 @@ public class AboutMeFragment extends Fragment {
 //
 //                // Commit the transaction
 //                transaction.commit();
-                Intent intent = new Intent();
-                intent.setClass(getContext(), HomeActivity.class);
-                startActivity(intent);
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(), HomeActivity.class);
+                        startActivity(intent);
 
-                Toast.makeText(getContext(), "Sign Out Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Sign Out Successfully", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
+                });
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                alertDialog.show();
+
             }
         });
 

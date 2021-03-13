@@ -577,7 +577,7 @@ public class AddFragment extends Fragment {
         if (description.getText().toString().isEmpty()){
             description.setError(errorMsg);
             flag = false;
-        }else if (description.getLineCount()>10){
+        }else if (description.getLineCount()>20){
             description.setError("Description Too Long");
             flag = false;
         }else{
