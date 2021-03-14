@@ -76,13 +76,15 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private TextView sellerAddress;
     private ImageView sellerImage;
     private Button viewSellerProfileButton;
-    private TextView itemAdditionInfo;
+    private TextView itemAdditionInfoText;
 //    private Button addToSaveButton;
     private ToggleButton addToSaveButton;
     private ViewPagerAdapter viewPagerAdapter;
     private SimilarItemCollectionView similarItemAdapter;
     private LinearLayout additionalInfoLayout;
+    private AdditionalInfo itemAdditionalInfo;
 
+    private static final int MAX_NUM_SIMILAR_ITEMS = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -175,8 +177,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             }
         });
         additionalInfoLayout = findViewById(R.id.additionalInfoLayout);
-        itemAdditionInfo = findViewById(R.id.itemAdditionalInfo);
-        itemAdditionInfo.setText("No Additional Information");
+        itemAdditionInfoText = findViewById(R.id.itemAdditionalInfo);
+        itemAdditionInfoText.setText("No Additional Information");
 
 
         addToSaveButton = findViewById(R.id.saveItemButton);
@@ -224,6 +226,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         intent.setClass(this, ItemDetailActivity.class);
         intent.putExtra("ItemData", similarItemData.get(pos));
         startActivity(intent);
+
     }
 
     private void setData(){
@@ -241,8 +244,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
         getAdditionalInfo(item);
 
-        getSimilarItems();
+//        getSimilarItems();
 //        TODO: Testing New Similar Item with Price (Percentage), Category, Name
+
 //        firstStageQuerySimilarItem();
 
     }
@@ -257,7 +261,6 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
                 String additionalInformation = "";
-
 
                 if (tempAdditionalInfo != null) {
                     additionalInformation = "Condition : " + tempAdditionalInfo.getCondition();
@@ -283,10 +286,14 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                                 + "Motobike Type : " +tempAdditionalInfo.getMotoType();
                     }
 
-                    itemAdditionInfo.setText(additionalInformation);
+                    itemAdditionalInfo = new AdditionalInfo(tempAdditionalInfo);
+                    itemAdditionInfoText.setText(additionalInformation);
+
                 }else{
                     additionalInfoLayout.setVisibility(View.GONE);
                 }
+
+                firstStageQuerySimilarItem();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -296,94 +303,236 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
+    private void addItemToListNotify(Item itemToAdd){
+        if (similarItemData.size() <MAX_NUM_SIMILAR_ITEMS) {
+            if (!itemToAdd.getItemid().equals(item.getItemid())) {
+
+                if (!similarItemData.contains(itemToAdd)){
+                    similarItemData.add(itemToAdd);
+                }
+
+                similarItemAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+//    if (queryAdditionalInfo.getCar() != null){
+//        if (queryAdditionalInfo.getCar().getBrand().equals(
+//                currentItemAdditionInfo.getCar().getBrand())
+//                && queryAdditionalInfo.getCar().getModel().equals(
+//                currentItemAdditionInfo.getCar().getModel())) {
+//            addItemToListNotify(tempItem);
+//        }
+//    }
+
+//    First Stage:
+//    Must Be Similar in price +/-(Depend on Percentage)
+//    Must Be in the same category
+//    Then the additional info that relate to that current item
+//    Move to stage Two
+//    If additional info for current item is null, just find the item in that same category
+//    Move to final stage
+
+
+    private int i;
     private void firstStageQuerySimilarItem() {
-//        testing priceRange of +-35%
+//         priceRange of +-35%
+        i=0;
         int percentage = 35;
         float topPrice = (float) (item.getPrice() + (item.getPrice()*percentage/100));
         float bottomPrice = (float) (item.getPrice() - (item.getPrice()*percentage/100));
 
-//        Get Similar Item with a certain price point with the same name
         db.collection(Constant.itemCollection)
-                .whereGreaterThanOrEqualTo("price",Math.floor(bottomPrice))
-                .whereLessThanOrEqualTo("price",Math.ceil(topPrice))
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-
-                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
-                            Item tempItem = documentSnapshot.toObject(Item.class);
-                            db.collection(Constant.itemCollection)
-                                    .document(tempItem.getItemid())
-                                    .collection(Constant.additionalInfoCollection)
-                                    .document(item.getSubCategory())
-                                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    AdditionalInfo info = documentSnapshot.toObject(AdditionalInfo.class);
-//                                    AdditionalInfo currentItemAdditionInfo =
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-//
-//                            tempItem.setItemid(documentSnapshot.getId());
-//                            if (tempItem.getSubCategory().equalsIgnoreCase(item.getSubCategory())
-//                                    && tempItem.getMainCategory().equalsIgnoreCase(item.getMainCategory())){
-//                                similarItemData.add(tempItem);
-//                            }
-                        }
-                        similarItemData.remove(item);
-                        similarItemAdapter.notifyDataSetChanged();
-                        if (similarItemData.size()<7){
-//                            Query for more data similar
-//                            ToDo: Find more data to fill in the similar item
-//                            getMoreSimilarItem();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                System.out.println(e.getMessage());
-                Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getMoreSimilarItem() {
-        db.collection(Constant.itemCollection)
+                .whereEqualTo("mainCategory",item.getMainCategory())
+                .whereEqualTo("subCategory",item.getSubCategory())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
                             Item tempItem = documentSnapshot.toObject(Item.class);
-                            if (tempItem!= null){
-                                if (tempItem.getName().toLowerCase().contains(item.getName().toLowerCase())){
 
+                            if (itemAdditionalInfo != null) {
+                                db.collection(Constant.itemCollection)
+                                        .document(tempItem.getItemid())
+                                        .collection(Constant.additionalInfoCollection)
+                                        .document(tempItem.getSubCategory())
+                                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        AdditionalInfo queryAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
+                                        if (queryAdditionalInfo != null) {
+
+                                            if (tempItem.getPrice() >= Math.floor(bottomPrice)
+                                                    && tempItem.getPrice() <= Math.ceil(topPrice)) {
+                                                if (queryAdditionalInfo.equals(itemAdditionalInfo)) {
+                                                    addItemToListNotify(tempItem);
+                                                } else if (queryAdditionalInfo.getPhone() != null) {
+                                                    if (queryAdditionalInfo.getPhone().getPhoneBrand().equals(
+                                                            itemAdditionalInfo.getPhone().getPhoneBrand())) {
+                                                        addItemToListNotify(tempItem);
+                                                    }
+                                                } else if (queryAdditionalInfo.getCar() != null) {
+                                                    if (queryAdditionalInfo.getCar().getBrand().equals(
+                                                            itemAdditionalInfo.getCar().getBrand())
+                                                            && queryAdditionalInfo.getCar().getModel().equals(
+                                                            itemAdditionalInfo.getCar().getModel())) {
+                                                        addItemToListNotify(tempItem);
+                                                    }
+                                                } else if (queryAdditionalInfo.getBikeType().equals(
+                                                        itemAdditionalInfo.getBikeType())) {
+                                                    addItemToListNotify(tempItem);
+                                                } else if (queryAdditionalInfo.getMotoType() !=null)
+                                                    if (queryAdditionalInfo.getMotoType()
+                                                            .equals(itemAdditionalInfo.getMotoType())) {
+                                                        addItemToListNotify(tempItem);
+                                                    } else if (queryAdditionalInfo.getComputerParts() !=null){
+                                                        if (queryAdditionalInfo.getComputerParts()
+                                                                .equals(itemAdditionalInfo.getComputerParts())) {
+                                                            addItemToListNotify(tempItem);
+                                                        }
+                                                    }
+                                            }
+
+                                        }
+                                        i++;
+                                        if (queryDocumentSnapshots.size() == i) {
+                                            if (similarItemData.size() < MAX_NUM_SIMILAR_ITEMS) {
+//                                                Toast.makeText(ItemDetailActivity.this, "Second Stage", Toast.LENGTH_SHORT).show();
+                                                secondStageQuerySimilarItem(queryDocumentSnapshots);
+                                            }
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }else {
+                                if (tempItem.getPrice() >= Math.floor(bottomPrice)
+                                        && tempItem.getPrice() <= Math.ceil(topPrice)) {
+                                    addItemToListNotify(tempItem);
+                                } else if (tempItem.getSubCategory().equalsIgnoreCase(item.getSubCategory())
+                                        && tempItem.getMainCategory().equalsIgnoreCase(item.getMainCategory())) {
+                                    addItemToListNotify(tempItem);
+                                }
+                                i++;
+                                if (queryDocumentSnapshots.size() == i) {
+                                    if (similarItemData.size() < MAX_NUM_SIMILAR_ITEMS) {
+//                                        Toast.makeText(ItemDetailActivity.this, "Final Stage", Toast.LENGTH_SHORT).show();
+                                        finalStageQuerySimilarItem();
+                                    }
                                 }
                             }
-                        }
-                        similarItemData.remove(item);
-                        similarItemAdapter.notifyDataSetChanged();
 
-                        if (similarItemData.size()<7){
-//                            Query for more data similar
 
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                System.out.println(e.getMessage());
                 Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+//    Stage Two
+//    Query data in the same category without price range
+//    For Additional Info item so that you can find specific (Ex: same bran: Apple, HondaxCRV)
+//    Then move to final stage
+
+    private void secondStageQuerySimilarItem(QuerySnapshot queryDocumentSnapshots) {
+        i=0;
+
+
+        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+            Item tempItem = documentSnapshot.toObject(Item.class);
+
+            db.collection(Constant.itemCollection)
+                    .document(tempItem.getItemid())
+                    .collection(Constant.additionalInfoCollection)
+                    .document(tempItem.getSubCategory())
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    AdditionalInfo queryAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
+                    if (queryAdditionalInfo != null) {
+                        if (queryAdditionalInfo.equals(itemAdditionalInfo)) {
+                            addItemToListNotify(tempItem);
+                        } else if (queryAdditionalInfo.getPhone() != null) {
+                            if (queryAdditionalInfo.getPhone().getPhoneBrand().equals(
+                                    itemAdditionalInfo.getPhone().getPhoneBrand())) {
+                                addItemToListNotify(tempItem);
+                            }
+                        } else if (queryAdditionalInfo.getCar() != null) {
+                            if (queryAdditionalInfo.getCar().getBrand().equals(
+                                    itemAdditionalInfo.getCar().getBrand())
+                                    && queryAdditionalInfo.getCar().getModel().equals(
+                                    itemAdditionalInfo.getCar().getModel())) {
+                                addItemToListNotify(tempItem);
+                            }
+                        } else if (queryAdditionalInfo.getBikeType().equals(
+                                itemAdditionalInfo.getBikeType())) {
+                            addItemToListNotify(tempItem);
+                        } else if (queryAdditionalInfo.getMotoType() !=null)
+                            if (queryAdditionalInfo.getMotoType()
+                                    .equals(itemAdditionalInfo.getMotoType())) {
+                            addItemToListNotify(tempItem);
+                        } else if (queryAdditionalInfo.getComputerParts() !=null){
+                            if (queryAdditionalInfo.getComputerParts()
+                                    .equals(itemAdditionalInfo.getComputerParts())) {
+                                addItemToListNotify(tempItem);
+                            }
+                        }
+                    }
+                    i++;
+                    if (queryDocumentSnapshots.size() == i) {
+                        if (similarItemData.size() < MAX_NUM_SIMILAR_ITEMS) {
+//                            Toast.makeText(ItemDetailActivity.this, "Final Stage", Toast.LENGTH_SHORT).show();
+                            finalStageQuerySimilarItem();
+                        }
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+
+    }
+
+//    Final Stage:
+//    query the item in the same category that are not yet in the list
+//    just to fill out the remain slot just in case
+    private void finalStageQuerySimilarItem() {
+
+
+//        Get Similar Item with a certain price point with the same name
+        db.collection(Constant.itemCollection)
+                .whereEqualTo("mainCategory",item.getMainCategory())
+                .whereEqualTo("subCategory",item.getSubCategory())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                    Item tempItem = documentSnapshot.toObject(Item.class);
+                    addItemToListNotify(tempItem);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
 
     private void getSimilarItems() {

@@ -38,7 +38,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
@@ -199,32 +198,32 @@ public class MyItemDetailActivity extends AppCompatActivity {
 
 
 
-        Query query = db.collection("items")
-                .whereEqualTo("subCategory",mitem.getSubCategory())
-                .limit(6);
-
-        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
-                    Item current = documentSnapshot.toObject(Item.class);
-                    current.setItemid(documentSnapshot.getId());
-
-                    if (!current.getItemid().equals(mitem.getItemid())) {
-                        similarItems.add(current);
-                        RecyclerSimilarItemAdapter recyclerAdapter = new RecyclerSimilarItemAdapter(similarItems);
-                        similarItemsRecyclerView.setAdapter(recyclerAdapter);
-                        recyclerAdapter.setOnItemClickListener(onItemClickListener);
-                        recyclerAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.fillInStackTrace();
-            }
-        });
+//        Query query = db.collection("items")
+//                .whereEqualTo("subCategory",mitem.getSubCategory())
+//                .limit(6);
+//
+//        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+//                    Item current = documentSnapshot.toObject(Item.class);
+//                    current.setItemid(documentSnapshot.getId());
+//
+//                    if (!current.getItemid().equals(mitem.getItemid())) {
+//                        similarItems.add(current);
+//                        RecyclerSimilarItemAdapter recyclerAdapter = new RecyclerSimilarItemAdapter(similarItems);
+//                        similarItemsRecyclerView.setAdapter(recyclerAdapter);
+//                        recyclerAdapter.setOnItemClickListener(onItemClickListener);
+//                        recyclerAdapter.notifyDataSetChanged();
+//                    }
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                e.fillInStackTrace();
+//            }
+//        });
 
 
     }

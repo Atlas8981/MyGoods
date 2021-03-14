@@ -174,7 +174,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 setupRecentlyViewedCollectionView();
                 setupRecommendationCollectionView();
             }
-            Toast.makeText(homeFragmentContext, "Execute", Toast.LENGTH_SHORT).show();
+
             if (progressDialog != null){
                 progressDialog.dismiss();
             }

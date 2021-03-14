@@ -1,5 +1,7 @@
 package com.example.mygoods.Model;
 
+import java.util.Objects;
+
 public class AdditionalInfo {
     private Car car;
     private Phone phone;
@@ -9,6 +11,15 @@ public class AdditionalInfo {
     private String bikeType;
 
     public AdditionalInfo() {}
+
+    public AdditionalInfo(AdditionalInfo additionalInfo) {
+        this.car = additionalInfo.getCar();
+        this.phone = additionalInfo.getPhone();
+        this.motoType = additionalInfo.getMotoType();
+        this.computerParts = additionalInfo.getComputerParts();
+        this.condition = additionalInfo.getCondition();
+        this.bikeType = additionalInfo.getBikeType();
+    }
 
     public AdditionalInfo(Car car, Phone phone, String motoType, String computerParts, String condition, String bikeType) {
         this.car = car;
@@ -77,5 +88,23 @@ public class AdditionalInfo {
                 ", condition='" + condition + '\'' +
                 ", bikeType='" + bikeType + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdditionalInfo)) return false;
+        AdditionalInfo info = (AdditionalInfo) o;
+        return Objects.equals(car, info.car) &&
+                Objects.equals(phone, info.phone) &&
+                Objects.equals(motoType, info.motoType) &&
+                Objects.equals(computerParts, info.computerParts) &&
+                Objects.equals(condition, info.condition) &&
+                Objects.equals(bikeType, info.bikeType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(car, phone, motoType, computerParts, condition, bikeType);
     }
 }
