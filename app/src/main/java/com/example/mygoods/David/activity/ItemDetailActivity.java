@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -80,6 +81,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private ToggleButton addToSaveButton;
     private ViewPagerAdapter viewPagerAdapter;
     private SimilarItemCollectionView similarItemAdapter;
+    private LinearLayout additionalInfoLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +174,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 }
             }
         });
-
+        additionalInfoLayout = findViewById(R.id.additionalInfoLayout);
         itemAdditionInfo = findViewById(R.id.itemAdditionalInfo);
         itemAdditionInfo.setText("No Additional Information");
 
@@ -282,6 +284,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                     }
 
                     itemAdditionInfo.setText(additionalInformation);
+                }else{
+                    additionalInfoLayout.setVisibility(View.GONE);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

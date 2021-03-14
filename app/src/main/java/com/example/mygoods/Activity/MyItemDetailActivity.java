@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -61,6 +62,7 @@ public class MyItemDetailActivity extends AppCompatActivity {
     private ImageView userImage;
     private ViewPager viewPager;
     private TextView additionalText;
+    private LinearLayout additionalInfoLayout;
     private Bundle bundle;
     private Item mitem;
     private ArrayList<User> sellers;
@@ -285,6 +287,7 @@ public class MyItemDetailActivity extends AppCompatActivity {
         }
         additionalText = findViewById(R.id.additionalText);
         additionalText.setText("No Additional Information");
+
         checkIfItemSaved();
 
 
@@ -378,7 +381,6 @@ public class MyItemDetailActivity extends AppCompatActivity {
                 AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
                 String additionalInformation = "";
 
-
                 if (tempAdditionalInfo != null) {
                     additionalInformation = "Condition : " + tempAdditionalInfo.getCondition();
                     if (tempAdditionalInfo.getBikeType()!=null){
@@ -404,6 +406,8 @@ public class MyItemDetailActivity extends AppCompatActivity {
                     }
 
                     additionalText.setText(additionalInformation);
+                }else{
+                    additionalInfoLayout.setVisibility(View.GONE);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

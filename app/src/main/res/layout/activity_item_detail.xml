@@ -109,30 +109,37 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
 
-            <TextView
-                android:id="@+id/itemAdditionalInfoTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:layout_marginTop="10dp"
-                android:textStyle="bold"
-                android:textSize="13dp"
-                android:text="Additional Information" />
-
-            <TextView
-                android:id="@+id/itemAdditionalInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:layout_marginTop="20dp"
-                android:textSize="12.5dp"
-                android:text="Good condition, 2 months of used, No charger and earphones, free delivery in Phnom penh" />
-
-            <View
+            <LinearLayout
+                android:id="@+id/additionalInfoLayout"
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemAdditionalInfoTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Additional Information"
+                    android:textColor="@android:color/black"
+                    android:textSize="13dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/itemAdditionalInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Good condition, 2 months of used, No charger and earphones, free delivery in Phnom penh"
+                    android:textColor="@android:color/black"
+                    android:textSize="12.5dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/darker_gray" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/itemDetailAboutThisSellerTitle"
