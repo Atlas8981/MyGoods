@@ -23,6 +23,7 @@ import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.ViewPagerAdapter;
 import com.example.mygoods.David.others.collectionview.ItemDetail.SimilarItemCollectionView;
 import com.example.mygoods.Firewall.WelcomeActivity;
+import com.example.mygoods.Model.AdditionalInfo;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
@@ -74,6 +75,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private TextView sellerAddress;
     private ImageView sellerImage;
     private Button viewSellerProfileButton;
+    private TextView itemAdditionInfo;
 //    private Button addToSaveButton;
     private ToggleButton addToSaveButton;
     private ViewPagerAdapter viewPagerAdapter;
@@ -136,15 +138,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             }
         });
 
-
-
     }
 
     private void setupViews(){
 
         item = (Item) getIntent().getSerializableExtra("ItemData"); // get object
-
-
 
         // Views pager (Images slider)
         viewPager = (ViewPager) findViewById(R.id.imageViewPager);
@@ -174,14 +172,10 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 }
             }
         });
-//        addToSaveButton = (Button) findViewById(R.id.itemDetailAddToSaveButton);
-//        addToSaveButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                //TODO: Add Item as user's favorite
-//                addToSaveItem();
-//            }
-//        });
+
+        itemAdditionInfo = findViewById(R.id.itemAdditionalInfo);
+        itemAdditionInfo.setText("No Additional Information");
+
 
         addToSaveButton = findViewById(R.id.saveItemButton);
 
@@ -242,9 +236,60 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         sellerAddress.setText("Address: " + item.getAddress());
         getSellerProfile();
         viewPagerAdapter.notifyDataSetChanged();
+
+        getAdditionalInfo(item);
+
         getSimilarItems();
 //        TODO: Testing New Similar Item with Price (Percentage), Category, Name
 //        testNewSimilarItem();
+
+    }
+
+    private void getAdditionalInfo(Item i) {
+        db.collection("items")
+                .document(i.getItemid())
+                .collection("additionInfo")
+                .document(i.getSubCategory())
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
+                String additionalInformation = "";
+
+
+                if (tempAdditionalInfo != null) {
+                    additionalInformation = "Condition : " + tempAdditionalInfo.getCondition();
+                    if (tempAdditionalInfo.getBikeType()!=null){
+//                        String description = additionalInfo+itemDescription.getText().toString().trim();
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Bike Type : " +tempAdditionalInfo.getBikeType();
+                    }else if (tempAdditionalInfo.getCar()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Car Brand : " + tempAdditionalInfo.getCar().getBrand()
+                                + "\nCar Model : " + tempAdditionalInfo.getCar().getModel()
+                                + "\nCar Type : " + tempAdditionalInfo.getCar().getCategory()
+                                + "\nCar Year : " + tempAdditionalInfo.getCar().getYear();
+                    }else if (tempAdditionalInfo.getComputerParts()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Part Type : " +tempAdditionalInfo.getComputerParts();
+                    }else if (tempAdditionalInfo.getPhone()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Phone Brand : " + tempAdditionalInfo.getPhone().getPhoneBrand()
+                                + "\nPhone Model : " + tempAdditionalInfo.getPhone().getPhoneModel();
+                    }else if (tempAdditionalInfo.getMotoType()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Motobike Type : " +tempAdditionalInfo.getMotoType();
+                    }
+
+                    itemAdditionInfo.setText(additionalInformation);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void testNewSimilarItem() {

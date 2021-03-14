@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -21,12 +22,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,31 +39,48 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.mygoods.Adapters.RecyclerHorizontalScrollAdapter;
+import com.example.mygoods.David.others.Constant;
+import com.example.mygoods.Model.AdditionalInfo;
+import com.example.mygoods.Model.Car;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.Item;
+import com.example.mygoods.Model.Phone;
+import com.example.mygoods.Other.AddBottomSheetDialog;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class EditMyItemActivity extends AppCompatActivity {
-    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference itemRef = firestore.collection("items");
-    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private Item mitem;
     private UploadTask uploadtask;
 
@@ -91,18 +111,400 @@ public class EditMyItemActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerHorizontalScrollAdapter recyclerAdapter;
 
+    private LinearLayout brandLayout, conditionLayout, yearLayout, modelLayout, typeLayout;
+    private TextView brandText, conditionText, yearText, modelText, typeText;
+    private TextView brandSelector, yearSelector, modelSelector, typeSelector,conditionSelector;
+
+
+    private AddBottomSheetDialog bottomSheets;
+
+    private static List<Car> carList;
+    private static List<String> bikePartsList;
+    private static List<Phone> phoneList;
+    private static List<String> motoTypeList;
+    private static List<String> computerPartsList;
+
+    private AdditionalInfo additionalInfo;
+
     private static final int REQUEST_CODE = 0;
     public static final int MAX_NUM_IMAGE = 5;
 
     private ProgressDialog progressDialog;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
+        if (carList==null
+                || bikePartsList ==null
+                || phoneList == null
+                || motoTypeList == null
+                || computerPartsList ==null) {
+            getDataFromApi();
+        }
+
         initializeUI();
 
         putDataIntoViews();
+
+    }
+
+    private void getDataFromApi() {
+        carList = new ArrayList<>();
+        computerPartsList = new ArrayList<>();
+        phoneList = new ArrayList<>();
+        motoTypeList = new ArrayList<>();
+        bikePartsList = new ArrayList<>();
+
+        getCarBrandApi();
+        getMotobikeApi();
+        getBikeApi();
+        getComputerApi();
+        getPhoneApi();
+    }
+
+    private void getCarBrandApi() {
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    URL url = new URL("https://parseapi.back4app.com/classes/Car_Model_List?limit=9581&order=Make");
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    urlConnection.setRequestProperty("X-Parse-Application-Id", "hlhoNKjOvEhqzcVAJ1lxjicJLZNVv36GdbboZj3Z"); // This is the fake app's application id
+                    urlConnection.setRequestProperty("X-Parse-Master-Key", "SNMJJF0CZZhTPhLDIqGhTlUNV9r60M2Z5spyWfXW"); // This is the fake app's readonly master key
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+                        carList.addAll(generateCarData(data));
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+    }
+
+    private void getMotobikeApi(){
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.trademe.co.nz/v1/Categories/MotorBikes.json");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+                        motoTypeList.addAll(generateMotoBikeData(data));
+
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+
+    }
+
+    private void getBikeApi(){
+
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.trademe.co.nz/v1/Categories/0005.json");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+//                        System.out.println(data.toString(2));
+
+                        bikePartsList.addAll(generateBikeData(data));
+
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+    }
+
+    private void getComputerApi(){
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.trademe.co.nz/v1/Categories/0002.json");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+//                    urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
+//                    urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+//                        System.out.println(generateComputerData(data).toString(2));
+                        computerPartsList.addAll(generateComputerData(data));
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+    }
+
+    private void getPhoneApi() {
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=8634&order=Brand&keys=Brand,Model");
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
+                    urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+                        phoneList.addAll(generatePhoneData(data));
+
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+
+    }
+
+    private Set<Car> generateCarData(JSONObject thisData) {
+
+        Set<Car> setCars =new HashSet<>();
+
+//        Set<String> carBrands =new HashSet<>();
+
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("results");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+            JSONObject jObj = null;
+            try {
+                jObj = ja_data.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                assert jObj != null;
+//                carBrands.add(jObj.getString("Make"));
+
+                Car tempCar = new Car(jObj.getString("Make"),
+                        jObj.getString("Model"),
+                        jObj.getString("Category"),
+                        jObj.getString("Year"));
+                setCars.add(tempCar);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return setCars;
+    }
+
+    private Set<String> generateMotoBikeData(JSONObject thisData) {
+
+        Set<String> motoTypeSet = new HashSet<>();
+
+        JSONObject jObj;
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("Subcategories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+            try {
+                jObj = ja_data.getJSONObject(i);
+                assert jObj != null;
+                motoTypeSet.add(jObj.getString("Name"));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return motoTypeSet;
+    }
+
+    private Set<String> generateBikeData(JSONObject thisData) {
+
+        Set<String> bikeSet = new HashSet<>();
+
+        JSONObject jObj ;
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("Subcategories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+
+            try {
+                jObj = ja_data.getJSONObject(i);
+                assert jObj != null;
+
+                // getting inner array Ingredients
+                JSONArray ja = jObj.getJSONArray("Subcategories");
+                int len = ja.length();
+//
+                if (jObj.getString("Name").equalsIgnoreCase("Cycling")) {
+                    // getting json objects from Ingredients json array
+                    for (int j = 0; j < len; j++) {
+                        JSONObject json = ja.getJSONObject(j);
+//                        Here Where you get type of stuff that going to sell on the site in category of bike
+                        bikeSet.add(json.getString("Name"));
+//                        System.out.println(json.toString(2));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return bikeSet;
+    }
+
+    private Set<String> generateComputerData(JSONObject thisData) {
+        Set<String > computerSet = new HashSet<>();
+
+        JSONObject jObj;
+
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("Subcategories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+
+            try {
+                jObj = ja_data.getJSONObject(i);
+                assert jObj != null;
+//                System.out.println("Krav " + jObj.getString("Name"));
+
+                // getting inner array Ingredients
+                JSONArray ja = jObj.getJSONArray("Subcategories");
+                int len = ja.length();
+
+                if (jObj.getString("Name").equalsIgnoreCase("Components")) {
+                    // getting json objects from Ingredients json array
+                    for (int j = 0; j < len; j++) {
+                        JSONObject json = ja.getJSONObject(j);
+//                        System.out.println("Knong " + .replace("Other",""));
+                        computerSet.add(json.getString("Name"));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return computerSet;
+    }
+
+    private Set<Phone> generatePhoneData(JSONObject thisData) {
+
+        Set<Phone> setPhone =new HashSet<>();
+
+
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("results");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+            JSONObject jObj = null;
+            try {
+                jObj = ja_data.getJSONObject(i);
+
+                assert jObj != null;
+                setPhone.add(new Phone(jObj.getString("Brand"),jObj.getString("Model").replace("_","")));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return setPhone;
 
     }
 
@@ -346,17 +748,44 @@ public class EditMyItemActivity extends AppCompatActivity {
         updatedItem.setSubCategory(subCategory);
         updatedItem.setImages(images);
 
-        itemRef.document(itemid).set(updatedItem).addOnCompleteListener(new OnCompleteListener<Void>() {
+        itemRef.document(itemid)
+                .set(updatedItem)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-//                        Dismiss the dialog box if or if not the data is uploaded because we want user to be control of what happen
-                progressDialog.dismiss();
 
                 if (task.isSuccessful()){
-                    Toast.makeText(EditMyItemActivity.this, "Data Updated", Toast.LENGTH_SHORT).show();
-//                  When upload is successful launch the myitemAcitivity without user ability to come back
-                    launchActivityWithoutBack();
+                    additionalInfo.setCondition(conditionSelector.getText().toString().trim());
+                    firestore.collection(Constant.itemCollection)
+                            .document(mitem.getItemid())
+                            .collection("additionInfo")
+                            .document(subCategory)
+                            .set(additionalInfo)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+
+                                    if (progressDialog!=null) {
+                                        progressDialog.dismiss();
+                                    }
+                                    Toast.makeText(EditMyItemActivity.this, "Data Updated", Toast.LENGTH_SHORT).show();
+//                                  When upload is successful launch the myitemAcitivity without user ability to come back
+                                    launchActivityWithoutBack();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (progressDialog!=null) {
+                                progressDialog.dismiss();
+                            }
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 }else {
+                    if (progressDialog!=null) {
+                        progressDialog.dismiss();
+                    }
 //                  Else stay in the same activity until everything workout
                     Toast.makeText(EditMyItemActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 }
@@ -406,6 +835,384 @@ public class EditMyItemActivity extends AppCompatActivity {
 
         recyclerAdapter.setOnItemClickListener(onItemClickListener);
 
+        additionalInfo = new AdditionalInfo();
+
+        brandLayout = findViewById(R.id.brandLayout);
+        brandText = findViewById(R.id.brandText);
+        brandSelector = findViewById(R.id.brandSelector);
+
+        conditionLayout = findViewById(R.id.conditionLayout);
+        conditionText = findViewById(R.id.conditionText);
+        conditionSelector = findViewById(R.id.conditionSelector);
+
+        yearLayout = findViewById(R.id.yearLayout);
+        yearText = findViewById(R.id.yearText);
+        yearSelector = findViewById(R.id.yearSelector);
+
+        modelLayout = findViewById(R.id.modelLayout);
+        modelText = findViewById(R.id.modelText);
+        modelSelector = findViewById(R.id.modelSelector);
+
+        typeLayout = findViewById(R.id.carTypeLayout);
+        typeText = findViewById(R.id.carTypeText);
+        typeSelector = findViewById(R.id.carTypeSelector);
+
+        conditionText.setText("Condition");
+        conditionSelector.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.R)
+            @Override
+            public void onClick(View view) {
+
+                List<String> conditions = new ArrayList<>();
+                conditions.add("Used");
+                conditions.add("New");
+
+                AddBottomSheetDialog bottomSheet = new AddBottomSheetDialog(conditions);
+
+                bottomSheet.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheet.dismiss();
+                        conditionSelector.setError(null);
+                        conditionSelector.setText(name);
+                    }
+                });
+                bottomSheet.show(getSupportFragmentManager(), "AddBottomSheet");
+            }
+        });
+
+        layoutGone();
+
+    }
+
+    private void layoutGone(){
+        brandLayout.setVisibility(View.GONE);
+        yearLayout.setVisibility(View.GONE);
+        modelLayout.setVisibility(View.GONE);
+        typeLayout.setVisibility(View.GONE);
+    }
+
+    private void carProcedure(){
+        brandLayout.setVisibility(View.VISIBLE);
+        brandText.setText("Car Information (Brand, Model, Type of Car, Year)");
+        brandSelector.setText("(Enter Car Information)");
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.GONE);
+        typeText.setText(null);
+        typeSelector.setText(null);
+
+        brandSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Car tempCar = new Car();
+
+                if (carList.size()!=0) {
+                    Set<String> brandList = new HashSet<>();
+                    for (Car c : carList) {
+                        brandList.add(c.getBrand());
+                    }
+                    brandList.add("Other");
+                    bottomSheets = new AddBottomSheetDialog(new ArrayList<>(brandList));
+
+                    bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                        @Override
+                        public void onItemClicked(String name) {
+                            bottomSheets.dismiss();
+                            tempCar.setBrand(name);
+                            brandSelector.setText(tempCar.toString());
+                            additionalInfo.setCar(tempCar);
+
+                            Set<String> modelList = new HashSet<>();
+                            for (Car c : carList) {
+                                if (c.getBrand().equalsIgnoreCase(name)){
+                                    modelList.add(c.getModel());
+                                }
+                            }
+                            modelList.add("Other");
+
+                            bottomSheets = new AddBottomSheetDialog(new ArrayList<>(modelList));
+
+                            bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                                @Override
+                                public void onItemClicked(String name) {
+                                    bottomSheets.dismiss();
+                                    tempCar.setModel(name);
+                                    brandSelector.setText(tempCar.toString());
+                                    additionalInfo.setCar(tempCar);
+
+                                    Set<String> carTypeList = new HashSet<>();
+                                    for (Car c : carList) {
+                                        if (c.getModel().equals(name)){
+                                            carTypeList.add(c.getCategory());
+                                        }
+                                    }
+                                    carTypeList.add("Other");
+                                    if (carTypeList.size()==1){
+                                        for (Car c : carList) {
+                                            carTypeList.add(c.getCategory());
+                                        }
+                                    }
+
+                                    bottomSheets = new AddBottomSheetDialog(new ArrayList<>(carTypeList));
+
+                                    bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                                        @Override
+                                        public void onItemClicked(String name) {
+                                            bottomSheets.dismiss();
+                                            tempCar.setCategory(name);
+                                            brandSelector.setText(tempCar.toString());
+                                            additionalInfo.setCar(tempCar);
+
+                                            Set<String> yearList = new HashSet<>();
+                                            if (!name.equalsIgnoreCase("Other")) {
+                                                for (Car c : carList) {
+                                                    if (c.getModel().equalsIgnoreCase(tempCar.getModel())) {
+                                                        yearList.add(c.getYear());
+                                                    }
+                                                }
+                                            }
+                                            yearList.add("Other");
+                                            if (yearList.size()==1){
+                                                for (Car c : carList) {
+                                                    yearList.add(c.getYear());
+                                                }
+                                            }
+
+                                            ArrayList<String> sortedList = new ArrayList<>(yearList);
+                                            Collections.sort(sortedList);
+
+                                            bottomSheets = new AddBottomSheetDialog(sortedList);
+
+                                            bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                                                @Override
+                                                public void onItemClicked(String name) {
+                                                    bottomSheets.dismiss();
+                                                    tempCar.setYear(name);
+                                                    brandSelector.setText(tempCar.toString());
+
+                                                    additionalInfo.setCar(tempCar);
+                                                }
+                                            });
+                                            bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
+                                        }
+                                    });
+                                    bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
+                                }
+                            });
+                            bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
+
+                        }
+                    });
+                    bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
+
+                }else{
+                    Toast.makeText(getApplicationContext(), "Please Wait A bit", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+
+    //    Work for Phone, Tablet
+    private void phoneProcedure(){
+
+        brandLayout.setVisibility(View.VISIBLE);
+        brandText.setText("Phone Detail (Brand, Model)");
+        brandSelector.setText("(Enter Phone Detail)");
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.GONE);
+        typeText.setText(null);
+        typeSelector.setText(null);
+
+        brandSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Phone tempPhone = new Phone();
+
+                Set<String> listPhoneBrand = new HashSet<>();
+                for (Phone p: phoneList){
+                    listPhoneBrand.add(p.getPhoneBrand());
+                }
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(listPhoneBrand));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        tempPhone.setPhoneBrand(name);
+                        brandSelector.setError(null);
+                        brandSelector.setText(tempPhone.getPhoneBrand());
+                        additionalInfo.setPhone(tempPhone);
+
+
+                        Set<String> listPhoneModel = new HashSet<>();
+                        for (Phone p: phoneList){
+                            if (p.getPhoneBrand().equalsIgnoreCase(name)){
+                                listPhoneModel.add(p.getPhoneModel());
+                            }
+                        }
+                        listPhoneModel.add("Other");
+
+                        bottomSheets = new AddBottomSheetDialog(new ArrayList<>(listPhoneModel));
+
+                        bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                            @Override
+                            public void onItemClicked(String name) {
+                                bottomSheets.dismiss();
+                                tempPhone.setPhoneModel(name);
+                                brandSelector.setError(null);
+                                brandSelector.setText(tempPhone.getPhoneBrand() + ", " + tempPhone.getPhoneModel());
+                                additionalInfo.setPhone(tempPhone);
+                            }
+                        });
+                        assert getFragmentManager() != null;
+                        bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
+                    }
+                });
+                assert getFragmentManager() != null;
+                bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
+            }
+        });
+
+
+    }
+
+    //    For Electronic Part and accessories
+    private void partAccessoriesComputerProcedure(){
+
+        brandLayout.setVisibility(View.GONE);
+        brandText.setText(null);
+        brandSelector.setText(null);
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.VISIBLE);
+        typeText.setText("Type of Item");
+        typeSelector.setText("(Select Type of Item)");
+
+        typeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(computerPartsList));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        typeSelector.setText(name);
+
+                        additionalInfo.setComputerParts(name);
+                    }
+                });
+                bottomSheets.show(getSupportFragmentManager(), "AddBottomSheet");
+            }
+        });
+
+    }
+
+    private void bikeProcedure(){
+
+
+        brandLayout.setVisibility(View.GONE);
+        brandText.setText(null);
+        brandSelector.setText(null);
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.VISIBLE);
+        typeText.setText("Type of Bike Item");
+        typeSelector.setText("(Select Type of Bike Item)");
+
+        typeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(bikePartsList));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        typeSelector.setText(name);
+
+                        additionalInfo.setBikeType(name);
+                    }
+                });
+                bottomSheets.show(getSupportFragmentManager(), "AddBottomSheet");
+            }
+        });
+    }
+
+    private void motoProcedure(){
+
+        brandLayout.setVisibility(View.GONE);
+        brandText.setText(null);
+        brandSelector.setText(null);
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.VISIBLE);
+        typeText.setText("Type of Moto Item");
+        typeSelector.setText("(Select Type of Moto Item)");
+
+        typeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(motoTypeList));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        typeSelector.setText(name);
+
+                        additionalInfo.setMotoType(name);
+                    }
+                });
+                bottomSheets.show(getSupportFragmentManager(), "AddBottomSheet");
+            }
+        });
     }
 
     RecyclerHorizontalScrollAdapter.OnItemClickListener onItemClickListener = new RecyclerHorizontalScrollAdapter.OnItemClickListener() {
@@ -461,6 +1268,26 @@ public class EditMyItemActivity extends AppCompatActivity {
                         mainCategoryText.setText("Category: " + mainCategory);
                         categorySelector.setText(subCategory);
 
+                        additionalInfo = new AdditionalInfo();
+
+                        if (subCategory.equalsIgnoreCase("cars")){
+                            carProcedure();
+                        }else if (subCategory.equalsIgnoreCase("phone")){
+                            phoneProcedure();
+                        }else if (subCategory.toLowerCase().contains("parts")){
+                            partAccessoriesComputerProcedure();
+                        }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                            bikeProcedure();
+                        }else if (subCategory.toLowerCase().contains("moto")){
+                            motoProcedure();
+                        }else{
+                            layoutGone();
+                        }
+
+                        brandSelector.setError(null);
+                        yearSelector.setError(null);
+                        modelSelector.setError(null);
+                        typeSelector.setError(null);
 //                        listener.applyTexts(cat);
                     }
                 });
@@ -529,6 +1356,20 @@ public class EditMyItemActivity extends AppCompatActivity {
                 categorySelector.setText(mitem.getSubCategory());
                 subCategory = mitem.getSubCategory();
                 mainCategory = mitem.getMainCategory();
+
+                if (subCategory.equalsIgnoreCase("cars")){
+                    carProcedure();
+                }else if (subCategory.equalsIgnoreCase("phone")){
+                    phoneProcedure();
+                }else if (subCategory.toLowerCase().contains("parts")){
+                    partAccessoriesComputerProcedure();
+                }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                    bikeProcedure();
+                }else if (subCategory.toLowerCase().contains("moto")){
+                    motoProcedure();
+                }else{
+                    layoutGone();
+                }
             }
 
             itemPrice.setText(String.valueOf(mitem.getPrice()));
@@ -551,11 +1392,48 @@ public class EditMyItemActivity extends AppCompatActivity {
                                 notifyImageNumberChange();
                             }
                         });
-
             }
-
+            getAdditionalInfo(mitem);
         }
+    }
 
+    private void getAdditionalInfo(Item i) {
+        firestore.collection("items")
+                .document(i.getItemid())
+                .collection("additionInfo")
+                .document(i.getSubCategory())
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
+
+                if (tempAdditionalInfo != null) {
+                    conditionSelector.setText(tempAdditionalInfo.getCondition());
+                    if (tempAdditionalInfo.getBikeType()!=null){
+                        typeSelector.setText(tempAdditionalInfo.getBikeType());
+                    }else if (tempAdditionalInfo.getCar()!=null){
+                        brandSelector.setText(tempAdditionalInfo.getCar().toString());
+
+                    }else if (tempAdditionalInfo.getComputerParts()!=null){
+                        typeSelector.setText(tempAdditionalInfo.getComputerParts());
+
+                    }else if (tempAdditionalInfo.getPhone()!=null){
+                        brandSelector.setText(tempAdditionalInfo.getPhone().getPhoneBrand()
+                                + ", " +tempAdditionalInfo.getPhone().getPhoneModel() );
+
+                    }else if (tempAdditionalInfo.getMotoType()!=null){
+                        typeSelector.setText(tempAdditionalInfo.getMotoType());
+
+                    }
+                    additionalInfo = tempAdditionalInfo;
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void notifyImageNumberChange(){
@@ -616,13 +1494,75 @@ public class EditMyItemActivity extends AppCompatActivity {
         }else{
             itemDescription.setError(null);
         }
-        if (imagesUpload==null){
+        if (currentImageBitmaps.size()==0){
             Toast.makeText(this, "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }
+
+        if (conditionSelector.getText().toString().equalsIgnoreCase("")
+                || conditionSelector.getText().toString().equalsIgnoreCase("(Condition)")
+                || conditionSelector.getText().toString().isEmpty()){
+            conditionSelector.setError("Please select Condition");
+            flag = false;
+        }else {
+            conditionSelector.setError(null);
+        }
+
         if (subCategory == null || mainCategory ==null){
             Toast.makeText(this, "Please Choose a Category", Toast.LENGTH_SHORT).show();
             flag = false;
+        }else {
+            if (subCategory.equalsIgnoreCase("cars")) {
+                if (additionalInfo.getCar() == null) {
+                    brandSelector.setError("Please Enter Car Detail");
+                    flag = false;
+                } else {
+                    if (additionalInfo.getCar().getBrand() == null
+                            | additionalInfo.getCar().getModel() == null
+                            | additionalInfo.getCar().getCategory() == null
+                            | additionalInfo.getCar().getYear() == null) {
+                        brandSelector.setError("Not Enough Information");
+                        flag = false;
+                    } else {
+                        brandSelector.setError(null);
+                    }
+
+                }
+            } else if (subCategory.equalsIgnoreCase("phone")) {
+                if (additionalInfo.getPhone() == null) {
+                    brandSelector.setError("Please Enter Phone Detail");
+                    flag = false;
+                } else {
+                    if (additionalInfo.getPhone().getPhoneBrand() == null
+                            | additionalInfo.getPhone().getPhoneModel() == null) {
+                        brandSelector.setError("Not Enough Information");
+                        flag = false;
+                    } else {
+                        brandSelector.setError(null);
+                    }
+                }
+            } else if (subCategory.toLowerCase().contains("parts")) {
+                if (additionalInfo.getComputerParts() == null) {
+                    typeSelector.setError("Please Select Type of Item");
+                    flag = false;
+                } else {
+                    typeSelector.setError(null);
+                }
+            } else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())) {
+                if (additionalInfo.getBikeType() == null) {
+                    typeSelector.setError("Please Select Type of Item");
+                    flag = false;
+                } else {
+                    typeSelector.setError(null);
+                }
+            } else if (subCategory.toLowerCase().contains("moto")) {
+                if (additionalInfo.getMotoType() == null) {
+                    typeSelector.setError("Please Select Type of Item");
+                    flag = false;
+                } else {
+                    typeSelector.setError(null);
+                }
+            }
         }
 
         return flag;

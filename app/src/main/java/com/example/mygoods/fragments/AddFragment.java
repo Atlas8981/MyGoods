@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,9 +36,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mygoods.Adapters.RecyclerHorizontalScrollAdapter;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.Firewall.SignUp.PersonalInformationActivity;
+import com.example.mygoods.Model.AdditionalInfo;
+import com.example.mygoods.Model.Car;
 import com.example.mygoods.Model.Image;
 import com.example.mygoods.Model.Item;
+import com.example.mygoods.Model.Phone;
 import com.example.mygoods.Model.User;
+import com.example.mygoods.Other.AddBottomSheetDialog;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,12 +55,23 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -111,6 +127,21 @@ public class AddFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerHorizontalScrollAdapter recyclerAdapter;
 
+    private LinearLayout brandLayout, conditionLayout, yearLayout, modelLayout, typeLayout;
+    private TextView brandText, conditionText, yearText, modelText, typeText;
+    private TextView brandSelector, yearSelector, modelSelector, typeSelector,conditionSelector;
+
+
+    private AddBottomSheetDialog bottomSheets;
+
+    private static List<Car> carList;
+    private static List<String> bikePartsList;
+    private static List<Phone> phoneList;
+    private static List<String> motoTypeList;
+    private static List<String> computerPartsList;
+
+    private AdditionalInfo additionalInfo;
+
     private static final int REQUEST_CODE = 0;
     public static final int MAX_NUM_IMAGE = 5;
     public AddFragment() {
@@ -140,7 +171,13 @@ public class AddFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        if (carList==null
+                || bikePartsList ==null
+                || phoneList == null
+                || motoTypeList == null
+                || computerPartsList ==null) {
+            getDataFromApi();
+        }
 
     }
 
@@ -175,6 +212,362 @@ public class AddFragment extends Fragment {
 
         return v;
     } // End of onCreateView()
+
+    private void getDataFromApi() {
+        carList = new ArrayList<>();
+        computerPartsList = new ArrayList<>();
+        phoneList = new ArrayList<>();
+        motoTypeList = new ArrayList<>();
+        bikePartsList = new ArrayList<>();
+
+        getCarBrandApi();
+        getMotobikeApi();
+        getBikeApi();
+        getComputerApi();
+        getPhoneApi();
+    }
+
+    private void getCarBrandApi() {
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    URL url = new URL("https://parseapi.back4app.com/classes/Car_Model_List?limit=9581&order=Make");
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    urlConnection.setRequestProperty("X-Parse-Application-Id", "hlhoNKjOvEhqzcVAJ1lxjicJLZNVv36GdbboZj3Z"); // This is the fake app's application id
+                    urlConnection.setRequestProperty("X-Parse-Master-Key", "SNMJJF0CZZhTPhLDIqGhTlUNV9r60M2Z5spyWfXW"); // This is the fake app's readonly master key
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+                        carList.addAll(generateCarData(data));
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+    }
+
+    private void getMotobikeApi(){
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.trademe.co.nz/v1/Categories/MotorBikes.json");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+                        motoTypeList.addAll(generateMotoBikeData(data));
+
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+
+    }
+
+    private void getBikeApi(){
+
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.trademe.co.nz/v1/Categories/0005.json");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+//                        System.out.println(data.toString(2));
+
+                        bikePartsList.addAll(generateBikeData(data));
+
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+    }
+
+    private void getComputerApi(){
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.trademe.co.nz/v1/Categories/0002.json");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+//                    urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
+//                    urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+//                        System.out.println(generateComputerData(data).toString(2));
+                        computerPartsList.addAll(generateComputerData(data));
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+    }
+
+    private void getPhoneApi() {
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=8634&order=Brand&keys=Brand,Model");
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
+                    urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
+                    try {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
+                        JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
+
+                        phoneList.addAll(generatePhoneData(data));
+
+                    } finally {
+                        urlConnection.disconnect();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        })).start();
+
+    }
+
+    private Set<Car> generateCarData(JSONObject thisData) {
+
+        Set<Car> setCars =new HashSet<>();
+
+//        Set<String> carBrands =new HashSet<>();
+
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("results");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+            JSONObject jObj = null;
+            try {
+                jObj = ja_data.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                assert jObj != null;
+//                carBrands.add(jObj.getString("Make"));
+
+                Car tempCar = new Car(jObj.getString("Make"),
+                        jObj.getString("Model"),
+                        jObj.getString("Category"),
+                        jObj.getString("Year"));
+                setCars.add(tempCar);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return setCars;
+    }
+
+    private Set<String> generateMotoBikeData(JSONObject thisData) {
+
+        Set<String> motoTypeSet = new HashSet<>();
+
+        JSONObject jObj;
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("Subcategories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+            try {
+                jObj = ja_data.getJSONObject(i);
+                assert jObj != null;
+                motoTypeSet.add(jObj.getString("Name"));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return motoTypeSet;
+    }
+
+    private Set<String> generateBikeData(JSONObject thisData) {
+
+        Set<String> bikeSet = new HashSet<>();
+
+        JSONObject jObj ;
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("Subcategories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+
+            try {
+                jObj = ja_data.getJSONObject(i);
+                assert jObj != null;
+
+                // getting inner array Ingredients
+                JSONArray ja = jObj.getJSONArray("Subcategories");
+                int len = ja.length();
+//
+                if (jObj.getString("Name").equalsIgnoreCase("Cycling")) {
+                    // getting json objects from Ingredients json array
+                    for (int j = 0; j < len; j++) {
+                        JSONObject json = ja.getJSONObject(j);
+//                        Here Where you get type of stuff that going to sell on the site in category of bike
+                        bikeSet.add(json.getString("Name"));
+//                        System.out.println(json.toString(2));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return bikeSet;
+    }
+
+    private Set<String> generateComputerData(JSONObject thisData) {
+        Set<String > computerSet = new HashSet<>();
+
+        JSONObject jObj;
+
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("Subcategories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+
+            try {
+                jObj = ja_data.getJSONObject(i);
+                assert jObj != null;
+//                System.out.println("Krav " + jObj.getString("Name"));
+
+                // getting inner array Ingredients
+                JSONArray ja = jObj.getJSONArray("Subcategories");
+                int len = ja.length();
+
+                if (jObj.getString("Name").equalsIgnoreCase("Components")) {
+                    // getting json objects from Ingredients json array
+                    for (int j = 0; j < len; j++) {
+                        JSONObject json = ja.getJSONObject(j);
+//                        System.out.println("Knong " + .replace("Other",""));
+                        computerSet.add(json.getString("Name"));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return computerSet;
+    }
+
+    private Set<Phone> generatePhoneData(JSONObject thisData) {
+
+        Set<Phone> setPhone =new HashSet<>();
+
+
+        //extracting data array from json string
+        JSONArray ja_data = null;
+        try {
+            ja_data = thisData.getJSONArray("results");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assert ja_data != null;
+        int length = ja_data.length();
+        //loop to get all json objects from data json array
+        for(int i=0; i<length; i++)
+        {
+            JSONObject jObj = null;
+            try {
+                jObj = ja_data.getJSONObject(i);
+
+                assert jObj != null;
+                setPhone.add(new Phone(jObj.getString("Brand"),jObj.getString("Model").replace("_","")));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return setPhone;
+
+    }
 
     private void autoCompleteField() {
         if (auth.getUid()!=null) {
@@ -218,6 +611,8 @@ public class AddFragment extends Fragment {
         recyclerView.setAdapter(recyclerAdapter);
 
         recyclerAdapter.setOnItemClickListener(onItemClickListener);
+
+        additionalInfo = new AdditionalInfo();
     }
     RecyclerHorizontalScrollAdapter.OnItemClickListener onItemClickListener = new RecyclerHorizontalScrollAdapter.OnItemClickListener() {
         @Override
@@ -371,11 +766,31 @@ public class AddFragment extends Fragment {
         db.collection("items").document(item.getItemid()).set(item).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(addFragmentContext, "Item Uploaded", Toast.LENGTH_SHORT).show();
-                if (pd!=null) {
-                    pd.dismiss();
-                }
-                clearDataAfterUpload();
+
+                additionalInfo.setCondition(conditionSelector.getText().toString().trim());
+                ref.collection("additionInfo")
+                        .document(subCategory)
+                        .set(additionalInfo)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(addFragmentContext, "Item Uploaded", Toast.LENGTH_SHORT).show();
+                                if (pd!=null) {
+                                    pd.dismiss();
+                                }
+                                clearDataAfterUpload();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if (pd!=null) {
+                            pd.dismiss();
+                        }
+                        Toast.makeText(addFragmentContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -583,13 +998,75 @@ public class AddFragment extends Fragment {
         }else{
             description.setError(null);
         }
-        if (imagesUpload==null){
+        if (imageBitmap.size() == 0){
             Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }
+
+        if (conditionSelector.getText().toString().equalsIgnoreCase("")
+                || conditionSelector.getText().toString().equalsIgnoreCase("(Condition)")
+                || conditionSelector.getText().toString().isEmpty()){
+            conditionSelector.setError("Please select Condition");
+            flag = false;
+        }else {
+            conditionSelector.setError(null);
+        }
+
         if (subCategory == null || mainCategory ==null){
             Toast.makeText(getContext(), "Please Choose a Category", Toast.LENGTH_SHORT).show();
             flag = false;
+        }else{
+            if (subCategory.equalsIgnoreCase("cars")){
+                if (additionalInfo.getCar() == null){
+                    brandSelector.setError("Please Enter Car Detail");
+                    flag = false;
+                }else{
+                    if (additionalInfo.getCar().getBrand() == null
+                            | additionalInfo.getCar().getModel() == null
+                            | additionalInfo.getCar().getCategory() == null
+                            | additionalInfo.getCar().getYear() == null){
+                        brandSelector.setError("Not Enough Information");
+                        flag=false;
+                    }else{
+                        brandSelector.setError(null);
+                    }
+
+                }
+            }else if (subCategory.equalsIgnoreCase("phone")){
+                if (additionalInfo.getPhone() ==null){
+                    brandSelector.setError("Please Enter Phone Detail");
+                    flag = false;
+                }else{
+                    if (additionalInfo.getPhone().getPhoneBrand() == null
+                            | additionalInfo.getPhone().getPhoneModel() == null ){
+                        brandSelector.setError("Not Enough Information");
+                        flag=false;
+                    }else {
+                        brandSelector.setError(null);
+                    }
+                }
+            }else if (subCategory.toLowerCase().contains("parts")){
+                if (additionalInfo.getComputerParts() == null){
+                    typeSelector.setError("Please Select Type of Item");
+                    flag = false;
+                }else {
+                    typeSelector.setError(null);
+                }
+            }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                if (additionalInfo.getBikeType() == null){
+                    typeSelector.setError("Please Select Type of Item");
+                    flag = false;
+                }else {
+                    typeSelector.setError(null);
+                }
+            }else if (subCategory.toLowerCase().contains("moto")){
+                if (additionalInfo.getMotoType() == null){
+                    typeSelector.setError("Please Select Type of Item");
+                    flag = false;
+                }else {
+                    typeSelector.setError(null);
+                }
+            }
         }
 
         return flag;
@@ -616,6 +1093,388 @@ public class AddFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 openDialog();
+            }
+        });
+
+        brandLayout = v.findViewById(R.id.brandLayout);
+        brandText = v.findViewById(R.id.brandText);
+        brandSelector = v.findViewById(R.id.brandSelector);
+
+        conditionLayout = v.findViewById(R.id.conditionLayout);
+        conditionText = v.findViewById(R.id.conditionText);
+        conditionSelector = v.findViewById(R.id.conditionSelector);
+
+        yearLayout = v.findViewById(R.id.yearLayout);
+        yearText = v.findViewById(R.id.yearText);
+        yearSelector = v.findViewById(R.id.yearSelector);
+
+        modelLayout = v.findViewById(R.id.modelLayout);
+        modelText = v.findViewById(R.id.modelText);
+        modelSelector = v.findViewById(R.id.modelSelector);
+
+        typeLayout = v.findViewById(R.id.carTypeLayout);
+        typeText = v.findViewById(R.id.carTypeText);
+        typeSelector = v.findViewById(R.id.carTypeSelector);
+
+        conditionText.setText("Condition");
+        conditionSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                List<String> conditions = new ArrayList<>();
+                conditions.add("Used");
+                conditions.add("New");
+
+                AddBottomSheetDialog bottomSheet = new AddBottomSheetDialog(conditions);
+
+                bottomSheet.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheet.dismiss();
+                        conditionSelector.setError(null);
+                        conditionSelector.setText(name);
+                    }
+                });
+                bottomSheet.show(getFragmentManager(),getTag());
+            }
+        });
+
+        layoutGone();
+    }
+
+    private void layoutGone(){
+        brandLayout.setVisibility(View.GONE);
+        yearLayout.setVisibility(View.GONE);
+        modelLayout.setVisibility(View.GONE);
+        typeLayout.setVisibility(View.GONE);
+
+        brandSelector.setError(null);
+        yearSelector.setError(null);
+        modelSelector.setError(null);
+        typeSelector.setError(null);
+    }
+
+    private void carProcedure(){
+
+        brandLayout.setVisibility(View.VISIBLE);
+        brandText.setText("Car Information (Brand, Model, Type of Car, Year)");
+        brandSelector.setText("(Enter Car Information)");
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.GONE);
+        typeText.setText(null);
+        typeSelector.setText(null);
+
+        brandSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Car tempCar = new Car();
+
+                if (carList.size()!=0) {
+                    Set<String> brandList = new HashSet<>();
+                    for (Car c : carList) {
+                        brandList.add(c.getBrand());
+                    }
+                    brandList.add("Other");
+                    bottomSheets = new AddBottomSheetDialog(new ArrayList<>(brandList));
+
+                    bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                        @Override
+                        public void onItemClicked(String name) {
+                            bottomSheets.dismiss();
+                            tempCar.setBrand(name);
+                            brandSelector.setText(tempCar.toString());
+                            additionalInfo.setCar(tempCar);
+
+                            Set<String> modelList = new HashSet<>();
+                            for (Car c : carList) {
+                                if (c.getBrand().equalsIgnoreCase(name)){
+                                    modelList.add(c.getModel());
+                                }
+                            }
+                            modelList.add("Other");
+
+                            bottomSheets = new AddBottomSheetDialog(new ArrayList<>(modelList));
+
+                            bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                                @Override
+                                public void onItemClicked(String name) {
+                                    bottomSheets.dismiss();
+                                    tempCar.setModel(name);
+                                    brandSelector.setText(tempCar.toString());
+                                    additionalInfo.setCar(tempCar);
+
+                                    Set<String> carTypeList = new HashSet<>();
+                                    for (Car c : carList) {
+                                        if (c.getModel().equals(name)){
+                                            carTypeList.add(c.getCategory());
+                                        }
+                                    }
+                                    carTypeList.add("Other");
+                                    if (carTypeList.size()==1){
+                                        for (Car c : carList) {
+                                            carTypeList.add(c.getCategory());
+                                        }
+                                    }
+
+                                    bottomSheets = new AddBottomSheetDialog(new ArrayList<>(carTypeList));
+
+                                    bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                                        @Override
+                                        public void onItemClicked(String name) {
+                                            bottomSheets.dismiss();
+                                            tempCar.setCategory(name);
+                                            brandSelector.setText(tempCar.toString());
+                                            additionalInfo.setCar(tempCar);
+
+                                            Set<String> yearList = new HashSet<>();
+                                            if (!name.equalsIgnoreCase("Other")) {
+                                                for (Car c : carList) {
+                                                    if (c.getModel().equalsIgnoreCase(tempCar.getModel())) {
+                                                        yearList.add(c.getYear());
+                                                    }
+                                                }
+                                            }
+                                            yearList.add("Other");
+                                            if (yearList.size()==1){
+                                                for (Car c : carList) {
+                                                    yearList.add(c.getYear());
+                                                }
+                                            }
+
+                                            ArrayList<String> sortedList = new ArrayList<>(yearList);
+                                            Collections.sort(sortedList);
+
+                                            bottomSheets = new AddBottomSheetDialog(sortedList);
+
+                                            bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                                                @Override
+                                                public void onItemClicked(String name) {
+                                                    bottomSheets.dismiss();
+                                                    tempCar.setYear(name);
+                                                    brandSelector.setText(tempCar.toString());
+
+                                                    additionalInfo.setCar(tempCar);
+                                                }
+                                            });
+                                            bottomSheets.show(getFragmentManager(), getTag());
+                                        }
+                                    });
+                                    bottomSheets.show(getFragmentManager(), getTag());
+                                }
+                            });
+                            bottomSheets.show(getFragmentManager(), getTag());
+
+                        }
+                    });
+                    bottomSheets.show(getFragmentManager(), getTag());
+
+                }else{
+                    Toast.makeText(addFragmentContext, "Please Wait A bit", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+
+    //    Work for Phone, Tablet
+    private void phoneProcedure(){
+
+        brandLayout.setVisibility(View.VISIBLE);
+        brandText.setText("Phone Detail (Brand, Model)");
+        brandSelector.setText("(Enter Phone Detail)");
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.GONE);
+        typeText.setText(null);
+        typeSelector.setText(null);
+
+        brandSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Phone tempPhone = new Phone();
+
+                Set<String> listPhoneBrand = new HashSet<>();
+                for (Phone p: phoneList){
+                    listPhoneBrand.add(p.getPhoneBrand());
+                }
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(listPhoneBrand));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        tempPhone.setPhoneBrand(name);
+                        brandSelector.setError(null);
+                        brandSelector.setText(tempPhone.getPhoneBrand());
+                        additionalInfo.setPhone(tempPhone);
+
+
+                        Set<String> listPhoneModel = new HashSet<>();
+                        for (Phone p: phoneList){
+                            if (p.getPhoneBrand().equalsIgnoreCase(name)){
+                                listPhoneModel.add(p.getPhoneModel());
+                            }
+                        }
+                        listPhoneModel.add("Other");
+
+                        bottomSheets = new AddBottomSheetDialog(new ArrayList<>(listPhoneModel));
+
+                        bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                            @Override
+                            public void onItemClicked(String name) {
+                                bottomSheets.dismiss();
+                                tempPhone.setPhoneModel(name);
+                                brandSelector.setError(null);
+                                brandSelector.setText(tempPhone.getPhoneBrand() + ", " + tempPhone.getPhoneModel());
+                                additionalInfo.setPhone(tempPhone);
+                            }
+                        });
+                        assert getFragmentManager() != null;
+                        bottomSheets.show(getFragmentManager(),getTag());
+                    }
+                });
+                assert getFragmentManager() != null;
+                bottomSheets.show(getFragmentManager(),getTag());
+            }
+        });
+
+
+    }
+
+    //    For Electronic Part and accessories
+    private void partAccessoriesComputerProcedure(){
+
+        brandLayout.setVisibility(View.GONE);
+        brandText.setText(null);
+        brandSelector.setText(null);
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.VISIBLE);
+        typeText.setText("Type of Item");
+        typeSelector.setText("(Select Type of Item)");
+
+        typeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(computerPartsList));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        typeSelector.setText(name);
+
+                        additionalInfo.setComputerParts(name);
+                    }
+                });
+                bottomSheets.show(getFragmentManager(),getTag());
+            }
+        });
+
+    }
+
+    private void bikeProcedure(){
+
+
+        brandLayout.setVisibility(View.GONE);
+        brandText.setText(null);
+        brandSelector.setText(null);
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.VISIBLE);
+        typeText.setText("Type of Bike Item");
+        typeSelector.setText("(Select Type of Bike Item)");
+
+        typeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(bikePartsList));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        typeSelector.setText(name);
+
+                        additionalInfo.setBikeType(name);
+                    }
+                });
+                bottomSheets.show(getFragmentManager(),getTag());
+            }
+        });
+    }
+
+    private void motoProcedure(){
+
+        brandLayout.setVisibility(View.GONE);
+        brandText.setText(null);
+        brandSelector.setText(null);
+
+
+        yearLayout.setVisibility(View.GONE);
+        yearText.setText(null);
+        yearSelector.setText(null);
+
+        modelLayout.setVisibility(View.GONE);
+        modelText.setText(null);
+        modelSelector.setText(null);
+
+        typeLayout.setVisibility(View.VISIBLE);
+        typeText.setText("Type of Moto Item");
+        typeSelector.setText("(Select Type of Moto Item)");
+
+        typeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(motoTypeList));
+
+                bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
+                    @Override
+                    public void onItemClicked(String name) {
+                        bottomSheets.dismiss();
+                        typeSelector.setText(name);
+
+                        additionalInfo.setMotoType(name);
+                    }
+                });
+                bottomSheets.show(getFragmentManager(),getTag());
             }
         });
     }
@@ -649,6 +1508,26 @@ public class AddFragment extends Fragment {
 
                         mainCategoryText.setText("Category: " + mainCategory);
                         categorySelector.setText(subCategory);
+
+                        additionalInfo = new AdditionalInfo();
+
+                        if (subCategory.equalsIgnoreCase("cars")){
+                            carProcedure();
+                        }else if (subCategory.equalsIgnoreCase("phone")){
+                            phoneProcedure();
+                        }else if (subCategory.toLowerCase().contains("parts")){
+                            partAccessoriesComputerProcedure();
+                        }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                            bikeProcedure();
+                        }else if (subCategory.toLowerCase().contains("moto")){
+                            motoProcedure();
+                        }else{
+                            layoutGone();
+                        }
+                        brandSelector.setError(null);
+                        yearSelector.setError(null);
+                        modelSelector.setError(null);
+                        typeSelector.setError(null);
 
 //                        listener.applyTexts(cat);
                     }
@@ -714,6 +1593,10 @@ public class AddFragment extends Fragment {
         mainCategoryText.setText("Category");
         remainingImages.setText("(0/5)");
         categorySelector.setText("(Select Category)");
+
+        layoutGone();
+
+        conditionSelector.setText("(Condition)");
 
         subCategory = null;
         mainCategory = null;

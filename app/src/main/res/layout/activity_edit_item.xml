@@ -134,13 +134,167 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@drawable/box_frame"
-                android:gravity="center_vertical"
                 android:padding="5dp"
+                android:gravity="center_vertical"
                 android:text="(Select Category)"
-                android:textSize="16sp"
+                android:textSize="18sp"
+                android:background="@drawable/box_frame"
                 app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24" />
 
+            <LinearLayout
+                android:id="@+id/brandLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/brandText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:text="Brand (For Car &amp; Phone)"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/brandSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:textSize="18sp"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:text="(Select Brand for Car and Phone)"
+                    android:importantForAutofill="no"
+                    android:background="@drawable/box_frame"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/modelLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/modelText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:text="Model (For Vehicle)"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/modelSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:ems="10"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:textSize="18sp"
+                    android:text="(Select Model)"
+                    android:importantForAutofill="no"
+                    android:background="@drawable/box_frame"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/carTypeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/carTypeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:text="Car Type (For Vehicle)"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/carTypeSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:ems="10"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:textSize="18sp"
+                    android:text="(Select Car And Computer Type)"
+                    android:importantForAutofill="no"
+                    android:background="@drawable/box_frame"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/yearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/yearText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:text="Year (Vehicle)"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/yearSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:ems="10"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:textSize="18sp"
+                    android:text="(Select Car Year)"
+                    android:importantForAutofill="no"
+                    android:background="@drawable/box_frame"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/conditionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/conditionText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:text="Conditions (All)"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/conditionSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:ems="10"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:textSize="18sp"
+                    android:text="(Condition)"
+                    android:background="@drawable/box_frame"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24"/>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

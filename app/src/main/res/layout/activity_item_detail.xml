@@ -110,6 +110,31 @@
                 android:background="@android:color/darker_gray"/>
 
             <TextView
+                android:id="@+id/itemAdditionalInfoTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textSize="13dp"
+                android:text="Additional Information" />
+
+            <TextView
+                android:id="@+id/itemAdditionalInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="20dp"
+                android:textSize="12.5dp"
+                android:text="Good condition, 2 months of used, No charger and earphones, free delivery in Phnom penh" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+
+            <TextView
                 android:id="@+id/itemDetailAboutThisSellerTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

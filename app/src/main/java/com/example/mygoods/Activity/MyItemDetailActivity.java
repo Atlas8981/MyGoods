@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.example.mygoods.Adapters.RecyclerSimilarItemAdapter;
 import com.example.mygoods.David.activity.SellerProfileActivity;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.Firewall.WelcomeActivity;
+import com.example.mygoods.Model.AdditionalInfo;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.User;
 import com.example.mygoods.R;
@@ -58,12 +60,13 @@ public class MyItemDetailActivity extends AppCompatActivity {
     private ToggleButton saveButton;
     private ImageView userImage;
     private ViewPager viewPager;
+    private TextView additionalText;
     private Bundle bundle;
     private Item mitem;
     private ArrayList<User> sellers;
     private DotsIndicator dotsIndicator;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private String edit;
 
@@ -280,7 +283,8 @@ public class MyItemDetailActivity extends AppCompatActivity {
         }else {
             saveButton.setVisibility(View.VISIBLE);
         }
-
+        additionalText = findViewById(R.id.additionalText);
+        additionalText.setText("No Additional Information");
         checkIfItemSaved();
 
 
@@ -357,12 +361,60 @@ public class MyItemDetailActivity extends AppCompatActivity {
                     .into(userImage);
 
 
-            putUserDate();
+            putUserData();
 
+            getAdditionalInfo(mitem);
         }
     }
 
-    private void putUserDate(){
+    private void getAdditionalInfo(Item i) {
+        db.collection("items")
+                .document(i.getItemid())
+                .collection("additionInfo")
+                .document(i.getSubCategory())
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
+                String additionalInformation = "";
+
+
+                if (tempAdditionalInfo != null) {
+                    additionalInformation = "Condition : " + tempAdditionalInfo.getCondition();
+                    if (tempAdditionalInfo.getBikeType()!=null){
+//                        String description = additionalInfo+itemDescription.getText().toString().trim();
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Bike Type : " +tempAdditionalInfo.getBikeType();
+                    }else if (tempAdditionalInfo.getCar()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Car Brand : " + tempAdditionalInfo.getCar().getBrand()
+                                + "\nCar Model : " + tempAdditionalInfo.getCar().getModel()
+                                + "\nCar Type : " + tempAdditionalInfo.getCar().getCategory()
+                                + "\nCar Year : " + tempAdditionalInfo.getCar().getYear();
+                    }else if (tempAdditionalInfo.getComputerParts()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Part Type : " +tempAdditionalInfo.getComputerParts();
+                    }else if (tempAdditionalInfo.getPhone()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Phone Brand : " + tempAdditionalInfo.getPhone().getPhoneBrand()
+                                + "\nPhone Model : " + tempAdditionalInfo.getPhone().getPhoneModel();
+                    }else if (tempAdditionalInfo.getMotoType()!=null){
+                        additionalInformation = additionalInformation + "\n\n"
+                                + "Motobike Type : " +tempAdditionalInfo.getMotoType();
+                    }
+
+                    additionalText.setText(additionalInformation);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void putUserData(){
         db.collection("users")
                 .document(mitem.getUserid())
                 .get()
