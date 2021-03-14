@@ -66,6 +66,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -354,7 +355,19 @@ public class AddFragment extends Fragment {
             @Override
             public void run() {
                 try {
-                    URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=8634&order=Brand&keys=Brand,Model");
+//                    URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=8634&order=Brand&keys=Brand,Model");
+                    String where = URLEncoder.encode("{" +
+                            "    \"Brand\": {" +
+                            "        \"$exists\": true" +
+                            "    }," +
+                            "    \"Model\": {" +
+                            "        \"$exists\": true" +
+                            "    }," +
+                            "    \"Display_resolution\": {" +
+                            "        \"$exists\": true" +
+                            "    }" +
+                            "}", "utf-8");
+                    URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=7418&order=Brand&keys=Brand,Model,Display_resolution&where=" + where);
                     HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
                     urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
                     urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
@@ -367,8 +380,12 @@ public class AddFragment extends Fragment {
                         }
                         JSONObject data = new JSONObject(stringBuilder.toString()); // Here you have the data that you need
 
+
                         phoneList.addAll(generatePhoneData(data));
 
+//                        for (Phone p : generatePhoneData(data)){
+//                            System.out.println(p.getPhoneBrand());
+//                        }
                     } finally {
                         urlConnection.disconnect();
                     }
@@ -558,11 +575,33 @@ public class AddFragment extends Fragment {
                 jObj = ja_data.getJSONObject(i);
 
                 assert jObj != null;
-                setPhone.add(new Phone(jObj.getString("Brand"),jObj.getString("Model").replace("_","")));
+
+                String mystring = jObj.getString("Display_resolution");
+                String[] arr = mystring.split(" ", 2);
+                String firstWord = arr[0];
+                String theRest = arr[1];
+                double screenSize = 0;
+                try {
+                    screenSize = Double.parseDouble(firstWord);
+                }catch (NumberFormatException e){
+
+                }
+
+
+                if (screenSize > 1.8 &&screenSize < 7.0){
+
+                    setPhone.add(new Phone(jObj.getString("Brand"),
+                            jObj.getString("Model").replace("_","")));
+                }
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        for (Phone p: setPhone){
+            System.out.println(p.getPhoneBrand());
         }
 
         return setPhone;
@@ -1183,7 +1222,7 @@ public class AddFragment extends Fragment {
                         brandList.add(c.getBrand());
                     }
                     brandList.add("Other");
-                    bottomSheets = new AddBottomSheetDialog(new ArrayList<>(brandList));
+                    bottomSheets = new AddBottomSheetDialog(sortSetString(brandList));
 
                     bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
                         @Override
@@ -1201,7 +1240,7 @@ public class AddFragment extends Fragment {
                             }
                             modelList.add("Other");
 
-                            bottomSheets = new AddBottomSheetDialog(new ArrayList<>(modelList));
+                            bottomSheets = new AddBottomSheetDialog(sortSetString(modelList));
 
                             bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
                                 @Override
@@ -1224,7 +1263,7 @@ public class AddFragment extends Fragment {
                                         }
                                     }
 
-                                    bottomSheets = new AddBottomSheetDialog(new ArrayList<>(carTypeList));
+                                    bottomSheets = new AddBottomSheetDialog(sortSetString(carTypeList));
 
                                     bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
                                         @Override
@@ -1249,10 +1288,9 @@ public class AddFragment extends Fragment {
                                                 }
                                             }
 
-                                            ArrayList<String> sortedList = new ArrayList<>(yearList);
-                                            Collections.sort(sortedList);
 
-                                            bottomSheets = new AddBottomSheetDialog(sortedList);
+
+                                            bottomSheets = new AddBottomSheetDialog(sortSetString(yearList));
 
                                             bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
                                                 @Override
@@ -1308,14 +1346,17 @@ public class AddFragment extends Fragment {
         brandSelector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Phone tempPhone = new Phone();
 
-                Set<String> listPhoneBrand = new HashSet<>();
+                Set<String> listPhoneBrand= new HashSet<>();
                 for (Phone p: phoneList){
                     listPhoneBrand.add(p.getPhoneBrand());
                 }
 
-                bottomSheets = new AddBottomSheetDialog(new ArrayList<>(listPhoneBrand));
+
+
+                bottomSheets = new AddBottomSheetDialog(sortSetString(listPhoneBrand));
 
                 bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
                     @Override
@@ -1335,7 +1376,7 @@ public class AddFragment extends Fragment {
                         }
                         listPhoneModel.add("Other");
 
-                        bottomSheets = new AddBottomSheetDialog(new ArrayList<>(listPhoneModel));
+                        bottomSheets = new AddBottomSheetDialog(sortSetString(listPhoneModel));
 
                         bottomSheets.setOnItemBottomSheetListener(new AddBottomSheetDialog.onItemBottomSheetListener() {
                             @Override
@@ -1479,6 +1520,11 @@ public class AddFragment extends Fragment {
         });
     }
 
+    private ArrayList<String> sortSetString (Set<String> unsortedSet){
+        ArrayList<String> sortedList = new ArrayList<>(unsortedSet);
+        Collections.sort(sortedList);
+        return sortedList;
+    }
     private Spinner mainCategorySpinner;
     private Spinner subCategorySpinner;
 
