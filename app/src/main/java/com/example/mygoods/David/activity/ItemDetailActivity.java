@@ -243,7 +243,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
         getSimilarItems();
 //        TODO: Testing New Similar Item with Price (Percentage), Category, Name
-//        testNewSimilarItem();
+//        firstStageQuerySimilarItem();
 
     }
 
@@ -296,25 +296,53 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
-    private void testNewSimilarItem() {
-//        testing priceRange of +10%
-        int percentage = 25;
-        float priceRange = (float) (item.getPrice() + (item.getPrice()*percentage/100));
+    private void firstStageQuerySimilarItem() {
+//        testing priceRange of +-35%
+        int percentage = 35;
+        float topPrice = (float) (item.getPrice() + (item.getPrice()*percentage/100));
+        float bottomPrice = (float) (item.getPrice() - (item.getPrice()*percentage/100));
 
 //        Get Similar Item with a certain price point with the same name
         db.collection(Constant.itemCollection)
-                .whereGreaterThanOrEqualTo("price",item.getPrice())
-                .whereLessThanOrEqualTo("price",priceRange)
+                .whereGreaterThanOrEqualTo("price",Math.floor(bottomPrice))
+                .whereLessThanOrEqualTo("price",Math.ceil(topPrice))
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        similarItemData.addAll(queryDocumentSnapshots.toObjects(Item.class));
+
+
+                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                            Item tempItem = documentSnapshot.toObject(Item.class);
+                            db.collection(Constant.itemCollection)
+                                    .document(tempItem.getItemid())
+                                    .collection(Constant.additionalInfoCollection)
+                                    .document(item.getSubCategory())
+                                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    AdditionalInfo info = documentSnapshot.toObject(AdditionalInfo.class);
+//                                    AdditionalInfo currentItemAdditionInfo =
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+//
+//                            tempItem.setItemid(documentSnapshot.getId());
+//                            if (tempItem.getSubCategory().equalsIgnoreCase(item.getSubCategory())
+//                                    && tempItem.getMainCategory().equalsIgnoreCase(item.getMainCategory())){
+//                                similarItemData.add(tempItem);
+//                            }
+                        }
                         similarItemData.remove(item);
                         similarItemAdapter.notifyDataSetChanged();
                         if (similarItemData.size()<7){
 //                            Query for more data similar
-                            getMoreSimilarItem();
+//                            ToDo: Find more data to fill in the similar item
+//                            getMoreSimilarItem();
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {

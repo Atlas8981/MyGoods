@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.activity.NewsFeedActivity;
 import com.example.mygoods.David.others.Constant;
+import com.example.mygoods.David.others.CustomProgressDialog;
 import com.example.mygoods.David.others.collectionview.Home.PreferenceCollectionView;
 import com.example.mygoods.David.others.collectionview.Home.RecentViewCollectionView;
 import com.example.mygoods.David.others.collectionview.Home.TrendingCollectionView;
@@ -156,13 +157,13 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             sqLiteManager.close();
         }
     }
-
+    private CustomProgressDialog progressDialog;
     private void setupFirebase() {
 
-        if (mAuth.getCurrentUser()!=null){
-            if (mAuth.getCurrentUser().isAnonymous()) {
-                currentUserID = currentUser.getUid();
 
+        if (currentUser!=null){
+            if (currentUser.isAnonymous()) {
+                currentUserID = currentUser.getUid();
                 sqLiteManager = new SQLiteManager(homeFragmentContext);
                 sqLiteManager.open();
                 setupTrendingCollectionView();
@@ -173,7 +174,14 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 setupRecentlyViewedCollectionView();
                 setupRecommendationCollectionView();
             }
+            Toast.makeText(homeFragmentContext, "Execute", Toast.LENGTH_SHORT).show();
+            if (progressDialog != null){
+                progressDialog.dismiss();
+            }
         }else{
+            progressDialog = new CustomProgressDialog(getContext());
+            progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+            progressDialog.show();
             mAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                 @Override
                 public void onSuccess(AuthResult authResult) {
@@ -183,6 +191,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
                     Toast.makeText(homeFragmentContext, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
@@ -215,8 +224,6 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             }
         });
     }
-
-
 
     private void setupTrendingCollectionView() {
         getTrendingItem();
@@ -348,6 +355,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             });
 //        }
     }
+
     private void deleteRecentViewItem(int pos) {
         db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentView").document(
                 itemID.get(pos)

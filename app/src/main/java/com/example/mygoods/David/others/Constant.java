@@ -11,6 +11,7 @@ public class Constant {
 
     public static String itemCollection     = "items";
     public static String userCollection     = "users";
+    public static final String additionalInfoCollection = "additionInfo";
     public static String recentSearchCollection = "recentSearch";
 
     public static String usernameField      = "username";
