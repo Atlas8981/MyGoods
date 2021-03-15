@@ -1,11 +1,14 @@
 package com.example.mygoods.Activity.AboutMe;
 
+import android.app.KeyguardManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mygoods.Model.User;
@@ -30,12 +33,20 @@ public class EditProfileActivity extends AppCompatActivity {
     private TextInputLayout firstnameEdt, lastnameEdt, usernameEdt, addressEdt, phoneEdt,emailEdt;
     private Button saveBtn;
 
+    private static final int LOCK_REQUEST_CODE = 221;
+    private static final int SECURITY_SETTING_REQUEST_CODE = 233;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         setTitle("Edit Profile Information");
 
+        authenticate();
+
+    }
+
+    private void onCreateEvents(){
         initializeUI();
 
         Bundle bundle = getIntent().getExtras();
@@ -43,9 +54,61 @@ public class EditProfileActivity extends AppCompatActivity {
             currentUser = (User) bundle.get("user");
         }
         putDataIntoViews();
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        switch (requestCode) {
+            case LOCK_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    //If screen lock authentication is success update text
+//                    Event when everything go smoothly and correctly
+                    onCreateEvents();
+                } else {
+                    //If screen lock authentication is failed update text
+//                    When user backpress
+//                    Super.backpress in this event
+                    onBackPressed();
+                }
+                break;
+            case SECURITY_SETTING_REQUEST_CODE:
+                //When user is enabled Security settings then we don't get any kind of RESULT_OK
+                //So we need to check whether device has enabled screen lock or not
+                if (isDeviceSecure()) {
+                    //If screen lock enabled show toast and start intent to authenticate user
+                    Toast.makeText(this, "getResources().getString(R.string.device_is_secure)", Toast.LENGTH_SHORT).show();
+                    authenticate();
+                } else {
+                    //If screen lock is not enabled just update text
+                    Toast.makeText(this, "screen lock", Toast.LENGTH_SHORT).show();
+                }
 
+                break;
+        }
+    }
+
+    private boolean isDeviceSecure() {
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+        return keyguardManager.isKeyguardSecure();
+    }
+    private void authenticate() {
+        //Get the instance of KeyGuardManager
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+
+        //Check if the device version is greater than or equal to Lollipop(21)
+        //Create an intent to open device screen lock screen to authenticate
+        //Pass the Screen Lock screen Title and Description
+        Intent i = keyguardManager.createConfirmDeviceCredentialIntent("Biometric Authentication Require", "For better security, authentication is need before editing your profile");
+        try {
+            //Start activity for result
+            startActivityForResult(i, LOCK_REQUEST_CODE);
+        } catch (Exception e) {
+//            If user don't have any authentication;
+            onCreateEvents();
+            Toast.makeText(this, "Set Up Device Authentication For Better Security", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initializeUI() {

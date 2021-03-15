@@ -12,7 +12,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
-        versionName "0.9.10.1 Beta"
+        versionName "0.9.10.2 Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -57,8 +57,8 @@ dependencies {
     implementation 'com.github.thefuntasty.hauler:library:2.0.0'
 
     //    UI Libary
-    implementation 'androidx.navigation:navigation-fragment:2.3.3'
-    implementation 'androidx.navigation:navigation-ui:2.3.3'
+    implementation 'androidx.navigation:navigation-fragment:2.3.4'
+    implementation 'androidx.navigation:navigation-ui:2.3.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:3.0.3'
@@ -71,5 +71,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0" // Refresh
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     compileOnly 'com.google.android.wearable:wearable:2.8.1'// Refresh ReyclerView
+
+    implementation "androidx.biometric:biometric:1.1.0"
 
 }
