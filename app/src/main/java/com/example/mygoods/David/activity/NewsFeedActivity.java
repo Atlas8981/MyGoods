@@ -383,7 +383,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 int count = i;
 
                 db.collection(Constant.itemCollection)
-                        .whereEqualTo(Constant.subCategoryField, Constant.capitalize(preferences.get(i)))
+                        .whereEqualTo(Constant.subCategoryField, Constant.capitalizeFirstWord(preferences.get(i)))
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override

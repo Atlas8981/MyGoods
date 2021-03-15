@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
+import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.R;
 
 
@@ -82,6 +83,9 @@ public class SubCategoryListActivity extends AppCompatActivity {
                 };
             }
 
+            for (String arrSubCategoryTitle : arrSubCategoryTitles) {
+                Constant.capitalize(arrSubCategoryTitle);
+            }
         }
     }
 

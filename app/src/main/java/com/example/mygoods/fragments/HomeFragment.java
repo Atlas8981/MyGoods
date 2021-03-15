@@ -411,7 +411,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
         for (int i = 0; i < preferences.size(); i++) {
 
             db.collection(Constant.itemCollection)
-                    .whereEqualTo(Constant.subCategoryField, Constant.capitalize(preferences.get(i)))
+                    .whereEqualTo(Constant.subCategoryField, Constant.capitalizeFirstWord(preferences.get(i)))
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
