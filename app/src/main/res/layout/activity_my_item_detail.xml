@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:descendantFocusability="blocksDescendants"
-    tools:context=".Activity.MyItemDetailActivity">
+    tools:context=".Activity.AboutMe.MyItemDetailActivity">
 
     <ScrollView
         android:layout_width="match_parent"

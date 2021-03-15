@@ -1,4 +1,4 @@
-package com.example.mygoods.Activity;
+package com.example.mygoods.Activity.AboutMe;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;

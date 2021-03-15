@@ -1,4 +1,4 @@
-package com.example.mygoods.Activity;
+package com.example.mygoods.Activity.AboutMe;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.example.mygoods.Activity.Other.FullScreenImageActivity;
 import com.example.mygoods.Adapters.ImageAdapter;
 import com.example.mygoods.Adapters.RecyclerSimilarItemAdapter;
 import com.example.mygoods.David.activity.SellerProfileActivity;
@@ -253,7 +254,7 @@ public class MyItemDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.editPost) {
-            Intent intent = new Intent(MyItemDetailActivity.this,EditMyItemActivity.class);
+            Intent intent = new Intent(MyItemDetailActivity.this, EditMyItemActivity.class);
             intent.putExtra("myitem",mitem);
             startActivity(intent);
         }

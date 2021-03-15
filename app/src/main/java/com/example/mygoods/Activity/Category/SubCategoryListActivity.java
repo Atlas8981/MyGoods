@@ -1,4 +1,4 @@
-package com.example.mygoods.Activity;
+package com.example.mygoods.Activity.Category;
 
 import android.content.Intent;
 import android.os.Bundle;

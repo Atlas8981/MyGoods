@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.mygoods.Activity.HomeActivity;
+import com.example.mygoods.Activity.Home.HomeActivity;
 import com.example.mygoods.Firewall.SignUp.EmailActivity;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnSuccessListener;

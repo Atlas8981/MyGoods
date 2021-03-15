@@ -1,4 +1,4 @@
-package com.example.mygoods.Activity;
+package com.example.mygoods.Activity.AboutMe;
 
 import android.os.Bundle;
 import android.view.View;
@@ -20,8 +20,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference userRef = firestore.collection("users");
     private FirebaseUser firebaseUser = auth.getCurrentUser();
 

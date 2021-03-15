@@ -600,10 +600,6 @@ public class AddFragment extends Fragment {
             }
         }
 
-        for (Phone p: setPhone){
-            System.out.println(p.getPhoneBrand());
-        }
-
         return setPhone;
 
     }

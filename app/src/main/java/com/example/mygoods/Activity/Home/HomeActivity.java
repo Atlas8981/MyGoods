@@ -1,4 +1,4 @@
-package com.example.mygoods.Activity;
+package com.example.mygoods.Activity.Home;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.mygoods.Activity.Other.InternetScreenActivity;
 import com.example.mygoods.David.activity.ItemDetailActivity;
 import com.example.mygoods.David.activity.SearchActivity;
 import com.example.mygoods.Firewall.WelcomeActivity;

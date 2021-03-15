@@ -13,15 +13,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.MyGoods">
 
-        <activity android:name=".Activity.InternetScreenActivity"/>
+        <activity android:name=".Activity.Other.InternetScreenActivity"/>
         <activity android:name=".Firewall.SignUp.PasswordActivity" />
         <activity android:name=".Firewall.SignUp.EmailActivity" />
         <activity android:name=".Firewall.SignUp.EmailVerificationActivity" />
         <activity android:name=".Firewall.ForgotPasswordActivity" />
-        <activity android:name=".Activity.TermAndConditionActivity" />
-        <activity android:name=".Activity.AboutOurAppActivity" />
+        <activity android:name=".Activity.AboutMe.TermAndConditionActivity" />
+        <activity android:name=".Activity.AboutMe.AboutOurAppActivity" />
         <activity
-            android:name=".Activity.SplashActivity"
+            android:name=".Activity.Other.SplashActivity"
             android:theme="@style/Theme.MyGoods.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,22 +29,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.PasswordResetActivity" />
-        <activity android:name=".Activity.EditProfileActivity" />
-        <activity android:name=".Activity.MySaveItemActivity" />
+        <activity android:name=".Activity.AboutMe.PasswordResetActivity" />
+        <activity android:name=".Activity.AboutMe.EditProfileActivity" />
+        <activity android:name=".Activity.AboutMe.MySaveItemActivity" />
         <activity
-            android:name=".Activity.FullScreenImageActivity"
+            android:name=".Activity.Other.FullScreenImageActivity"
             android:label="@string/title_activity_full_screen_image"
             android:theme="@style/Theme.AppCompat.NoActionBar.SlidrActivityTheme" />
-        <activity android:name=".Activity.CategoryListViewActivity" />
-        <activity android:name=".Activity.SubCategoryListActivity" />
+        <activity android:name=".Activity.Category.CategoryListViewActivity" />
+        <activity android:name=".Activity.Category.SubCategoryListActivity" />
         <activity
-            android:name=".Activity.HomeActivity"
+            android:name=".Activity.Home.HomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".Activity.MyItemActivity" />
-        <activity android:name=".Activity.MyItemDetailActivity" />
-        <activity android:name=".Activity.EditMyItemActivity" />
+        <activity android:name=".Activity.AboutMe.MyItemActivity" />
+        <activity android:name=".Activity.AboutMe.MyItemDetailActivity" />
+        <activity android:name=".Activity.AboutMe.EditMyItemActivity" />
         <activity android:name=".Firewall.SignUp.User_PreferenceActivity"/>
         <activity android:name=".Firewall.LoginActivity" />
         <activity android:name=".Firewall.SignUp.PersonalInformationActivity" />

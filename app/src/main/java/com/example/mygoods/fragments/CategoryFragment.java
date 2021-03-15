@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.example.mygoods.Activity.CategoryListViewActivity;
-import com.example.mygoods.Activity.SubCategoryListActivity;
+import com.example.mygoods.Activity.Category.CategoryListViewActivity;
+import com.example.mygoods.Activity.Category.SubCategoryListActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
 import com.example.mygoods.Model.Item;
 import com.example.mygoods.Model.PopularCategory;

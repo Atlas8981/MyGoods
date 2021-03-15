@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
-import com.example.mygoods.Activity.FullScreenImageActivity;
+import com.example.mygoods.Activity.Other.FullScreenImageActivity;
 import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.ViewPagerAdapter;
@@ -420,10 +420,19 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 addItemToListNotify(tempItem);
             }
         } else if (queryAdditionalInfo.getCar() != null) {
+
+            String[] arr = queryAdditionalInfo.getCar().getModel().split(" ", 2);
+
+            String firstWord = arr[0];
             if (queryAdditionalInfo.getCar().getBrand().equals(
                     itemAdditionalInfo.getCar().getBrand())
                     && queryAdditionalInfo.getCar().getModel().equals(
                     itemAdditionalInfo.getCar().getModel())) {
+                addItemToListNotify(tempItem);
+            }else if (queryAdditionalInfo.getCar().getBrand().equals(
+                    itemAdditionalInfo.getCar().getBrand())
+                    && itemAdditionalInfo.getCar().getModel().contains(
+                    firstWord)){
                 addItemToListNotify(tempItem);
             }
         } else if (queryAdditionalInfo.getBikeType() != null) {
