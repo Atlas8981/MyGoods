@@ -42,10 +42,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SearchActivity extends AppCompatActivity {
@@ -67,7 +67,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,34 +162,34 @@ public class SearchActivity extends AppCompatActivity {
 
     private void getSearchData(String searchText) {
         progressDialog.show();
-        switch (searchText.toLowerCase()) {
-            case "phone": searchBySubCat(searchText.toLowerCase());
+        switch (searchText) {
+            case "phone": searchBySubCat("Phone");
                 break;
             case "desktop":
             case "pc":
-                searchBySubCat("desktop");
+                searchBySubCat("Desktop");
                 break;
-            case "laptop": searchBySubCat(searchText.toLowerCase());
+            case "laptop": searchBySubCat("Laptop");
                 break;
             case "table":
             case "desk":
-                searchBySubCat("table & desk");
+                searchBySubCat("Table & Desk");
                 break;
             case "chair":
             case "sofa":
-                searchBySubCat("chair & sofa");
+                searchBySubCat("Chair & Sofa");
                 break;
-            case "household": searchBySubCat("household items");
+            case "household": searchBySubCat("Household Item");
                 break;
-            case "car": searchBySubCat(searchText.toLowerCase());
+            case "car": searchBySubCat("Cars");
                 break;
             case "motorbike":
             case "motor":
-                searchBySubCat(" motorbike");
+                searchBySubCat("Motorbikes");
                 break;
-            case "bike": searchBySubCat(searchText.toLowerCase());
+            case "bike": searchBySubCat("Bicycle");
                 break;
-            default: searchByItemName(searchText.toLowerCase());
+            default: searchByItemName(searchText);
         }
     }
 
@@ -215,78 +215,69 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchByItemName(String itemName) {
-        db.collection(Constant.itemCollection).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                    for(DocumentSnapshot doc : list) {
-                        Item item = doc.toObject(Item.class);
-                        filteredData.add(item);
+        // Remove special characters from search text if exist
+        String item = itemName.replaceAll("[^a-zA-Z0-9]", "");
+
+        if (item.length() != 0 && item.length() != 1) {
+            db.collection(Constant.itemCollection).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if(!queryDocumentSnapshots.isEmpty()){
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        for(DocumentSnapshot doc : list) {
+                            Item item = doc.toObject(Item.class);
+                            filteredData.add(item);
+                        }
+                        if (filteredData.size() == list.size()) {
+                            filterSearchData(item);
+                        }
+                    }else{
+                        progressDialog.hide();
+                        Toast.makeText(SearchActivity.this, ("No item with the given name of: "+itemName), Toast.LENGTH_SHORT).show();
                     }
-                    if (filteredData.size() == list.size()) {
-                        filterSearchData(itemName);
-                    }
-                }else{
-                    progressDialog.hide();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    System.out.println("Fail to get Document");
                     Toast.makeText(SearchActivity.this, ("No item with the given name of: "+itemName), Toast.LENGTH_SHORT).show();
                 }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                System.out.println("Fail to get Document");
-                Toast.makeText(SearchActivity.this, ("No item with the given name of: "+itemName), Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        } else if (itemName.length() == 1) {
+            progressDialog.hide();
+            Toast.makeText(SearchActivity.this, ("Item Name Must be Longer Than 1 Character"), Toast.LENGTH_SHORT).show();
+        } else {
+            progressDialog.hide();
+            Toast.makeText(SearchActivity.this, ("Pure Special Characters is Not Allowed"), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
-    private void filterSearchData(String text) {
-        String st = replaceWhiteSpace(text).toLowerCase();
-        Set<Character> charactersMatchCount = new HashSet<>();
+    private void filterSearchData(String item) {
+        // Remove white space from search text and convert to lowercase
+        String searchText = replaceWhiteSpace(item).toLowerCase();
 
-        for (int f = 0; f<filteredData.size(); f++) {
-            String data = replaceWhiteSpace(filteredData.get(f).getName()).toLowerCase();
-
-            if (data.length() > st.length()) {
-                for (int s = 0; s<data.length(); s++) {
-
-                    for (int t = 0; t<st.length(); t++) {
-
-                        if (st.charAt(t) == data.charAt(s)) {
-
-                            charactersMatchCount.add(data.charAt(s));
-                        }
-                    } // End of third for loop
-                } // End of second for loop
-
-            } else {
-                for (int s = 0; s<st.length(); s++) {
-
-                    for (int t = 0; t<data.length(); t++) {
-
-                        if (data.charAt(t) == st.charAt(s)) {
-
-                            charactersMatchCount.add(st.charAt(s));
-                        }
-                    }  // End of third for loop
-                } // End of second for loop
-            } // End of length if else conditional check
-            if (charactersMatchCount.size() == st.length() || charactersMatchCount.size() > st.length() || charactersMatchCount.size() == (st.length() - 1)) {
-                searchData.add(filteredData.get(f));
+        Pattern pattern   = Pattern.compile("(.*)"+searchText+"(.*)");
+        Matcher matcher = pattern.matcher("");
+        for (int i = 0; i<filteredData.size(); i++) {
+            String data = replaceWhiteSpace(filteredData.get(i).getName()).toLowerCase();
+            matcher.reset(data);
+            if (matcher.matches()) {
+                searchData.add(filteredData.get(i));
             }
-            charactersMatchCount.clear();
+        }
 
-        } // End of FIRST for-loop
         if (searchData.isEmpty()) {
             progressDialog.hide();
             filteredData.clear();
             searchData.clear();
             Toast.makeText(SearchActivity.this, ("No Result"), Toast.LENGTH_SHORT).show();
         }else{
-            addRecentSearchData(text);
+            addRecentSearchData(item);
         }
     }
+
+
 
     private String replaceWhiteSpace(String text) {
         return text.replace(" ", "");
@@ -356,9 +347,20 @@ public class SearchActivity extends AppCompatActivity {
             recentlySearchData.clear();
         } else {
             for (int i = 0; i<recentlySearchData.size(); i++) {
-                db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentSearch").document(
-                        recentlySearchData.get(i)
-                ).delete();
+                db.collection(Constant.userCollection)
+                        .document(currentUser.getUid().toString())
+                        .collection("recentSearch")
+                        .document(recentlySearchData.get(i))
+                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(SearchActivity.this, "Search History Clear", Toast.LENGTH_SHORT).show();
+                        try {
+                            recentlySearchData.clear();
+                            recentlySearchAdapter.notifyDataSetChanged();
+                        }catch (IllegalStateException ignored){}
+                    }
+                });
             }
         }
         recentlySearchAdapter.notifyDataSetChanged();
