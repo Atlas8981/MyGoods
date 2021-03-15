@@ -83,7 +83,8 @@ public class ImageAdapter extends PagerAdapter {
         }
         else {
             PhotoView photoView = new PhotoView(context);
-            photoView.setScaleType(PhotoView.ScaleType.FIT_CENTER);
+//            photoView.setScaleType(PhotoView.ScaleType.FIT_CENTER);
+
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -94,6 +95,7 @@ public class ImageAdapter extends PagerAdapter {
                     }
                 }
             });
+
 
             if (currentImage != null && currentImage.getImageURL() != null) {
                 Glide.with(context)
@@ -111,16 +113,6 @@ public class ImageAdapter extends PagerAdapter {
 
             return photoView;
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 
