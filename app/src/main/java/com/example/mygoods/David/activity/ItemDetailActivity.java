@@ -365,33 +365,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
                                             if (tempItem.getPrice() >= Math.floor(bottomPrice)
                                                     && tempItem.getPrice() <= Math.ceil(topPrice)) {
-                                                if (queryAdditionalInfo.equals(itemAdditionalInfo)) {
-                                                    addItemToListNotify(tempItem);
-                                                } else if (queryAdditionalInfo.getPhone() != null) {
-                                                    if (queryAdditionalInfo.getPhone().getPhoneBrand().equals(
-                                                            itemAdditionalInfo.getPhone().getPhoneBrand())) {
-                                                        addItemToListNotify(tempItem);
-                                                    }
-                                                } else if (queryAdditionalInfo.getCar() != null) {
-                                                    if (queryAdditionalInfo.getCar().getBrand().equals(
-                                                            itemAdditionalInfo.getCar().getBrand())
-                                                            && queryAdditionalInfo.getCar().getModel().equals(
-                                                            itemAdditionalInfo.getCar().getModel())) {
-                                                        addItemToListNotify(tempItem);
-                                                    }
-                                                } else if (queryAdditionalInfo.getBikeType().equals(
-                                                        itemAdditionalInfo.getBikeType())) {
-                                                    addItemToListNotify(tempItem);
-                                                } else if (queryAdditionalInfo.getMotoType() !=null)
-                                                    if (queryAdditionalInfo.getMotoType()
-                                                            .equals(itemAdditionalInfo.getMotoType())) {
-                                                        addItemToListNotify(tempItem);
-                                                    } else if (queryAdditionalInfo.getComputerParts() !=null){
-                                                        if (queryAdditionalInfo.getComputerParts()
-                                                                .equals(itemAdditionalInfo.getComputerParts())) {
-                                                            addItemToListNotify(tempItem);
-                                                        }
-                                                    }
+                                                checkAdditionalItem(queryAdditionalInfo,tempItem);
                                             }
 
                                         }
@@ -437,6 +411,39 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
+    private void checkAdditionalItem(AdditionalInfo queryAdditionalInfo,Item tempItem){
+        if (queryAdditionalInfo.equals(itemAdditionalInfo)) {
+            addItemToListNotify(tempItem);
+        } else if (queryAdditionalInfo.getPhone() != null) {
+            if (queryAdditionalInfo.getPhone().getPhoneBrand().equals(
+                    itemAdditionalInfo.getPhone().getPhoneBrand())) {
+                addItemToListNotify(tempItem);
+            }
+        } else if (queryAdditionalInfo.getCar() != null) {
+            if (queryAdditionalInfo.getCar().getBrand().equals(
+                    itemAdditionalInfo.getCar().getBrand())
+                    && queryAdditionalInfo.getCar().getModel().equals(
+                    itemAdditionalInfo.getCar().getModel())) {
+                addItemToListNotify(tempItem);
+            }
+        } else if (queryAdditionalInfo.getBikeType() != null) {
+            if (queryAdditionalInfo.getBikeType().equals(
+                    itemAdditionalInfo.getBikeType())) {
+                addItemToListNotify(tempItem);
+            }
+        } else if (queryAdditionalInfo.getMotoType() !=null) {
+            if (queryAdditionalInfo.getMotoType()
+                    .equals(itemAdditionalInfo.getMotoType())) {
+                addItemToListNotify(tempItem);
+            } else if (queryAdditionalInfo.getComputerParts() != null) {
+                if (queryAdditionalInfo.getComputerParts()
+                        .equals(itemAdditionalInfo.getComputerParts())) {
+                    addItemToListNotify(tempItem);
+                }
+            }
+        }
+    }
+
 //    Stage Two
 //    Query data in the same category without price range
 //    For Additional Info item so that you can find specific (Ex: same bran: Apple, HondaxCRV)
@@ -458,33 +465,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     AdditionalInfo queryAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
                     if (queryAdditionalInfo != null) {
-                        if (queryAdditionalInfo.equals(itemAdditionalInfo)) {
-                            addItemToListNotify(tempItem);
-                        } else if (queryAdditionalInfo.getPhone() != null) {
-                            if (queryAdditionalInfo.getPhone().getPhoneBrand().equals(
-                                    itemAdditionalInfo.getPhone().getPhoneBrand())) {
-                                addItemToListNotify(tempItem);
-                            }
-                        } else if (queryAdditionalInfo.getCar() != null) {
-                            if (queryAdditionalInfo.getCar().getBrand().equals(
-                                    itemAdditionalInfo.getCar().getBrand())
-                                    && queryAdditionalInfo.getCar().getModel().equals(
-                                    itemAdditionalInfo.getCar().getModel())) {
-                                addItemToListNotify(tempItem);
-                            }
-                        } else if (queryAdditionalInfo.getBikeType().equals(
-                                itemAdditionalInfo.getBikeType())) {
-                            addItemToListNotify(tempItem);
-                        } else if (queryAdditionalInfo.getMotoType() !=null)
-                            if (queryAdditionalInfo.getMotoType()
-                                    .equals(itemAdditionalInfo.getMotoType())) {
-                            addItemToListNotify(tempItem);
-                        } else if (queryAdditionalInfo.getComputerParts() !=null){
-                            if (queryAdditionalInfo.getComputerParts()
-                                    .equals(itemAdditionalInfo.getComputerParts())) {
-                                addItemToListNotify(tempItem);
-                            }
-                        }
+                        checkAdditionalItem(queryAdditionalInfo,tempItem);
                     }
                     i++;
                     if (queryDocumentSnapshots.size() == i) {
