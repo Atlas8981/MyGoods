@@ -10,7 +10,7 @@ public class SQLiteManager {
 
     private SQLite dbHelper;
 
-    private Context context;
+    private final Context context;
 
     private SQLiteDatabase database;
 
@@ -26,7 +26,9 @@ public class SQLiteManager {
     }
 
     public void close() {
-        dbHelper.close();
+        if (dbHelper != null){
+            dbHelper.close();
+        }
     }
 
     public void insert(String table, String item) {

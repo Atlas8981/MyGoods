@@ -29,6 +29,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_verification);
+        setTitle("Email Verification");
 
         verifyEmailBtn = findViewById(R.id.verifyEmailButton);
         verifyEmailText = findViewById(R.id.verifyEmailText);

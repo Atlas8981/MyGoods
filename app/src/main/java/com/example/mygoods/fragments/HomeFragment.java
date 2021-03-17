@@ -1,8 +1,6 @@
 package com.example.mygoods.fragments;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -161,22 +159,20 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     private void setupFirebase() {
 
         if (currentUser!=null){
-            if (currentUser.isAnonymous()) {
-                try {
-                    currentUserID = currentUser.getUid();
-                    sqLiteManager = new SQLiteManager(homeFragmentContext);
-                    sqLiteManager.open();
-                }catch (SQLiteException e){
-                    e.printStackTrace();
-                }
-                setupTrendingCollectionView();
-                setupRecentlyViewedCollectionView();
-            } else {
-                currentUserID = currentUser.getUid();
-                setupTrendingCollectionView();
-                setupRecentlyViewedCollectionView();
-                setupRecommendationCollectionView();
-            }
+//            if (currentUser.isAnonymous()) {
+//
+//                currentUserID = currentUser.getUid();
+//                sqLiteManager = new SQLiteManager(homeFragmentContext);
+//                sqLiteManager.open();
+//                setupTrendingCollectionView();
+//                setupRecentlyViewedCollectionView();
+//            } else {
+//
+//            }
+            currentUserID = currentUser.getUid();
+            setupTrendingCollectionView();
+            setupRecentlyViewedCollectionView();
+            setupRecommendationCollectionView();
 
             if (progressDialog != null) {
                 progressDialog.dismiss();
@@ -275,20 +271,20 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
     private void getRecentViewItemID() {
 
-        if (currentUser.isAnonymous()) {
-
-            Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
-            if (cursor != null && cursor.getCount() != 0) {
-                do {
-                    String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
-                    itemID.add(getItemID);
-                } while (cursor.moveToNext());
-                getRecentViewItem();
-            } else {
-                return;
-            }
-
-        } else {
+//        if (currentUser.isAnonymous()) {
+//
+//            Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
+//            if (cursor != null && cursor.getCount() != 0) {
+//                do {
+//                    String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
+//                    itemID.add(getItemID);
+//                } while (cursor.moveToNext());
+//                getRecentViewItem();
+//            } else {
+//                return;
+//            }
+//
+//        } else {
             db.collection(Constant.userCollection)
                     .document(currentUserID)
                     .collection("recentView")
@@ -312,7 +308,7 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                             }
                         }
                     });
-        }
+//        }
     }
 
     private int i = 0;

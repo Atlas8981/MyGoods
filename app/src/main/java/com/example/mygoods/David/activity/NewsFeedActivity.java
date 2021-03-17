@@ -566,7 +566,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             }
 
             viewHolder.itemName.setText(dataObjects.get(pos).getName());
-            viewHolder.itemPrice.setText("USD "+dataObjects.get(pos).getPrice());
+            viewHolder.itemPrice.setText("USD " + dataObjects.get(pos).getPrice());
 
 
             if (pos< owners.size()) {
@@ -575,8 +575,8 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         viewHolder.itemOwner.setText("Posted by: " + user.getUsername());
                     }
                 }
-
             }
+
 
             if (pos<time.size()) {
                 viewHolder.itemDuration.setText("Posted " + time.get(pos));

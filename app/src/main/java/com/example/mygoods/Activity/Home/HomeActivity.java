@@ -31,6 +31,7 @@ import java.util.ArrayList;
 public class HomeActivity extends AppCompatActivity implements HomeFragment.HomeFragmentInterface {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +76,7 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
         }, 2000);
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener =
+    private final BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {

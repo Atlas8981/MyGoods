@@ -3,7 +3,6 @@ package com.example.mygoods.David.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -293,21 +292,26 @@ public class SearchActivity extends AppCompatActivity {
 
     private void getRecentSearchData() {
         recentlySearchData.clear();
-        if (currentUser.isAnonymous()) {
-            //TODO: Read from local database
-            sqLiteManager.open();
-            Cursor cursor = sqLiteManager.fetch(Constant.recentSearchTable);
-            if (cursor.getCount() != 0 && cursor != null) {
-                do{
-                    String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
-                    recentlySearchData.add(getItemID);
-                }while (cursor.moveToNext());
-                recentlySearchAdapter.notifyDataSetChanged();
-            }else{
-                return;
-            }
-        } else {
-            db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentSearch").orderBy(Constant.dateField, Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//        if (currentUser.isAnonymous()) {
+//            //TODO: Read from local database
+//            sqLiteManager.open();
+//            Cursor cursor = sqLiteManager.fetch(Constant.recentSearchTable);
+//            if (cursor.getCount() != 0 && cursor != null) {
+//                do{
+//                    String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
+//                    recentlySearchData.add(getItemID);
+//                }while (cursor.moveToNext());
+//                recentlySearchAdapter.notifyDataSetChanged();
+//            }else{
+//                return;
+//            }
+//        } else {
+            db.collection(Constant.userCollection)
+                    .document(currentUser.getUid())
+                    .collection("recentSearch")
+                    .orderBy(Constant.dateField, Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if(!queryDocumentSnapshots.isEmpty()){
@@ -317,13 +321,14 @@ public class SearchActivity extends AppCompatActivity {
                                 recentlySearchData.add(doc.get("itemId").toString());
                             }
                             recentlySearchAdapter.notifyDataSetChanged();
-                        } else {
-                            return;
                         }
+//                        else {
+//                            return;
+//                        }
                     }
                 }
             });
-        }
+//        }
     }
 
     private void deleteSingleRecentSearchData(String item, int pos) {
@@ -376,11 +381,14 @@ public class SearchActivity extends AppCompatActivity {
 
     private void addRecentSearchData(String searchText) {
 
-        if (currentUser.isAnonymous()) {
-            sqLiteManager.insert(Constant.recentSearchTable, searchText);
-            generateTimeAndSellerName();
-        } else {
-            DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection(Constant.recentSearchCollection).document(searchText);
+//        if (currentUser.isAnonymous()) {
+//            sqLiteManager.insert(Constant.recentSearchTable, searchText);
+//            generateTimeAndSellerName();
+//        } else {
+            DocumentReference ref = db.collection(Constant.userCollection)
+                    .document(currentUser.getUid())
+                    .collection(Constant.recentSearchCollection)
+                    .document(searchText);
 
             Map<String, Object> docData = new HashMap<>();
             docData.put("date",new Timestamp(new Date()));
@@ -392,9 +400,10 @@ public class SearchActivity extends AppCompatActivity {
                     generateTimeAndSellerName();
                 }
             });
-        }
+//        }
     }
 
+    private int num = 0;
 
     private void generateTimeAndSellerName() {
 
@@ -402,23 +411,39 @@ public class SearchActivity extends AppCompatActivity {
             ownerID.add(searchData.get(i).getUserid());
         }
 
+
         for (int o = 0; o<ownerID.size(); o++) {
             // Convert data
             String duration = calculateDate(searchData.get(o).getDate());
             time.add(duration);
 
-            int num = o;
-            db.collection(Constant.userCollection).document(ownerID.get(o)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            db.collection(Constant.userCollection)
+                    .document(ownerID.get(o))
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.getString(Constant.usernameField) != null) {
+                    User user = documentSnapshot.toObject(User.class);
+
+                    if (user != null) {
+                        System.out.println(user.getEmail());
 //                        ownerName.add(documentSnapshot.getString(Constant.usernameField));
-                        ownerName.add(documentSnapshot.toObject(User.class));
+                        user.setUserId(documentSnapshot.getId());
+                        ownerName.add(user);
+
+
                     }
+                    num++;
                     if (num == (ownerID.size()-1)){
                         progressDialog.hide();
                         moveToNewsFeedActivity();
                     }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(SearchActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }

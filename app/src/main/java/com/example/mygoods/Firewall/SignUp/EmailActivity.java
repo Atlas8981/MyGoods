@@ -34,6 +34,7 @@ public class EmailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email);
+        setTitle("Email");
 
         emailEdt = findViewById(R.id.emailEditText);
         sendEmailBtn = findViewById(R.id.sendEmailButton);

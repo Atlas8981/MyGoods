@@ -680,24 +680,34 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     private void addToRecentView() {
 
-        if (currentUser.isAnonymous()) {
-            //TODO: Save to local database
-            sqLiteManager = new SQLiteManager(ItemDetailActivity.this);
-            sqLiteManager.open();
-            sqLiteManager.insert(Constant.recentViewTable,item.getItemid()); // Insert current itemID + date of view
+//        if (currentUser.isAnonymous()) {
+//            //TODO: Save to local database
+//            sqLiteManager = new SQLiteManager(ItemDetailActivity.this);
+//            sqLiteManager.open();
+//            sqLiteManager.insert(Constant.recentViewTable,item.getItemid()); // Insert current itemID + date of view
+//
+//        } else {
+            if (currentUser!= null) {
+                DocumentReference ref = db.collection(Constant.userCollection)
+                        .document(currentUser.getUid())
+                        .collection("recentView")
+                        .document(item.getItemid());
 
-        } else {
+                Map<String, Object> recentViewItem = new HashMap<>();
+                recentViewItem.put("itemID", item.getItemid());
+                recentViewItem.put("date", new Timestamp(new Date()));
 
-            DocumentReference ref = db.collection(Constant.userCollection)
-                    .document(currentUser.getUid())
-                    .collection("recentView")
-                    .document(item.getItemid());
-
-            Map<String, Object> recentViewItem = new HashMap<>();
-            recentViewItem.put("itemID", item.getItemid());
-            recentViewItem.put("date", new Timestamp(new Date()));
-            ref.set(recentViewItem);
-        }
+                ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }else{
+                Toast.makeText(this, "Current User is Null", Toast.LENGTH_SHORT).show();
+            }
+//        }
+    }
 
         //TODO: Change documentPath to adaptive user id
 //        DocumentReference ref = db
@@ -715,7 +725,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 //                e.printStackTrace();
 //            }
 //        });
-    }
+
 
     private void addToSaveItem() {
         //TODO: Change documentPath to adaptive user id

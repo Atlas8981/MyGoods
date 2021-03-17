@@ -45,7 +45,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
-        setTitle("Sign Up");
+        setTitle("Personal Information");
 
         ffirstname = findViewById(R.id.firstnameEditText);
         llastname = findViewById(R.id.lastnameEditText);
