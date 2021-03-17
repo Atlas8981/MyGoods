@@ -51,7 +51,12 @@ public class PasswordActivity extends AppCompatActivity {
                                         Toast.makeText(PasswordActivity.this, "Please Verify Your Email First", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                            });
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(PasswordActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });

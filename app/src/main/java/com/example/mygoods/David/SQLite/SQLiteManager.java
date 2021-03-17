@@ -30,11 +30,6 @@ public class SQLiteManager {
     }
 
     public void insert(String table, String item) {
-        // Add current date
-//        String pattern = "YYYY-MM-DD HH:MM:SS.SSS";
-//        String pattern = "dd-M-yyyy hh:mm:ss";
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-//        String date = simpleDateFormat.format(new Date());
 
         ContentValues contentValue = new ContentValues();
 
@@ -84,12 +79,12 @@ public class SQLiteManager {
     }
 
     public void dropTable() {
-        database.execSQL("DROP TABLE RECENTVIEW");
-        database.execSQL("DROP TABLE RECENTSEARCH");
+        database.execSQL("DROP TABLE IF EXISTS RECENTVIEW");
+        database.execSQL("DROP TABLE IF EXISTS RECENTSEARCH");
     }
 
     public void deleteAllRows(String table) {
-        database.execSQL("delete from "+table);
+        database.execSQL("DELETE FROM "+table);
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.mygoods.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -142,14 +143,12 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_home, container, false);
 
-
         setupFirebase();
         viewAllButtonAction();
 
         return v;
     }
 
-    // ADD THIS
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -157,15 +156,19 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
             sqLiteManager.close();
         }
     }
+
     private CustomProgressDialog progressDialog;
     private void setupFirebase() {
 
-
         if (currentUser!=null){
             if (currentUser.isAnonymous()) {
-                currentUserID = currentUser.getUid();
-                sqLiteManager = new SQLiteManager(homeFragmentContext);
-                sqLiteManager.open();
+                try {
+                    currentUserID = currentUser.getUid();
+                    sqLiteManager = new SQLiteManager(homeFragmentContext);
+                    sqLiteManager.open();
+                }catch (SQLiteException e){
+                    e.printStackTrace();
+                }
                 setupTrendingCollectionView();
                 setupRecentlyViewedCollectionView();
             } else {
@@ -175,10 +178,10 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                 setupRecommendationCollectionView();
             }
 
-            if (progressDialog != null){
+            if (progressDialog != null) {
                 progressDialog.dismiss();
             }
-        }else{
+        } else {
             progressDialog = new CustomProgressDialog(getContext());
             progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
             progressDialog.show();
@@ -262,7 +265,6 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 
         getRecentViewItemID();
 
-
         // Setup horizontal RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(homeFragmentContext, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = v.findViewById(R.id.recentlyViewCollectionView);
@@ -274,16 +276,18 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
     private void getRecentViewItemID() {
 
         if (currentUser.isAnonymous()) {
+
             Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
-            if (cursor != null && cursor.getCount() != 0  ) {
-                do{
+            if (cursor != null && cursor.getCount() != 0) {
+                do {
                     String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
                     itemID.add(getItemID);
-                }while (cursor.moveToNext());
+                } while (cursor.moveToNext());
                 getRecentViewItem();
-            }else{
+            } else {
                 return;
             }
+
         } else {
             db.collection(Constant.userCollection)
                     .document(currentUserID)
@@ -309,7 +313,6 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                         }
                     });
         }
-
     }
 
     private int i = 0;
@@ -319,40 +322,40 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
 //        TODO: What if the 7 top recently view has been deleted? Then there would be no data
 //        for (int i = 0; i<itemID.size(); i++) {
 
-            int count = i;
-            db.collection(Constant.itemCollection)
-                    .document(itemID.get(i))
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Item item = documentSnapshot.toObject(Item.class);
+        int count = i;
+        db.collection(Constant.itemCollection)
+                .document(itemID.get(i))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Item item = documentSnapshot.toObject(Item.class);
 
-                    if (item != null) {
-                        item.setItemid(documentSnapshot.getId());
+                        if (item != null) {
+                            item.setItemid(documentSnapshot.getId());
 
-                        recentlyViewData.add(item);
+                            recentlyViewData.add(item);
 
 
 //                        if (recentlyViewData.size() == (itemID.size() - deletedItem)) {
 //                        if (recentlyViewData.size() == itemID.size()) {
-                        recentViewAdapter.notifyDataSetChanged();
-                        System.out.println("RECENTVIEW ADAPTER NOTIFYYYYYYYYYYYY");
+                            recentViewAdapter.notifyDataSetChanged();
+                            System.out.println("RECENTVIEW ADAPTER NOTIFYYYYYYYYYYYY");
 //                        }
-                    }else{
-                        deletedItem += 1;
-                        if (currentUser.isAnonymous()) {
-                            sqLiteManager.delete(Constant.recentViewTable, itemID.get(count));
                         }else{
-                            deleteRecentViewItem(count);
+                            deletedItem += 1;
+                            if (currentUser.isAnonymous()) {
+                                sqLiteManager.delete(Constant.recentViewTable, itemID.get(count));
+                            }else{
+                                deleteRecentViewItem(count);
+                            }
+                        }
+                        i++;
+                        if (i<itemID.size()){
+                            getRecentViewItem();
                         }
                     }
-                    i++;
-                    if (i<itemID.size()){
-                        getRecentViewItem();
-                    }
-                }
-            });
+                });
 //        }
     }
 
@@ -414,47 +417,40 @@ public class HomeFragment extends Fragment implements TrendingCollectionView.Tre
                     .whereEqualTo(Constant.subCategoryField, Constant.capitalizeFirstWord(preferences.get(i)))
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
 
-                    // Filter only item with most view
-                    if (!list.isEmpty()) {
+                            // Filter only item with most view
+                            if (!list.isEmpty()) {
 
-                        ArrayList<Item> rawRecommendationData = new ArrayList<>();
-                        int documentSize = 0;
-                        for(DocumentSnapshot doc : list) {
-                            documentSize += 1;
-                            Item trending = doc.toObject(Item.class);
-                            if (trending!=null) {
-                                trending.setItemid(doc.getId());
-                            }
+                                ArrayList<Item> rawRecommendationData = new ArrayList<>();
 
-                            rawRecommendationData.add(trending);
-                            if (rawRecommendationData.size() == list.size()) {
-                                Collections.sort(rawRecommendationData);
-                                for (Item i:rawRecommendationData){
-                                    if (recommendationData.size()<7){
-                                        recommendationData.add(i);
+                                for(DocumentSnapshot doc : list) {
+
+                                    Item trending = doc.toObject(Item.class);
+                                    if (trending!=null) {
+                                        trending.setItemid(doc.getId());
+                                    }
+
+                                    rawRecommendationData.add(trending);
+                                    if (rawRecommendationData.size() == list.size()) {
+                                        Collections.sort(rawRecommendationData);
+                                        if (rawRecommendationData.get(0).getViews() > 1) {
+                                            recommendationData.add(rawRecommendationData.get(0));
+                                        }
                                     }
                                 }
-//                                recommendationData.add(rawRecommendationData.get(0));
+                                if (recommendationData.size() == (preferences.size()-noTopViewItem)) {
+                                    System.out.println("PREFERENCE ADAPTER NOTIFYYYYYYYYYYYY");
+                                    prefAdapter.notifyDataSetChanged();
+                                }
+                            }else{
+                                System.out.println("Query Empty");
+                                noTopViewItem += 1;
                             }
                         }
-
-//                        if (recommendationData.size() == (preferences.size()-noTopViewItem)) {
-
-//                        if (recommendationData.size() == 7) {
-                            System.out.println("PREFERENCE ADAPTER NOTIFYYYYYYYYYYYY");
-                            prefAdapter.notifyDataSetChanged();
-//                        }
-                    }else{
-                        System.out.println("Query Empty");
-                        noTopViewItem += 1;
-                    }
-
-                }
-            });
+                    });
         }
 
     }

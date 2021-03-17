@@ -223,34 +223,34 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 .orderBy(Constant.dateField, Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                    int notMatchCount = 0;
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(!queryDocumentSnapshots.isEmpty()){
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                            int notMatchCount = 0;
 
-                    for(DocumentSnapshot doc : list) {
-                        //TODO: Check if MainCat equal each other
-                        if(doc.get(Constant.subCategoryField).equals(getCategory) && doc.get(Constant.mainCategoryField).equals(getMainCategory)) {
-                            Item item = doc.toObject(Item.class);
+                            for(DocumentSnapshot doc : list) {
+                                //TODO: Check if MainCat equal each other
+                                if(doc.get(Constant.subCategoryField).equals(getCategory) && doc.get(Constant.mainCategoryField).equals(getMainCategory)) {
+                                    Item item = doc.toObject(Item.class);
 
-                            if (item != null){
-                                item.setItemid(doc.getId());
+                                    if (item != null){
+                                        item.setItemid(doc.getId());
+                                    }
+
+                                    newsFeedData.add(item);
+                                }else{
+                                    notMatchCount += 1;
+                                    if (notMatchCount == list.size()) {
+                                        progressDialog.hide();
+                                        Toast.makeText(NewsFeedActivity.this, "There are no data at the moment, try again later!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
                             }
-
-                            newsFeedData.add(item);
-                        }else{
-                            notMatchCount += 1;
-                            if (notMatchCount == list.size()) {
-                                progressDialog.hide();
-                                Toast.makeText(NewsFeedActivity.this, "There are no data at the moment, try again later!", Toast.LENGTH_SHORT).show();
-                            }
+                            generateTimeAndSellerName();
                         }
                     }
-                    generateTimeAndSellerName();
-                }
-            }
-        });
+                });
     }
 
     //////////////////////////////
@@ -262,27 +262,27 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 .orderBy(Constant.viewField, Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                if (!list.isEmpty()) {
-                    for(DocumentSnapshot doc : list) {
-                        Item trending = doc.toObject(Item.class);
-                        if (trending != null) {
-                            trending.setItemid(doc.getId());
-                        }
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        if (!list.isEmpty()) {
+                            for(DocumentSnapshot doc : list) {
+                                Item trending = doc.toObject(Item.class);
+                                if (trending != null) {
+                                    trending.setItemid(doc.getId());
+                                }
 
-                        newsFeedData.add(trending);
-                        if (newsFeedData.size() == list.size()) {
-                            generateTimeAndSellerName();
+                                newsFeedData.add(trending);
+                                if (newsFeedData.size() == list.size()) {
+                                    generateTimeAndSellerName();
+                                }
+                            }
+                        }else{
+                            progressDialog.hide();
+                            Toast.makeText(NewsFeedActivity.this, "There are no data at the moment, try again later!", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }else{
-                    progressDialog.hide();
-                    Toast.makeText(NewsFeedActivity.this, "There are no data at the moment, try again later!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                });
     }
 
     private void getRecentViewItemID() {
@@ -340,38 +340,38 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
 //        for (int i = 0; i<recentlyViewItemID.size(); i++) {
 
-            int notCount = recentlyViewItemID.size();
-            db.collection(Constant.itemCollection)
-                    .document(recentlyViewItemID.get(i))
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Item item = documentSnapshot.toObject(Item.class);
-                    if (item != null) {
-                        item.setItemid(documentSnapshot.getId());
-                        newsFeedData.add(item);
+        int notCount = recentlyViewItemID.size();
+        db.collection(Constant.itemCollection)
+                .document(recentlyViewItemID.get(i))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Item item = documentSnapshot.toObject(Item.class);
+                        if (item != null) {
+                            item.setItemid(documentSnapshot.getId());
+                            newsFeedData.add(item);
 
 //                        if (newsFeedData.size() == (recentlyViewItemID.size() - deletedItem)) {
 //                            System.out.println("NF RECENTLY VIEWWWWWWWWWWWWWWWWWWWW");
 //                            generateTimeAndSellerName();
 //                        }
-                    }else{
-                        deletedItem += 1;
+                        }else{
+                            deletedItem += 1;
+                        }
+                        i++;
+                        if (i<recentlyViewItemID.size()){
+                            getRecentViewItem();
+                        }else{
+                            generateTimeAndSellerName();
+                        }
                     }
-                    i++;
-                    if (i<recentlyViewItemID.size()){
-                        getRecentViewItem();
-                    }else{
-                        generateTimeAndSellerName();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    deletedItem++;
-                }
-            });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                deletedItem++;
+            }
+        });
 //        }
     }
 
@@ -402,31 +402,18 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                         if (trending != null) {
                                             trending.setItemid(doc.getId());
                                         }
-
                                         rawRecommendationData.add(trending);
-
-                                        if (documentSize == list.size()) {
-                                            Collections.sort(rawRecommendationData); // Sort for top view item and add it into newsFeedData
-//                                            newsFeedData.add(rawRecommendationData.get(0));
-
-                                            for (Item item : rawRecommendationData) {
-                                                if (newsFeedData.size() < 15) {
-                                                    newsFeedData.add(item);
-                                                }
+                                        if (rawRecommendationData.size() == list.size()) {
+                                            Collections.sort(rawRecommendationData);
+                                            if (rawRecommendationData.get(0).getViews() > 1) {
+                                                newsFeedData.add(rawRecommendationData.get(0));
                                             }
-                                            // Handle Firebase Async: generateTimeAndSellerName() will be called after newsFeedData stop getting any data input
-
-//                                            if (newsFeedData.size() == (5 - noTopViewItem)) {
-                                            System.out.println(newsFeedData.size());
-                                            System.out.println(preferences.size());
-                                            System.out.println(noTopViewItem);
-                                            System.out.println(newsFeedData.size() == (preferences.size() - noTopViewItem));
-
-//                                            if (newsFeedData.size() == (preferences.size() - noTopViewItem)) {
-
                                         }
                                     }
-
+                                    if (newsFeedData.size() == (preferences.size()-noTopViewItem)) {
+                                        System.out.println("PREFERENCE ADAPTER NOTIFYYYYYYYYYYYY");
+                                        customAdapter.notifyDataSetChanged();
+                                    }
                                 } else {
                                     noTopViewItem += 1; // Count the number of category that does not has item so that we can use this variable to handle firebase async
                                 }
@@ -479,29 +466,29 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         .document(ownerID.get(o))
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user = documentSnapshot.toObject(User.class);
-                        String owner;
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                User user = documentSnapshot.toObject(User.class);
+                                String owner;
 
-                        if (user != null) {
-                            owner = user.getUsername();
-                        }else{
-                            owner = "Someone";
-                        }
+                                if (user != null) {
+                                    owner = user.getUsername();
+                                }else{
+                                    owner = "Someone";
+                                }
 
-                        if (owner != null) {
-                            owners.add(user);
-                            if (owners.size() == (ownerID.size() - noOwner)) {
-                                progressDialog.hide();
-                                customAdapter.notifyDataSetChanged();
+                                if (owner != null) {
+                                    owners.add(user);
+                                    if (owners.size() == (ownerID.size() - noOwner)) {
+                                        progressDialog.hide();
+                                        customAdapter.notifyDataSetChanged();
+                                    }
+                                }else{
+
+                                    noOwner += 1;
+                                }
                             }
-                        }else{
-
-                            noOwner += 1;
-                        }
-                    }
-                });
+                        });
             }
         }else{
             System.out.println("CANNOT GENERATEEEEEEEEE");

@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+
 public class HomeActivity extends AppCompatActivity implements HomeFragment.HomeFragmentInterface {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private BottomNavigationView bottomNavigationView;

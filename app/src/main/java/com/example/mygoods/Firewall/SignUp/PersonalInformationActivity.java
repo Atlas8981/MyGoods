@@ -111,27 +111,27 @@ public class PersonalInformationActivity extends AppCompatActivity {
 //            return;
 //        }
 
-            User signUpUser = new User(auth.getUid(), firstname, lastname, username, phonenumber, auth.getCurrentUser().getEmail(), address);
-            DocumentReference documentReference = firestore.collection("users").document(auth.getUid());
-            documentReference.set(signUpUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
+        User signUpUser = new User(auth.getUid(), firstname, lastname, username, phonenumber, auth.getCurrentUser().getEmail(), address);
+        DocumentReference documentReference = firestore.collection("users").document(auth.getUid());
+        documentReference.set(signUpUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
 //                    progressBar.setVisibility(View.INVISIBLE);
 //                    Toast.makeText(PersonalInformationActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
 //
 //                    moveToPreference();
-                    uploadLocalDataToFirestore(signUpUser);
+                uploadLocalDataToFirestore(signUpUser);
 
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    signUpBtn.setEnabled(true);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(PersonalInformationActivity.this, e.getMessage() , Toast.LENGTH_SHORT).show();
-                }
-            });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                signUpBtn.setEnabled(true);
+                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(PersonalInformationActivity.this, e.getMessage() , Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void moveToPreference() {
@@ -161,9 +161,8 @@ public class PersonalInformationActivity extends AppCompatActivity {
                 if (recentViewItemData.getCount() != 0 && recentViewItemData != null) {
                     do{
                         String getItemID = recentViewItemData.getString(recentViewItemData.getColumnIndex("item_id"));
-                        //String getDate     = recentViewItemData.getString(recentViewItemData.getColumnIndex("date"));
                         long getDate = Long.parseLong(recentViewItemData.getString(recentViewItemData.getColumnIndex("date")));
-                        getFromatDate(getDate);
+                        getFormatDate(getDate);
 
                         // Write batch to FireStore
                         RecentItem recentViewItem = new RecentItem(getItemID, new Timestamp(getDateFromString(getDate)));
@@ -176,8 +175,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
                 if (recentSearchItemData.getCount() != 0 && recentSearchItemData != null) {
                     do{
                         String getSearchItemName = recentSearchItemData.getString(recentSearchItemData.getColumnIndex("item_id"));
-                        // String getDate         = recentSearchItemData.getString(recentSearchItemData.getColumnIndex("date"));
-                        long getDate = Long.parseLong(recentViewItemData.getString(recentViewItemData.getColumnIndex("date")));
+                        long getDate = Long.parseLong(recentSearchItemData.getString(recentSearchItemData.getColumnIndex("date")));
 
                         // Write batch to FireStore
                         RecentItem recentSearch = new RecentItem(getSearchItemName, new Timestamp(getDateFromString(getDate))); // put searchItemName + date into an object
@@ -205,8 +203,6 @@ public class PersonalInformationActivity extends AppCompatActivity {
                             //TODO: Move to PreferenceActivity + Drop table
                             sqLiteManager.dropTable();
                             moveToPreference();
-                            Toast.makeText(PersonalInformationActivity.this, "Move to preference", Toast.LENGTH_SHORT).show();
-//                                            moveToHomeActivity();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -219,7 +215,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
         });
     }
 
-    public String getFromatDate(long dateTime) {
+    public String getFormatDate(long dateTime) {
         String formatedDate;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateTime);
@@ -234,7 +230,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
 //        final SimpleDateFormat originalFormat     = new SimpleDateFormat("YYYY-MM-DD HH:MM:SS.SSS");
         final SimpleDateFormat targetFormat       = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 
-        String oldDate = getFromatDate(date);
+        String oldDate = getFormatDate(date);
         try {
             Date newDate = targetFormat.parse(oldDate);
             return newDate ;

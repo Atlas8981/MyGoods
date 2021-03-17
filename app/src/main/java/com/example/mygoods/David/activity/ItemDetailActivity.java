@@ -52,7 +52,7 @@ import java.util.Set;
 public class ItemDetailActivity extends AppCompatActivity implements SimilarItemCollectionView.SimilarItemOnClickListener, Serializable, ViewPagerAdapter.OnViewPagerItemClick {
 
     private ViewPager viewPager;
-//    private Intent intent = getIntent();
+    //    private Intent intent = getIntent();
     private SQLiteManager sqLiteManager;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -77,7 +77,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private ImageView sellerImage;
     private Button viewSellerProfileButton;
     private TextView itemAdditionInfoText;
-//    private Button addToSaveButton;
+    //    private Button addToSaveButton;
     private ToggleButton addToSaveButton;
     private ViewPagerAdapter viewPagerAdapter;
     private SimilarItemCollectionView similarItemAdapter;
@@ -111,8 +111,6 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         }
     }
 
-
-
     private void addView() {
 
         Set<String> currentViewers = new HashSet<>();
@@ -121,26 +119,26 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 .document(item.getItemid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                Item currentItem = documentSnapshot.toObject(Item.class);
+                        Item currentItem = documentSnapshot.toObject(Item.class);
 
-                if (currentItem != null && currentItem.getViewers() != null) {
-                    currentViewers.addAll(currentItem.getViewers());
-                }
+                        if (currentItem != null && currentItem.getViewers() != null) {
+                            currentViewers.addAll(currentItem.getViewers());
+                        }
 
-                currentViewers.add(mAuth.getUid());
+                        currentViewers.add(mAuth.getUid());
 
 
-                List<String> toFirebase = new ArrayList<>(currentViewers);
+                        List<String> toFirebase = new ArrayList<>(currentViewers);
 
-                currentItem.setViewers(toFirebase);
-                currentItem.setViews(currentViewers.size());
+                        currentItem.setViewers(toFirebase);
+                        currentItem.setViews(currentViewers.size());
 
-                db.collection("items").document(item.getItemid()).set(currentItem);
-            }
-        });
+                        db.collection("items").document(item.getItemid()).set(currentItem);
+                    }
+                });
 
     }
 
@@ -495,7 +493,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     }
 
-//    Final Stage:
+    //    Final Stage:
 //    query the item in the same category that are not yet in the list
 //    just to fill out the remain slot just in case
     private void finalStageQuerySimilarItem() {
@@ -507,14 +505,14 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 .whereEqualTo("subCategory",item.getSubCategory())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
-                    Item tempItem = documentSnapshot.toObject(Item.class);
-                    addItemToListNotify(tempItem);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                            Item tempItem = documentSnapshot.toObject(Item.class);
+                            addItemToListNotify(tempItem);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -533,33 +531,33 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 .whereLessThan(Constant.priceField, avgPrice)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                int count = 0;
-                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                ArrayList<Item> similarItemData = new ArrayList<>();
-                if (!list.isEmpty()) {
-                    for(DocumentSnapshot doc : list) {
-                        count += 1;
-                        Item curItem = doc.toObject(Item.class);
-                        if (curItem != null) {
-                            similarItemData.add(curItem);
-                            if (count == list.size()){
-                                for(int i = 0; i<similarItemData.size(); i++) {
-                                    if (similarItemData.get(i).getSubCategory().equals(item.getSubCategory()) &&
-                                            similarItemData.get(i).getMainCategory().equals(item.getMainCategory())) {
-                                        filterSimilarItemData.add(similarItemData.get(i));
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        int count = 0;
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        ArrayList<Item> similarItemData = new ArrayList<>();
+                        if (!list.isEmpty()) {
+                            for(DocumentSnapshot doc : list) {
+                                count += 1;
+                                Item curItem = doc.toObject(Item.class);
+                                if (curItem != null) {
+                                    similarItemData.add(curItem);
+                                    if (count == list.size()){
+                                        for(int i = 0; i<similarItemData.size(); i++) {
+                                            if (similarItemData.get(i).getSubCategory().equals(item.getSubCategory()) &&
+                                                    similarItemData.get(i).getMainCategory().equals(item.getMainCategory())) {
+                                                filterSimilarItemData.add(similarItemData.get(i));
+                                            }
+                                        }
+                                        filterSimilarItem(filterSimilarItemData, item.getName());
                                     }
                                 }
-                                filterSimilarItem(filterSimilarItemData, item.getName());
                             }
+                        } else {
+                            return;
                         }
                     }
-                } else {
-                    return;
-                }
-            }
-        });
+                });
     }
 
     private String replaceWhiteSpace(String text) {
@@ -624,32 +622,32 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 .document(item.getUserid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User tempUser = documentSnapshot.toObject(User.class);
-                users.add(tempUser);
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        User tempUser = documentSnapshot.toObject(User.class);
+                        users.add(tempUser);
 
 
-                if (tempUser != null) {
-                    if (tempUser.getImage() != null && tempUser.getImage().getImageURL() != null) {
-                        Glide.with(ItemDetailActivity.this)
-                                .load(tempUser.getImage().getImageURL())
-                                .placeholder(R.drawable.account)
-                                .centerCrop()
-                                .into(sellerImage);
-                    }else {
-                        Glide.with(ItemDetailActivity.this)
-                                .load(R.drawable.account)
-                                .centerCrop()
-                                .into(sellerImage);
+                        if (tempUser != null) {
+                            if (tempUser.getImage() != null && tempUser.getImage().getImageURL() != null) {
+                                Glide.with(ItemDetailActivity.this)
+                                        .load(tempUser.getImage().getImageURL())
+                                        .placeholder(R.drawable.account)
+                                        .centerCrop()
+                                        .into(sellerImage);
+                            }else {
+                                Glide.with(ItemDetailActivity.this)
+                                        .load(R.drawable.account)
+                                        .centerCrop()
+                                        .into(sellerImage);
+                            }
+
+
+                            sellerName.setText(tempUser.getUsername());
+
+                        }
                     }
-
-
-                    sellerName.setText(tempUser.getUsername());
-
-                }
-            }
-        });
+                });
     }
 
     private void updateViewCount() {

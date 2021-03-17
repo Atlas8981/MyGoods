@@ -16,12 +16,12 @@ public class SQLite extends SQLiteOpenHelper {
     public static final String DATE         = "date";
 
     // database version
-    private static final int DB_VERSION     = 1;
+    public static int DB_VERSION     = 1;
 
     // Creating table query
-    private static final String RECENT_VIEW = "create table " + RECENTVIEW_TABLE + "(" + _ID
+    private static final String RECENT_VIEW = "create table if not exists " + RECENTVIEW_TABLE + "(" + _ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT, " + ITEM_ID + " TEXT NOT NULL, " + DATE + " TEXT NOT NULL);";
-    private static final String RECENT_SEARCH = "create table " + RECENTSEARCH_TABLE + "(" + _ID
+    private static final String RECENT_SEARCH = "create table if not exists " + RECENTSEARCH_TABLE + "(" + _ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT, " + ITEM_ID + " TEXT NOT NULL, " + DATE + " TEXT NOT NULL);";
 
     // Create database

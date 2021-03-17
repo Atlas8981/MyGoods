@@ -203,6 +203,9 @@ public class SearchActivity extends AppCompatActivity {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     for(DocumentSnapshot doc : list) {
                         Item item = doc.toObject(Item.class);
+                        if (item != null) {
+                            item.setUserid(doc.get("userid").toString());
+                        }
                         searchData.add(item);
                     }
                     if (searchData.size() == list.size()) {
@@ -228,6 +231,9 @@ public class SearchActivity extends AppCompatActivity {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         for(DocumentSnapshot doc : list) {
                             Item item = doc.toObject(Item.class);
+                            if (item != null) {
+                                item.setUserid(doc.get("userid").toString());
+                            }
                             filteredData.add(item);
                         }
                         if (filteredData.size() == list.size()) {
