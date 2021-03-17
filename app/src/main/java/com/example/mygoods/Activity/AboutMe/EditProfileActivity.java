@@ -210,9 +210,13 @@ public class EditProfileActivity extends AppCompatActivity {
 //        currentUser.setEmail(email);
 
         if (auth.getUid() != null) {
-            userRef.document(auth.getUid()).set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+            userRef.document(auth.getUid())
+                    .set(currentUser)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    usernameEdt.setError(null);
                     saveBtn.setEnabled(true);
                     Toast.makeText(EditProfileActivity.this, "Information Update Successfully", Toast.LENGTH_SHORT).show();
                     EditProfileActivity.super.onBackPressed();
@@ -226,8 +230,8 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
             });
 
-
         }else {
+            saveBtn.setEnabled(true);
             Toast.makeText(this, "No User Login", Toast.LENGTH_SHORT).show();
         }
     }

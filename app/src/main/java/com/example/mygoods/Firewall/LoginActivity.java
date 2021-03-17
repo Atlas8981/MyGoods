@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mygoods.Activity.Home.HomeActivity;
-import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.Firewall.SignUp.EmailVerificationActivity;
 import com.example.mygoods.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -55,8 +54,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void loginuser (){
-        SQLiteManager sqLiteManager = new SQLiteManager(LoginActivity.this);
-        sqLiteManager.open();
+//        SQLiteManager sqLiteManager = new SQLiteManager(LoginActivity.this);
+//        sqLiteManager.open();
         progressBar.setVisibility(View.VISIBLE);
         String email = eemail.getEditText().getText().toString().trim();
         String password = ppassword.getEditText().getText().toString().trim();
@@ -70,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (authResult.getUser().isEmailVerified()) {
                                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                sqLiteManager.dropTable();
+//                                sqLiteManager.dropTable();
                                 startActivity(intent);
                                 finish();
 

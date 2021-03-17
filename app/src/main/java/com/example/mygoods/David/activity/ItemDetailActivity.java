@@ -687,9 +687,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 //            sqLiteManager.insert(Constant.recentViewTable,item.getItemid()); // Insert current itemID + date of view
 //
 //        } else {
-            if (currentUser!= null) {
+            if (mAuth.getUid() != null) {
                 DocumentReference ref = db.collection(Constant.userCollection)
-                        .document(currentUser.getUid())
+                        .document(mAuth.getUid())
                         .collection("recentView")
                         .document(item.getItemid());
 

@@ -44,6 +44,7 @@ public class EmailActivity extends AppCompatActivity {
         sendEmailBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sendEmailBtn.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
                 email = emailEdt.getEditText().getText().toString().trim();
                 password = UUID.randomUUID().toString();
@@ -51,12 +52,15 @@ public class EmailActivity extends AppCompatActivity {
                 if (checkEmail(email)){
                     AuthCredential credential = EmailAuthProvider.getCredential(email, password);
                     if (auth.getCurrentUser()!=null) {
-                        auth.getCurrentUser().linkWithCredential(credential).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                        auth.getCurrentUser()
+                                .linkWithCredential(credential)
+                                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(AuthResult authResult) {
                                 authResult.getUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        sendEmailBtn.setEnabled(true);
                                         Toast.makeText(EmailActivity.this, "Verification Email Sent to " + email, Toast.LENGTH_SHORT).show();
                                         auth.signOut();
                                         moveToEmailVerification();
@@ -64,6 +68,7 @@ public class EmailActivity extends AppCompatActivity {
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        sendEmailBtn.setEnabled(true);
                                         progressBar.setVisibility(View.INVISIBLE);
                                         Toast.makeText(EmailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
@@ -72,14 +77,19 @@ public class EmailActivity extends AppCompatActivity {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                sendEmailBtn.setEnabled(true);
                                 progressBar.setVisibility(View.INVISIBLE);
                                 Toast.makeText(EmailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
 //                                Toast.makeText(EmailActivity.this, "Email Exists", Toast.LENGTH_SHORT).show();
                             }
                         });
+                    }else {
+                        sendEmailBtn.setEnabled(true);
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 }else{
-                    progressBar.setVisibility(View.VISIBLE);
+                    sendEmailBtn.setEnabled(true);
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             }
         });

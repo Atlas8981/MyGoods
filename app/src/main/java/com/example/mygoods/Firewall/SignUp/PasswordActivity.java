@@ -40,14 +40,17 @@ public class PasswordActivity extends AppCompatActivity {
         savePasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                savePasswordBtn.setEnabled(false);
                 if (checkViews()) {
                     auth.signInWithEmailAndPassword(email, prePassword)
                             .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
+
                                     if (authResult.getUser().isEmailVerified()){
                                         updatePassword(authResult,newPassword);
                                     }else{
+                                        savePasswordBtn.setEnabled(true);
                                         auth.signOut();
                                         Toast.makeText(PasswordActivity.this, "Please Verify Your Email First", Toast.LENGTH_SHORT).show();
                                     }
@@ -55,18 +58,17 @@ public class PasswordActivity extends AppCompatActivity {
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            savePasswordBtn.setEnabled(true);
                             Toast.makeText(PasswordActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
+                }else {
+                    savePasswordBtn.setEnabled(true);
                 }
             }
         });
     }
 
-    @Override
-    public void onBackPressed() {
-
-    }
 
     private boolean checkViews() {
         newPassword = passwordEdt.getEditText().getText().toString().trim();
@@ -114,11 +116,13 @@ public class PasswordActivity extends AppCompatActivity {
             authResult.getUser().updatePassword(password).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    savePasswordBtn.setEnabled(true);
                     moveToPersonalInformation();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    savePasswordBtn.setEnabled(true);
                     Toast.makeText(PasswordActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });

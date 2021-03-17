@@ -30,7 +30,7 @@ public class User_PreferenceActivity extends AppCompatActivity {
 
     private List<String> subCategories ;
 
-    GridViewAdapter gridViewAdapter;
+    private GridViewAdapter gridViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,7 @@ public class User_PreferenceActivity extends AppCompatActivity {
         preferenceGridView = findViewById(R.id.preferenceGrid);
         gridViewAdapter = new GridViewAdapter(getApplicationContext(), subCategories);
         preferenceGridView.setAdapter(gridViewAdapter);
+
     }
 
     private void populatePreference() {
@@ -64,9 +65,7 @@ public class User_PreferenceActivity extends AppCompatActivity {
 
     public void checkingthebox(){
 
-        List<String> selectedPreferences = new ArrayList<>();
-
-        selectedPreferences.addAll(gridViewAdapter.getCheckedItems());
+        List<String> selectedPreferences = new ArrayList<>(gridViewAdapter.getCheckedItems());
 
         if (gridViewAdapter!=null) {
             if(selectedPreferences.size()>=1 && selectedPreferences.size()<=5 ){

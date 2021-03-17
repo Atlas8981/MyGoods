@@ -306,8 +306,8 @@ public class SearchActivity extends AppCompatActivity {
                         if (!list.isEmpty()) {
                             for(DocumentSnapshot doc : list) {
                                 recentlySearchData.add(doc.get("itemId").toString());
+                                recentlySearchAdapter.notifyDataSetChanged();
                             }
-                            recentlySearchAdapter.notifyDataSetChanged();
                         } else {
                             return;
                         }
@@ -406,7 +406,7 @@ public class SearchActivity extends AppCompatActivity {
 //                        ownerName.add(documentSnapshot.getString(Constant.usernameField));
                         User user = documentSnapshot.toObject(User.class);
                         ownerName.add(user);
-                        System.out.println(user.getEmail());
+
                     }
                     num++;
                     if (num == ownerID.size()){
