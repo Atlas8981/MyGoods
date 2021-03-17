@@ -71,9 +71,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
-        if (getSupportActionBar()!=null){
-            getSupportActionBar().hide(); // hide the title bar
-        }
+        getSupportActionBar().hide(); // hide the title bar
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
@@ -202,9 +200,6 @@ public class SearchActivity extends AppCompatActivity {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     for(DocumentSnapshot doc : list) {
                         Item item = doc.toObject(Item.class);
-                        if (item != null) {
-                            item.setUserid(doc.get("userid").toString());
-                        }
                         searchData.add(item);
                     }
                     if (searchData.size() == list.size()) {
@@ -230,9 +225,6 @@ public class SearchActivity extends AppCompatActivity {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         for(DocumentSnapshot doc : list) {
                             Item item = doc.toObject(Item.class);
-                            if (item != null) {
-                                item.setUserid(doc.get("userid").toString());
-                            }
                             filteredData.add(item);
                         }
                         if (filteredData.size() == list.size()) {
@@ -306,12 +298,7 @@ public class SearchActivity extends AppCompatActivity {
 //                return;
 //            }
 //        } else {
-            db.collection(Constant.userCollection)
-                    .document(currentUser.getUid())
-                    .collection("recentSearch")
-                    .orderBy(Constant.dateField, Query.Direction.DESCENDING)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("recentSearch").orderBy(Constant.dateField, Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if(!queryDocumentSnapshots.isEmpty()){
@@ -321,10 +308,9 @@ public class SearchActivity extends AppCompatActivity {
                                 recentlySearchData.add(doc.get("itemId").toString());
                             }
                             recentlySearchAdapter.notifyDataSetChanged();
+                        } else {
+                            return;
                         }
-//                        else {
-//                            return;
-//                        }
                     }
                 }
             });
@@ -385,10 +371,7 @@ public class SearchActivity extends AppCompatActivity {
 //            sqLiteManager.insert(Constant.recentSearchTable, searchText);
 //            generateTimeAndSellerName();
 //        } else {
-            DocumentReference ref = db.collection(Constant.userCollection)
-                    .document(currentUser.getUid())
-                    .collection(Constant.recentSearchCollection)
-                    .document(searchText);
+            DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection(Constant.recentSearchCollection).document(searchText);
 
             Map<String, Object> docData = new HashMap<>();
             docData.put("date",new Timestamp(new Date()));
@@ -403,14 +386,12 @@ public class SearchActivity extends AppCompatActivity {
 //        }
     }
 
-    private int num = 0;
-
+    private int num;
     private void generateTimeAndSellerName() {
-
+        num = 0;
         for (int i = 0; i<searchData.size(); i++) {
             ownerID.add(searchData.get(i).getUserid());
         }
-
 
         for (int o = 0; o<ownerID.size(); o++) {
             // Convert data
@@ -418,32 +399,20 @@ public class SearchActivity extends AppCompatActivity {
             time.add(duration);
 
 
-            db.collection(Constant.userCollection)
-                    .document(ownerID.get(o))
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            db.collection(Constant.userCollection).document(ownerID.get(o)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    User user = documentSnapshot.toObject(User.class);
-
-                    if (user != null) {
-                        System.out.println(user.getEmail());
+                    if (documentSnapshot.getString(Constant.usernameField) != null) {
 //                        ownerName.add(documentSnapshot.getString(Constant.usernameField));
-                        user.setUserId(documentSnapshot.getId());
+                        User user = documentSnapshot.toObject(User.class);
                         ownerName.add(user);
-
-
+                        System.out.println(user.getEmail());
                     }
                     num++;
-                    if (num == (ownerID.size()-1)){
+                    if (num == ownerID.size()){
                         progressDialog.hide();
                         moveToNewsFeedActivity();
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(SearchActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
