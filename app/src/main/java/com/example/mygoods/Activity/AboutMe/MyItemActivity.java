@@ -73,6 +73,14 @@ public class MyItemActivity extends AppCompatActivity {
 
         getDataFromFireStore();
 
+//        firestore.collectionGroup("additionInfo").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+//                    System.out.println("Collection Group " + documentSnapshot.toString());
+//                }
+//            }
+//        });
 
         myItemListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
