@@ -12,6 +12,7 @@
         android:layout_width="125dp"
         android:layout_height="125dp"
         android:scaleType="centerCrop"
+        android:src="@drawable/bikepicture"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

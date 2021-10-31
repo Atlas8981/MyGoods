@@ -1472,8 +1472,6 @@ public class EditMyItemActivity extends AppCompatActivity {
         remainingImages.setText("(" + currentImageBitmaps.size() + "/5)");
     }
 
-
-
 //    Launch Activity that user cannot go back
     private void launchActivityWithoutBack(){
         Intent intent = new Intent(EditMyItemActivity.this, MyItemActivity.class);

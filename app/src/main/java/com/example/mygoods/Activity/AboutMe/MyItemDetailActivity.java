@@ -66,6 +66,7 @@ public class MyItemDetailActivity extends AppCompatActivity {
     private Bundle bundle;
     private Item mitem;
     private ArrayList<User> sellers;
+
     private DotsIndicator dotsIndicator;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth auth = FirebaseAuth.getInstance();

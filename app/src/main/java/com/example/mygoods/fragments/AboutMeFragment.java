@@ -1,5 +1,7 @@
 package com.example.mygoods.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,11 +35,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mygoods.Activity.AboutMe.AboutOurAppActivity;
 import com.example.mygoods.Activity.AboutMe.EditProfileActivity;
-import com.example.mygoods.Activity.Other.FullScreenImageActivity;
-import com.example.mygoods.Activity.Home.HomeActivity;
 import com.example.mygoods.Activity.AboutMe.MyItemActivity;
 import com.example.mygoods.Activity.AboutMe.MySaveItemActivity;
 import com.example.mygoods.Activity.AboutMe.TermAndConditionActivity;
+import com.example.mygoods.Activity.Home.HomeActivity;
+import com.example.mygoods.Activity.Other.FullScreenImageActivity;
 import com.example.mygoods.Adapters.RecyclerCategoryItemAdapter;
 import com.example.mygoods.Firewall.ForgotPasswordActivity;
 import com.example.mygoods.Firewall.SignUp.PersonalInformationActivity;
@@ -66,12 +68,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static android.app.Activity.RESULT_OK;
-
 public class AboutMeFragment extends Fragment {
 
     private ImageView myImage;
-    private TextView myName, myPhone,myAddress;
+    private TextView myName, myPhone, myAddress;
     private Button signOutBtn;
     private ProgressBar imageProgress;
 
@@ -93,6 +93,7 @@ public class AboutMeFragment extends Fragment {
     private Context context;
 
     private ProgressDialog progressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,7 +175,7 @@ public class AboutMeFragment extends Fragment {
 
 //        Load user data from internal storage for faster loading
 //        check if loadFunction is null before put it in
-        if (loadCurrentUser() != null){
+        if (loadCurrentUser() != null) {
             currentUser = loadCurrentUser();
         }
 
@@ -218,40 +219,40 @@ public class AboutMeFragment extends Fragment {
 
     }
 
-    private void getDataFromDatabase(){
+    private void getDataFromDatabase() {
 
-        if (auth.getUid() != null){
+        if (auth.getUid() != null) {
             userInfoRef.document(auth.getUid())
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    User tempUser = documentSnapshot.toObject(User.class);
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            User tempUser = documentSnapshot.toObject(User.class);
 
 
-                    if (tempUser != null ) {
-                        if (currentUser==null || !currentUser.equals(tempUser) || !currentUser.getUserId().equals(auth.getUid())){
-                            currentUser = new User(tempUser);
+                            if (tempUser != null) {
+                                if (currentUser == null || !currentUser.equals(tempUser) || !currentUser.getUserId().equals(auth.getUid())) {
+                                    currentUser = new User(tempUser);
 
-                            if (tempUser.getImage() == null || tempUser.getImage().getImageURL() == null){
-                                Uri uri=Uri.parse("R.drawable.account");
-                                tempUser.setImage(new Image("defaultImage",uri.toString()));
-                            }
+                                    if (tempUser.getImage() == null || tempUser.getImage().getImageURL() == null) {
+                                        Uri uri = Uri.parse("R.drawable.account");
+                                        tempUser.setImage(new Image("defaultImage", uri.toString()));
+                                    }
 
-                            Glide.with(view)
-                                    .load(tempUser.getImage().getImageURL())
-                                    .placeholder(placeHolder)
-                                    .into(myImage);
+                                    Glide.with(view)
+                                            .load(tempUser.getImage().getImageURL())
+                                            .placeholder(placeHolder)
+                                            .into(myImage);
 
-                            myName.setText(tempUser.getFirstname() + " " + tempUser.getLastname());
-                            myPhone.setText(tempUser.getPhoneNumber());
-                            myAddress.setText(tempUser.getAddress());
+                                    myName.setText(tempUser.getFirstname() + " " + tempUser.getLastname());
+                                    myPhone.setText(tempUser.getPhoneNumber());
+                                    myAddress.setText(tempUser.getAddress());
 
-                            saveCurrentUser(tempUser);
+                                    saveCurrentUser(tempUser);
 
-                            setHasOptionsMenu(true);
-                        }
-                    }else{
+                                    setHasOptionsMenu(true);
+                                }
+                            } else {
 
 //                        currentUser = new User();
 //                        saveCurrentUser(null);
@@ -264,18 +265,18 @@ public class AboutMeFragment extends Fragment {
 //                                currentUser.setUserId(auth.getUid());
 //                            }
 //                        }
-                        Intent intent = new Intent();
-                        intent.setClass(getContext(), PersonalInformationActivity.class);
-                        startActivity(intent);
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
+                                Intent intent = new Intent();
+                                intent.setClass(getContext(), PersonalInformationActivity.class);
+                                startActivity(intent);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-        }else{
+        } else {
             myImage.setImageResource(0);
             myName.setText("");
             myPhone.setText("");
@@ -285,7 +286,7 @@ public class AboutMeFragment extends Fragment {
 
     public static final int REQUEST_CODE = 1969;
 
-    private void choosePicture(){
+    private void choosePicture() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -298,7 +299,7 @@ public class AboutMeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             if (data != null) {
                 //Pick one image
                 Uri uri = data.getData();
@@ -316,7 +317,7 @@ public class AboutMeFragment extends Fragment {
                 }
             }
 
-        }else{
+        } else {
             Toast.makeText(getContext(), "No Image Chosen", Toast.LENGTH_SHORT).show();
         }
 
@@ -331,7 +332,7 @@ public class AboutMeFragment extends Fragment {
     private class CompressAndUpload extends AsyncTask<Bitmap, Integer, byte[]> {
 
 
-        public CompressAndUpload(){
+        public CompressAndUpload() {
         }
 
         @Override
@@ -357,7 +358,7 @@ public class AboutMeFragment extends Fragment {
 
     private void uploadImageToStorage(byte[] bytes) {
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference storageRef = firebaseStorage.getReference().child("images/" +randomKey);
+        StorageReference storageRef = firebaseStorage.getReference().child("images/" + randomKey);
 
         UploadTask uploadTask = storageRef.putBytes(bytes);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -372,7 +373,7 @@ public class AboutMeFragment extends Fragment {
                                 randomKey);
 
 
-                        if (currentUser.getImage() != null && currentUser.getImage().getImageURL() !=null) {
+                        if (currentUser.getImage() != null && currentUser.getImage().getImageURL() != null) {
                             firebaseStorage.getReference().child("images/" + currentUser.getImage().getImageName()).delete();
                         }
 
@@ -383,15 +384,15 @@ public class AboutMeFragment extends Fragment {
                 });
             }
         }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
-                }
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+            }
         });
     }
 
     private void updateDataToFirestore(Image newImageData) {
-        if (currentUser != null && auth.getUid() !=null) {
+        if (currentUser != null && auth.getUid() != null) {
             currentUser.setImage(newImageData);
             userInfoRef.document(auth.getUid()).set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
@@ -415,13 +416,13 @@ public class AboutMeFragment extends Fragment {
         }
     }
 
-    public static byte[] getBytesFromBitmap (Bitmap bitmap, int quality){
+    public static byte[] getBytesFromBitmap(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,quality,stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
 
-    public Bitmap checkOrientation (Context context,Uri uri,Bitmap bitmap){
+    public Bitmap checkOrientation(Context context, Uri uri, Bitmap bitmap) {
 
         ExifInterface ei = null;
         try {
@@ -437,7 +438,7 @@ public class AboutMeFragment extends Fragment {
 
         Bitmap rotatedBitmap = null;
 
-        switch(orientation) {
+        switch (orientation) {
 
             case ExifInterface.ORIENTATION_ROTATE_90:
                 rotatedBitmap = rotateImage(bitmap, 90);
@@ -468,10 +469,9 @@ public class AboutMeFragment extends Fragment {
     }
 
 
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.about_me_menu,menu);
+        inflater.inflate(R.menu.about_me_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -515,7 +515,7 @@ public class AboutMeFragment extends Fragment {
         menuRecyclerView = view.findViewById(R.id.aboutMeRecyclerView);
         menuRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        RecyclerCategoryItemAdapter recyclerCategoryItemAdapter = new RecyclerCategoryItemAdapter(arrMenusName,arrMenusImage);
+        RecyclerCategoryItemAdapter recyclerCategoryItemAdapter = new RecyclerCategoryItemAdapter(arrMenusName, arrMenusImage);
 
         menuRecyclerView.setLayoutManager(layoutManager);
         menuRecyclerView.setAdapter(recyclerCategoryItemAdapter);
@@ -524,23 +524,26 @@ public class AboutMeFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
 
-                switch (position){
-                    case 0:{
+                switch (position) {
+                    case 0: {
                         Intent intent = new Intent();
                         intent.setClass(getContext(), MyItemActivity.class);
                         startActivity(intent);
-                    }break;
-                    case 1:{
+                    }
+                    break;
+                    case 1: {
                         Intent intent = new Intent();
                         intent.setClass(getContext(), MySaveItemActivity.class);
                         startActivity(intent);
-                    }break;
-                    case 2:{
+                    }
+                    break;
+                    case 2: {
                         Intent intent = new Intent();
                         intent.setClass(getContext(), AboutOurAppActivity.class);
                         startActivity(intent);
-                    } break;
-                    case 3:{
+                    }
+                    break;
+                    case 3: {
                         Intent intent = new Intent();
                         intent.setClass(getContext(), TermAndConditionActivity.class);
                         startActivity(intent);
@@ -553,14 +556,14 @@ public class AboutMeFragment extends Fragment {
     private void putOldDataIntoView(View view) {
 
         if (currentUser != null) {
-            if (currentUser.getUserId() != null){
-                if (currentUser.getUserId().equals(auth.getUid())){
+            if (currentUser.getUserId() != null) {
+                if (currentUser.getUserId().equals(auth.getUid())) {
                     if (currentUser.getImage() != null && currentUser.getImage().getImageURL() != null) {
                         Glide.with(view)
                                 .load(currentUser.getImage().getImageURL())
                                 .placeholder(placeHolder)
                                 .into(myImage);
-                    }else{
+                    } else {
                         Glide.with(view)
                                 .load(R.drawable.account)
                                 .placeholder(placeHolder)
@@ -587,11 +590,11 @@ public class AboutMeFragment extends Fragment {
 
     public static final String FILE_NAME = "currentUser.ser";
 
-    private void saveCurrentUser(User user){
+    private void saveCurrentUser(User user) {
 
         try {
 
-            FileOutputStream fileOutputStream =  context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+            FileOutputStream fileOutputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(user);
@@ -605,7 +608,7 @@ public class AboutMeFragment extends Fragment {
         }
     }
 
-    private User loadCurrentUser(){
+    private User loadCurrentUser() {
         User userData = null;
         try {
             FileInputStream fileInputStream = getContext().openFileInput(FILE_NAME);
@@ -614,7 +617,7 @@ public class AboutMeFragment extends Fragment {
 
             User tempUser = (User) ois.readObject();
 
-            if (tempUser !=null) {
+            if (tempUser != null) {
                 userData = new User(tempUser);
             }
 
@@ -630,7 +633,7 @@ public class AboutMeFragment extends Fragment {
     }
 
 
-    private void settingUpButton (View view){
+    private void settingUpButton(View view) {
         myItemBtn = view.findViewById(R.id.myItemBtn);
         mySaveItemBtn = view.findViewById(R.id.saveItemBtn);
 

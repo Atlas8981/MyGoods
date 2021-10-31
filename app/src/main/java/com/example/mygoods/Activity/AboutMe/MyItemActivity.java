@@ -71,7 +71,9 @@ public class MyItemActivity extends AppCompatActivity {
 
         itemList = new ArrayList<Item>();
 
-        getDataFromFireStore();
+//        getDataFromFireStore();
+
+        getDataUsingIndex();
 
 //        firestore.collectionGroup("additionInfo").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
 //            @Override
@@ -96,6 +98,8 @@ public class MyItemActivity extends AppCompatActivity {
                     if (absListView.getLastVisiblePosition() == i2 - 1
                             && myItemListView.getCount() >= 0 && !isLoading && next != null && !isOutOfData) {
                         isLoading = true;
+                        Thread thread = new ThreadGetMoreData();
+                        thread.start();
 
 //                        if (itemList.size()>=10) {
 //                        }else{
@@ -103,8 +107,7 @@ public class MyItemActivity extends AppCompatActivity {
 //                            Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
 //                        }
 
-                        Thread thread = new ThreadGetMoreData();
-                        thread.start();
+
 
                     }
                 }
@@ -121,10 +124,56 @@ public class MyItemActivity extends AppCompatActivity {
 
     }
 
+    private void getDataUsingIndex() {
+        itemRef.whereEqualTo("userid", auth.getUid())
+                .orderBy("date", Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Item curItem = documentSnapshot.toObject(Item.class);
+                            curItem.setItemid(documentSnapshot.getId());
+                            itemList.add(curItem);
+                            setUpItemRowAdapter();
+                        }
+                        if (queryDocumentSnapshots.size() > 0) {
+                            DocumentSnapshot lastVisible = queryDocumentSnapshots.getDocuments()
+                                    .get(queryDocumentSnapshots.size() - 1);
 
-    private void getDataFromFireStore(){
+                            // Construct a new query starting at this document,
+                            // get the next 10 data.
+                            next = itemRef.whereEqualTo("userid", auth.getUid())
+                                    .orderBy("date", Query.Direction.DESCENDING)
+                                    .limit(5)
+                                    .startAfter(lastVisible);
+                        } else {
 
-        if (auth.getUid()!=null) {
+//                          if cursor cannot go further no need to query anything
+//                          user can still always refresh to do the same thing
+                            isOutOfData = true;
+                            Toast.makeText(MyItemActivity.this, "No Data", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MyItemActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                progressBar.setVisibility(ProgressBar.INVISIBLE);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+
+    private void getDataFromFireStore() {
+
+        if (auth.getUid() != null) {
             queryStatement.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -173,7 +222,7 @@ public class MyItemActivity extends AppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }
             });
-        }else{
+        } else {
             Toast.makeText(this, "You are not allow here", Toast.LENGTH_SHORT).show();
             super.onBackPressed();
         }
@@ -181,7 +230,7 @@ public class MyItemActivity extends AppCompatActivity {
     }
 
     private void setUpItemRowAdapter() {
-        listMyItemRowAdapter = new ListMyItemRowAdapter(MyItemActivity.this,itemList,true);
+        listMyItemRowAdapter = new ListMyItemRowAdapter(MyItemActivity.this, itemList, true);
         myItemListView.setAdapter(listMyItemRowAdapter);
         myItemListView.setOnItemClickListener(listViewListener);
         listMyItemRowAdapter.setOnItemClickListener(listViewAdapterClickListener);
@@ -189,35 +238,71 @@ public class MyItemActivity extends AppCompatActivity {
 
 
     //    Thread to send message to initiate the data retrieval by calling handler
-    public class  ThreadGetMoreData extends Thread{
+    public class ThreadGetMoreData extends Thread {
         @Override
         public void run() {
             handler.sendEmptyMessage(0);
-            ArrayList<Item> items = getMoreData();
+//            ArrayList<Item> items = getMoreData();
+            ArrayList<Item> items = getIndexMoreData();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Message msg = handler.obtainMessage(1,items);
+            Message msg = handler.obtainMessage(1, items);
             handler.sendMessage(msg);
         }
     }
 
+    private ArrayList<Item> getIndexMoreData() {
+        final ArrayList<Item> anotherListItem = new ArrayList<Item>();
+        if (next != null) {
+            next.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if (queryDocumentSnapshots.size() > 0) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Item curItem = documentSnapshot.toObject(Item.class);
+                            curItem.setItemid(documentSnapshot.getId());
+                            anotherListItem.add(curItem);
+                        }
 
-//    Handler will handle with adding View of loading progressbar into BottomListView
-    public class Handler extends android.os.Handler{
+
+                        DocumentSnapshot lastVisible = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+
+                        // Construct a new query starting at this document,
+
+                        next = itemRef.whereEqualTo("userid", auth.getUid())
+                                .orderBy("date", Query.Direction.DESCENDING)
+                                .limit(5)
+                                .startAfter(lastVisible);
+                    } else {
+                        if (!isOutOfData) {
+                            Toast.makeText(MyItemActivity.this, "No More Data to Load", Toast.LENGTH_SHORT).show();
+                            isOutOfData = true;
+                        }
+                    }
+                }
+            });
+        }
+        return anotherListItem;
+    }
+
+
+    //    Handler will handle with adding View of loading progressbar into BottomListView
+    public class Handler extends android.os.Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case 0:
                     myItemListView.addFooterView(footerView);
                     break;
                 case 1:
-                    if (listMyItemRowAdapter == null){
+                    if (listMyItemRowAdapter == null) {
                         setUpItemRowAdapter();
                     }
-                    listMyItemRowAdapter.addListItemToAdapter((ArrayList<Item>)msg.obj);
+                    listMyItemRowAdapter.addListItemToAdapter((ArrayList<Item>) msg.obj);
                     myItemListView.removeFooterView(footerView);
                     isLoading = false;
                     break;
@@ -228,14 +313,14 @@ public class MyItemActivity extends AppCompatActivity {
     }
 
 
-//    Function call when another 10 data needed from database
-    private ArrayList<Item> getMoreData(){
+    //    Function call when another 10 data needed from database
+    private ArrayList<Item> getMoreData() {
         final ArrayList<Item> anotherListItem = new ArrayList<Item>();
         if (next != null) {
             next.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    if (queryDocumentSnapshots.size()>0) {
+                    if (queryDocumentSnapshots.size() > 0) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Item curItem = documentSnapshot.toObject(Item.class);
                             if (curItem.getUserid().equals(auth.getUid())) {
@@ -252,7 +337,7 @@ public class MyItemActivity extends AppCompatActivity {
 
                         next = queryStatement
                                 .startAfter(lastVisible);
-                    }else {
+                    } else {
                         if (!isOutOfData) {
                             Toast.makeText(MyItemActivity.this, "No More Data to Load", Toast.LENGTH_SHORT).show();
                             isOutOfData = true;
@@ -265,7 +350,7 @@ public class MyItemActivity extends AppCompatActivity {
         return anotherListItem;
     }
 
-    private void initializeUI(){
+    private void initializeUI() {
         setTitle("My Item(s)");
 
         progressBar = findViewById(R.id.progressBar);
@@ -273,10 +358,10 @@ public class MyItemActivity extends AppCompatActivity {
         progressBar.setVisibility(ProgressBar.VISIBLE);
         swipeRefreshLayout = findViewById(R.id.pullToRefresh);
 
-        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,56,144,255));
+        swipeRefreshLayout.setColorSchemeColors(Color.argb(100, 56, 144, 255));
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        footerView = layoutInflater.inflate(R.layout.footerview_myitem,null);
+        footerView = layoutInflater.inflate(R.layout.footerview_myitem, null);
         handler = new Handler();
 
     }
@@ -305,17 +390,18 @@ public class MyItemActivity extends AppCompatActivity {
             startActivity(intent);
         }
     };
- 
+
     private ProgressDialog progressDialog;
+
     //    Delete Specific Data from firebase Firestore
-    private void deleteDataInFirestore(int position){
+    private void deleteDataInFirestore(int position) {
 
         itemRef.document(itemList.get(position).getItemid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
-                if (task.isSuccessful()){
-                    for (int i =0;i<itemList.get(position).getImages().size();i++) {
+                if (task.isSuccessful()) {
+                    for (int i = 0; i < itemList.get(position).getImages().size(); i++) {
                         firebaseStorage.getReference()
                                 .child("images/" +
                                         itemList.get(position)
@@ -324,23 +410,24 @@ public class MyItemActivity extends AppCompatActivity {
                                                 .getImageName()
                                 ).delete()
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(MyItemActivity.this, "images Deleted", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(MyItemActivity.this, "images Deleted", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                     Toast.makeText(MyItemActivity.this, "Data Deleted", Toast.LENGTH_SHORT).show();
                     itemList.remove(position);
                     listMyItemRowAdapter.notifyDataSetChanged();
-                }else {
+                } else {
                     Toast.makeText(MyItemActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 }
                 progressDialog.dismiss();
             }
         });
     }
-    private void activateDelete(int position){
+
+    private void activateDelete(int position) {
         progressDialog = new ProgressDialog(MyItemActivity.this);
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MyItemActivity.this);
         alertDialog.setTitle("Are you sure you want to delete this data ?");
@@ -362,17 +449,12 @@ public class MyItemActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void refreshViewAndData(){
+    private void refreshViewAndData() {
         isOutOfData = false;
         itemList = new ArrayList<>();
         setUpItemRowAdapter();
         getDataFromFireStore();
     }
-
-
-
-
-
 
 
 }

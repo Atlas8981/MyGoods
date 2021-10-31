@@ -25,6 +25,22 @@ public class Item implements Serializable , Comparable<Item>{
     private int views;
     private Date date;
 
+    private void testImages(){
+//        ClothItem  clothItem = new ClothItem();
+//
+//        List<String> sizes = new ArrayList<>();
+//        sizes.add("Medium");
+//        sizes.add("Large");
+//
+//        clothItem.setSizes(sizes);
+//
+//        firestore.collection.add(clothItem).addCompleteListener();
+//
+//        Glide.with(view)
+//                .load(item.getImages().get(0).getImageURL())
+//                .into(ImageView);
+    }
+
     //    Without empty constructor fireStore won't work
     public Item (){}
 

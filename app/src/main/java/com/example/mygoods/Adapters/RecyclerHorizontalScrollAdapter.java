@@ -20,7 +20,6 @@ public class RecyclerHorizontalScrollAdapter extends RecyclerView.Adapter<Recycl
     private View view;
     private OnItemClickListener mlister;
 
-
     public interface OnItemClickListener{
         void onItemClick(int position);
         void onMinusSignClick(int position);
