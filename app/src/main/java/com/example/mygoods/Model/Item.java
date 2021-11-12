@@ -1,14 +1,13 @@
 package com.example.mygoods.Model;
 
 
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 
-public class Item implements Serializable , Comparable<Item>{
+public class Item implements Serializable, Comparable<Item> {
 
     private String itemid;
     private String name;
@@ -25,33 +24,18 @@ public class Item implements Serializable , Comparable<Item>{
     private int views;
     private Date date;
 
-    private void testImages(){
-//        ClothItem  clothItem = new ClothItem();
-//
-//        List<String> sizes = new ArrayList<>();
-//        sizes.add("Medium");
-//        sizes.add("Large");
-//
-//        clothItem.setSizes(sizes);
-//
-//        firestore.collection.add(clothItem).addCompleteListener();
-//
-//        Glide.with(view)
-//                .load(item.getImages().get(0).getImageURL())
-//                .into(ImageView);
-    }
-
     //    Without empty constructor fireStore won't work
-    public Item (){}
+    public Item() {
+    }
 
 //    Without Item Id,View = 0
 //    Basically for Add Fragement
 
-    public Item(String name, String address,List<Image> images, String subCategory,String mainCategory, String description, String userid, String phone, double price,Date date) {
+    public Item(String name, String address, List<Image> images, String subCategory, String mainCategory, String description, String userid, String phone, double price, Date date) {
         this.name = name;
         this.address = address;
         this.images = images;
-        this.subCategory =subCategory;
+        this.subCategory = subCategory;
         this.mainCategory = mainCategory;
         this.description = description;
         this.userid = userid;
@@ -222,8 +206,8 @@ public class Item implements Serializable , Comparable<Item>{
 
     @Override
     public int compareTo(Item o) {
-        int compareView=((Item)o).getViews();
-        return compareView-this.views;
+        int compareView = ((Item) o).getViews();
+        return compareView - this.views;
     }
 
 

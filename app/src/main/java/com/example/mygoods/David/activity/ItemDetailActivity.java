@@ -85,6 +85,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private AdditionalInfo itemAdditionalInfo;
 
     private static final int MAX_NUM_SIMILAR_ITEMS = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -105,7 +106,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     protected void onDestroy() {
         super.onDestroy();
         if (currentUser.isAnonymous()) {
-            if (sqLiteManager !=null){
+            if (sqLiteManager != null) {
                 sqLiteManager.close();
             }
         }
@@ -142,7 +143,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     }
 
-    private void setupViews(){
+    private void setupViews() {
 
         item = (Item) getIntent().getSerializableExtra("ItemData"); // get object
 
@@ -169,7 +170,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 //TODO: Move to seller profile activity
                 if (users.get(0) != null) {
                     moveToSellerProfileActivity();
-                }else{
+                } else {
                     Toast.makeText(ItemDetailActivity.this, "Seller Information unavailable", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -187,20 +188,20 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    if (mAuth.getCurrentUser()!=null){
+                    if (mAuth.getCurrentUser() != null) {
                         if (!mAuth.getCurrentUser().isAnonymous()) {
                             addToSaveItem();
 
-                        }else{
+                        } else {
                             addToSaveButton.setChecked(false);
                             Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
-                            intent.putExtra("wantToSign","true");
+                            intent.putExtra("wantToSign", "true");
                             startActivity(intent);
                         }
-                    }else{
+                    } else {
                         addToSaveButton.setChecked(false);
                         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
-                        intent.putExtra("wantToSign","true");
+                        intent.putExtra("wantToSign", "true");
                         startActivity(intent);
                     }
                 } else {
@@ -227,12 +228,12 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
     }
 
-    private void setData(){
+    private void setData() {
         itemName.setText(item.getName());
-        itemPrice.setText("USD: "+item.getPrice());
-        itemViewCount.setText("Views: "+item.getViews());
+        itemPrice.setText("USD: " + item.getPrice());
+        itemViewCount.setText("Views: " + item.getViews());
         itemDescription.setText(item.getDescription());
-        for (int i = 0; i<item.getImages().size(); i++){
+        for (int i = 0; i < item.getImages().size(); i++) {
             imageUrl.add(item.getImages().get(i).getImageURL());
         }
         sellerPhone.setText("Tel: " + item.getPhone());
@@ -262,32 +263,32 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
                 if (tempAdditionalInfo != null) {
                     additionalInformation = "Condition : " + tempAdditionalInfo.getCondition();
-                    if (tempAdditionalInfo.getBikeType()!=null){
+                    if (tempAdditionalInfo.getBikeType() != null) {
 //                        String description = additionalInfo+itemDescription.getText().toString().trim();
                         additionalInformation = additionalInformation + "\n\n"
-                                + "Bike Type : " +tempAdditionalInfo.getBikeType();
-                    }else if (tempAdditionalInfo.getCar()!=null){
+                                + "Bike Type : " + tempAdditionalInfo.getBikeType();
+                    } else if (tempAdditionalInfo.getCar() != null) {
                         additionalInformation = additionalInformation + "\n\n"
                                 + "Car Brand : " + tempAdditionalInfo.getCar().getBrand()
                                 + "\nCar Model : " + tempAdditionalInfo.getCar().getModel()
                                 + "\nCar Type : " + tempAdditionalInfo.getCar().getCategory()
                                 + "\nCar Year : " + tempAdditionalInfo.getCar().getYear();
-                    }else if (tempAdditionalInfo.getComputerParts()!=null){
+                    } else if (tempAdditionalInfo.getComputerParts() != null) {
                         additionalInformation = additionalInformation + "\n\n"
-                                + "Part Type : " +tempAdditionalInfo.getComputerParts();
-                    }else if (tempAdditionalInfo.getPhone()!=null){
+                                + "Part Type : " + tempAdditionalInfo.getComputerParts();
+                    } else if (tempAdditionalInfo.getPhone() != null) {
                         additionalInformation = additionalInformation + "\n\n"
                                 + "Phone Brand : " + tempAdditionalInfo.getPhone().getPhoneBrand()
                                 + "\nPhone Model : " + tempAdditionalInfo.getPhone().getPhoneModel();
-                    }else if (tempAdditionalInfo.getMotoType()!=null){
+                    } else if (tempAdditionalInfo.getMotoType() != null) {
                         additionalInformation = additionalInformation + "\n\n"
-                                + "Motobike Type : " +tempAdditionalInfo.getMotoType();
+                                + "Motobike Type : " + tempAdditionalInfo.getMotoType();
                     }
 
                     itemAdditionalInfo = new AdditionalInfo(tempAdditionalInfo);
                     itemAdditionInfoText.setText(additionalInformation);
 
-                }else{
+                } else {
                     additionalInfoLayout.setVisibility(View.GONE);
                 }
 
@@ -301,11 +302,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
-    private void addItemToListNotify(Item itemToAdd){
-        if (similarItemData.size() <MAX_NUM_SIMILAR_ITEMS) {
+    private void addItemToListNotify(Item itemToAdd) {
+        if (similarItemData.size() < MAX_NUM_SIMILAR_ITEMS) {
             if (!itemToAdd.getItemid().equals(item.getItemid())) {
 
-                if (!similarItemData.contains(itemToAdd)){
+                if (!similarItemData.contains(itemToAdd)) {
                     similarItemData.add(itemToAdd);
                 }
 
@@ -333,21 +334,22 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
 
     private int i;
+
     private void firstStageQuerySimilarItem() {
 //         priceRange of +-35%
-        i=0;
+        i = 0;
         int percentage = 35;
-        float topPrice = (float) (item.getPrice() + (item.getPrice()*percentage/100));
-        float bottomPrice = (float) (item.getPrice() - (item.getPrice()*percentage/100));
+        float topPrice = (float) (item.getPrice() + (item.getPrice() * percentage / 100));
+        float bottomPrice = (float) (item.getPrice() - (item.getPrice() * percentage / 100));
 
         db.collection(Constant.itemCollection)
-                .whereEqualTo("mainCategory",item.getMainCategory())
-                .whereEqualTo("subCategory",item.getSubCategory())
+                .whereEqualTo("mainCategory", item.getMainCategory())
+                .whereEqualTo("subCategory", item.getSubCategory())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Item tempItem = documentSnapshot.toObject(Item.class);
 
                             if (itemAdditionalInfo != null) {
@@ -363,7 +365,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
                                             if (tempItem.getPrice() >= Math.floor(bottomPrice)
                                                     && tempItem.getPrice() <= Math.ceil(topPrice)) {
-                                                checkAdditionalItem(queryAdditionalInfo,tempItem);
+                                                checkAdditionalItem(queryAdditionalInfo, tempItem);
                                             }
 
                                         }
@@ -381,7 +383,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                                         Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                            }else {
+                            } else {
                                 if (tempItem.getPrice() >= Math.floor(bottomPrice)
                                         && tempItem.getPrice() <= Math.ceil(topPrice)) {
                                     addItemToListNotify(tempItem);
@@ -409,7 +411,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
-    private void checkAdditionalItem(AdditionalInfo queryAdditionalInfo,Item tempItem){
+    private void checkAdditionalItem(AdditionalInfo queryAdditionalInfo, Item tempItem) {
         if (queryAdditionalInfo.equals(itemAdditionalInfo)) {
             addItemToListNotify(tempItem);
         } else if (queryAdditionalInfo.getPhone() != null) {
@@ -427,10 +429,10 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                     && queryAdditionalInfo.getCar().getModel().equals(
                     itemAdditionalInfo.getCar().getModel())) {
                 addItemToListNotify(tempItem);
-            }else if (queryAdditionalInfo.getCar().getBrand().equals(
+            } else if (queryAdditionalInfo.getCar().getBrand().equals(
                     itemAdditionalInfo.getCar().getBrand())
                     && itemAdditionalInfo.getCar().getModel().contains(
-                    firstWord)){
+                    firstWord)) {
                 addItemToListNotify(tempItem);
             }
         } else if (queryAdditionalInfo.getBikeType() != null) {
@@ -438,7 +440,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                     itemAdditionalInfo.getBikeType())) {
                 addItemToListNotify(tempItem);
             }
-        } else if (queryAdditionalInfo.getMotoType() !=null) {
+        } else if (queryAdditionalInfo.getMotoType() != null) {
             if (queryAdditionalInfo.getMotoType()
                     .equals(itemAdditionalInfo.getMotoType())) {
                 addItemToListNotify(tempItem);
@@ -457,10 +459,10 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 //    Then move to final stage
 
     private void secondStageQuerySimilarItem(QuerySnapshot queryDocumentSnapshots) {
-        i=0;
+        i = 0;
 
 
-        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
             Item tempItem = documentSnapshot.toObject(Item.class);
 
             db.collection(Constant.itemCollection)
@@ -472,7 +474,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     AdditionalInfo queryAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
                     if (queryAdditionalInfo != null) {
-                        checkAdditionalItem(queryAdditionalInfo,tempItem);
+                        checkAdditionalItem(queryAdditionalInfo, tempItem);
                     }
                     i++;
                     if (queryDocumentSnapshots.size() == i) {
@@ -501,13 +503,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 
 //        Get Similar Item with a certain price point with the same name
         db.collection(Constant.itemCollection)
-                .whereEqualTo("mainCategory",item.getMainCategory())
-                .whereEqualTo("subCategory",item.getSubCategory())
+                .whereEqualTo("mainCategory", item.getMainCategory())
+                .whereEqualTo("subCategory", item.getSubCategory())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Item tempItem = documentSnapshot.toObject(Item.class);
                             addItemToListNotify(tempItem);
                         }
@@ -519,8 +521,6 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
             }
         });
     }
-
-
 
 
     private void getSimilarItems() {
@@ -537,13 +537,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         ArrayList<Item> similarItemData = new ArrayList<>();
                         if (!list.isEmpty()) {
-                            for(DocumentSnapshot doc : list) {
+                            for (DocumentSnapshot doc : list) {
                                 count += 1;
                                 Item curItem = doc.toObject(Item.class);
                                 if (curItem != null) {
                                     similarItemData.add(curItem);
-                                    if (count == list.size()){
-                                        for(int i = 0; i<similarItemData.size(); i++) {
+                                    if (count == list.size()) {
+                                        for (int i = 0; i < similarItemData.size(); i++) {
                                             if (similarItemData.get(i).getSubCategory().equals(item.getSubCategory()) &&
                                                     similarItemData.get(i).getMainCategory().equals(item.getMainCategory())) {
                                                 filterSimilarItemData.add(similarItemData.get(i));
@@ -568,13 +568,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         Set<Character> charactersMatchCount = new HashSet<>();
         String itemName = replaceWhiteSpace(currentItemName).toLowerCase();
 
-        for (int f = 0; f<rawData.size(); f++) {
+        for (int f = 0; f < rawData.size(); f++) {
             String data = replaceWhiteSpace(rawData.get(f).getName()).toLowerCase();
 
             if (data.length() > itemName.length()) {
-                for (int s = 0; s<data.length(); s++) {
+                for (int s = 0; s < data.length(); s++) {
 
-                    for (int t = 0; t<itemName.length(); t++) {
+                    for (int t = 0; t < itemName.length(); t++) {
 
                         if (itemName.charAt(t) == data.charAt(s)) {
 
@@ -584,9 +584,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 } // End of second for loop
 
             } else {
-                for (int s = 0; s<itemName.length(); s++) {
+                for (int s = 0; s < itemName.length(); s++) {
 
-                    for (int t = 0; t<data.length(); t++) {
+                    for (int t = 0; t < data.length(); t++) {
 
                         if (data.charAt(t) == itemName.charAt(s)) {
 
@@ -606,9 +606,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 //            Collections.copy(similarItemData, filterSimilarItemData);
             similarItemData.addAll(filterSimilarItemData);
             similarItemAdapter.notifyDataSetChanged();
-        }else if (similarItemData.size() < 3) {
+        } else if (similarItemData.size() < 3) {
             if (!filterSimilarItemData.isEmpty()) {
-                for (int i = 0; i<filterSimilarItemData.size(); i++) {
+                for (int i = 0; i < filterSimilarItemData.size(); i++) {
                     similarItemData.add(filterSimilarItemData.get(i));
                 }
             }
@@ -635,7 +635,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                                         .placeholder(R.drawable.account)
                                         .centerCrop()
                                         .into(sellerImage);
-                            }else {
+                            } else {
                                 Glide.with(ItemDetailActivity.this)
                                         .load(R.drawable.account)
                                         .centerCrop()
@@ -662,7 +662,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         // 1. Get all the viewer size
         int size = item.getViewers().size();
         // 2. Loop and add all the ID into set
-        for (int i = 0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             userID.add(item.getViewers().get(i));
         }
 
@@ -673,9 +673,8 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         // 4. Update data with size to FireStore
         DocumentReference ref = db.collection(Constant.itemCollection).document(item.getItemid());
         ref.update(Constant.viewerField, id);
-        ref.update(Constant.viewField, (id.size()-1));
+        ref.update(Constant.viewField, (id.size() - 1));
     }
-
 
 
     private void addToRecentView() {
@@ -687,29 +686,29 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 //            sqLiteManager.insert(Constant.recentViewTable,item.getItemid()); // Insert current itemID + date of view
 //
 //        } else {
-            if (mAuth.getUid() != null) {
-                DocumentReference ref = db.collection(Constant.userCollection)
-                        .document(mAuth.getUid())
-                        .collection("recentView")
-                        .document(item.getItemid());
+        if (mAuth.getUid() != null) {
+            DocumentReference ref = db.collection(Constant.userCollection)
+                    .document(mAuth.getUid())
+                    .collection("recentView")
+                    .document(item.getItemid());
 
-                Map<String, Object> recentViewItem = new HashMap<>();
-                recentViewItem.put("itemID", item.getItemid());
-                recentViewItem.put("date", new Timestamp(new Date()));
+            Map<String, Object> recentViewItem = new HashMap<>();
+            recentViewItem.put("itemID", item.getItemid());
+            recentViewItem.put("date", new Timestamp(new Date()));
 
-                ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }else{
-                Toast.makeText(this, "Current User is Null", Toast.LENGTH_SHORT).show();
-            }
+            ref.set(recentViewItem).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ItemDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Current User is Null", Toast.LENGTH_SHORT).show();
+        }
 //        }
     }
 
-        //TODO: Change documentPath to adaptive user id
+    //TODO: Change documentPath to adaptive user id
 //        DocumentReference ref = db
 //                .collection(Constant.userCollection)
 //                .document(currentUser.getUid())
@@ -736,7 +735,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         ref.set(saveItem).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                if (!isSaved){
+                if (!isSaved) {
                     Toast.makeText(ItemDetailActivity.this, "Added to Save Items!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -748,11 +747,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
-    private void unSaveItem(){
-        db.collection("users").whereEqualTo("userId",mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    private void unSaveItem() {
+        db.collection("users").whereEqualTo("userId", mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     db.collection("users")
                             .document(documentSnapshot.getId())
                             .collection("saveItems")
@@ -770,14 +769,14 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         });
     }
 
-    private void CheckIfItemSaved(){
+    private void CheckIfItemSaved() {
         List<String> saveItems = new ArrayList<>();
-        db.collection("users").whereEqualTo("userId",mAuth.getUid())
+        db.collection("users").whereEqualTo("userId", mAuth.getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             db.collection("users")
                                     .document(documentSnapshot.getId())
                                     .collection("saveItems")
@@ -785,11 +784,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                                 @Override
                                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                                    for(QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                         saveItems.add(documentSnapshot.get("itemid").toString());
                                     }
 
-                                    for (String itemId:saveItems) {
+                                    for (String itemId : saveItems) {
                                         if (item.getItemid().equals(itemId)) {
                                             addToSaveButton.setChecked(true);
                                             isSaved = true;
@@ -821,7 +820,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
         Intent intent = new Intent();
         intent.setClass(this, FullScreenImageActivity.class);
         intent.putExtra("images", (Serializable) item.getImages());
-        intent.putExtra("position",viewPager.getCurrentItem());
+        intent.putExtra("position", viewPager.getCurrentItem());
         startActivity(intent);
     }
 } // End of class

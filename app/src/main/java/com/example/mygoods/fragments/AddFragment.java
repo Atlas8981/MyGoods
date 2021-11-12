@@ -77,26 +77,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-
 public class AddFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     // Firebase
-
-
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     // Variables
@@ -123,14 +106,14 @@ public class AddFragment extends Fragment {
 
     private ArrayList<Image> imagesUpload;
 
-    int uploadNumber = 0;
+    private int uploadNumber = 0;
     private ProgressDialog pd;
     private RecyclerView recyclerView;
     private RecyclerHorizontalScrollAdapter recyclerAdapter;
 
     private LinearLayout brandLayout, conditionLayout, yearLayout, modelLayout, typeLayout;
     private TextView brandText, conditionText, yearText, modelText, typeText;
-    private TextView brandSelector, yearSelector, modelSelector, typeSelector,conditionSelector;
+    private TextView brandSelector, yearSelector, modelSelector, typeSelector, conditionSelector;
 
 
     private AddBottomSheetDialog bottomSheets;
@@ -145,18 +128,8 @@ public class AddFragment extends Fragment {
 
     private static final int REQUEST_CODE = 0;
     public static final int MAX_NUM_IMAGE = 5;
+
     public AddFragment() {
-
-    }
-
-    public static AddFragment newInstance(String param1, String param2) {
-        AddFragment fragment = new AddFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-
-        return fragment;
     }
 
 
@@ -167,15 +140,11 @@ public class AddFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        if (carList==null
-                || bikePartsList ==null
+        if (carList == null
+                || bikePartsList == null
                 || phoneList == null
                 || motoTypeList == null
-                || computerPartsList ==null) {
+                || computerPartsList == null) {
             getDataFromApi();
         }
 
@@ -203,8 +172,8 @@ public class AddFragment extends Fragment {
         // Setup item
         inflateViews();
 
-        amount.setKeyListener(DigitsKeyListener.getInstance(true,true));
-        price.setKeyListener(DigitsKeyListener.getInstance(true,true));
+        amount.setKeyListener(DigitsKeyListener.getInstance(true, true));
+        price.setKeyListener(DigitsKeyListener.getInstance(true, true));
 
         initializeVariable();
 
@@ -234,7 +203,7 @@ public class AddFragment extends Fragment {
                 try {
 
                     URL url = new URL("https://parseapi.back4app.com/classes/Car_Model_List?limit=9581&order=Make");
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestProperty("X-Parse-Application-Id", "hlhoNKjOvEhqzcVAJ1lxjicJLZNVv36GdbboZj3Z"); // This is the fake app's application id
                     urlConnection.setRequestProperty("X-Parse-Master-Key", "SNMJJF0CZZhTPhLDIqGhTlUNV9r60M2Z5spyWfXW"); // This is the fake app's readonly master key
                     try {
@@ -257,14 +226,14 @@ public class AddFragment extends Fragment {
         })).start();
     }
 
-    private void getMotobikeApi(){
+    private void getMotobikeApi() {
         (new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     URL url = new URL("https://api.trademe.co.nz/v1/Categories/MotorBikes.json");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     try {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                         StringBuilder stringBuilder = new StringBuilder();
@@ -286,7 +255,7 @@ public class AddFragment extends Fragment {
 
     }
 
-    private void getBikeApi(){
+    private void getBikeApi() {
 
         (new Thread(new Runnable() {
             @Override
@@ -294,7 +263,7 @@ public class AddFragment extends Fragment {
                 try {
                     URL url = new URL("https://api.trademe.co.nz/v1/Categories/0005.json");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     try {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                         StringBuilder stringBuilder = new StringBuilder();
@@ -318,14 +287,14 @@ public class AddFragment extends Fragment {
         })).start();
     }
 
-    private void getComputerApi(){
+    private void getComputerApi() {
         (new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     URL url = new URL("https://api.trademe.co.nz/v1/Categories/0002.json");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 //                    urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
 //                    urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
                     try {
@@ -367,7 +336,7 @@ public class AddFragment extends Fragment {
                             "    }" +
                             "}", "utf-8");
                     URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=7418&order=Brand&keys=Brand,Model,Display_resolution&where=" + where);
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
                     urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
                     try {
@@ -398,7 +367,7 @@ public class AddFragment extends Fragment {
 
     private Set<Car> generateCarData(JSONObject thisData) {
 
-        Set<Car> setCars =new HashSet<>();
+        Set<Car> setCars = new HashSet<>();
 
 //        Set<String> carBrands =new HashSet<>();
 
@@ -412,8 +381,7 @@ public class AddFragment extends Fragment {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             JSONObject jObj = null;
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -453,8 +421,7 @@ public class AddFragment extends Fragment {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             try {
                 jObj = ja_data.getJSONObject(i);
                 assert jObj != null;
@@ -471,7 +438,7 @@ public class AddFragment extends Fragment {
 
         Set<String> bikeSet = new HashSet<>();
 
-        JSONObject jObj ;
+        JSONObject jObj;
         //extracting data array from json string
         JSONArray ja_data = null;
         try {
@@ -482,8 +449,7 @@ public class AddFragment extends Fragment {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
 
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -510,7 +476,7 @@ public class AddFragment extends Fragment {
     }
 
     private Set<String> generateComputerData(JSONObject thisData) {
-        Set<String > computerSet = new HashSet<>();
+        Set<String> computerSet = new HashSet<>();
 
         JSONObject jObj;
 
@@ -524,8 +490,7 @@ public class AddFragment extends Fragment {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
 
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -554,7 +519,7 @@ public class AddFragment extends Fragment {
 
     private Set<Phone> generatePhoneData(JSONObject thisData) {
 
-        Set<Phone> setPhone =new HashSet<>();
+        Set<Phone> setPhone = new HashSet<>();
 
 
         //extracting data array from json string
@@ -567,8 +532,7 @@ public class AddFragment extends Fragment {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             JSONObject jObj = null;
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -582,15 +546,15 @@ public class AddFragment extends Fragment {
                 double screenSize = 0;
                 try {
                     screenSize = Double.parseDouble(firstWord);
-                }catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
 
                 }
 
 
-                if (screenSize > 1.8 &&screenSize < 7.0){
+                if (screenSize > 1.8 && screenSize < 7.0) {
 
                     setPhone.add(new Phone(jObj.getString("Brand"),
-                            jObj.getString("Model").replace("_","")));
+                            jObj.getString("Model").replace("_", "")));
                 }
 
 
@@ -604,7 +568,7 @@ public class AddFragment extends Fragment {
     }
 
     private void autoCompleteField() {
-        if (auth.getUid()!=null) {
+        if (auth.getUid() != null) {
             db.collection("users")
                     .document(auth.getUid())
                     .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -619,7 +583,7 @@ public class AddFragment extends Fragment {
                         if (currentUser.getPhoneNumber() != null) {
                             phone.setText(currentUser.getPhoneNumber());
                         }
-                    }else{
+                    } else {
                         Intent intent = new Intent();
                         intent.setClass(getContext(), PersonalInformationActivity.class);
                         startActivity(intent);
@@ -648,6 +612,7 @@ public class AddFragment extends Fragment {
 
         additionalInfo = new AdditionalInfo();
     }
+
     RecyclerHorizontalScrollAdapter.OnItemClickListener onItemClickListener = new RecyclerHorizontalScrollAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(int position) {
@@ -668,7 +633,7 @@ public class AddFragment extends Fragment {
 
     };
 
-    private void NotifyData(){
+    private void NotifyData() {
         recyclerAdapter = new RecyclerHorizontalScrollAdapter(imageBitmap);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerAdapter.setOnItemClickListener(onItemClickListener);
@@ -677,14 +642,14 @@ public class AddFragment extends Fragment {
     //****************
     // METHOD USE TO NAVIGATE TO GALLERY
     //****************
-    private void choosePicture(){
-        if (imageBitmap.size()<MAX_NUM_IMAGE) {
+    private void choosePicture() {
+        if (imageBitmap.size() < MAX_NUM_IMAGE) {
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Select Image(s)"), REQUEST_CODE);
-        }else {
+        } else {
             Toast.makeText(addFragmentContext, "You cannot add more than 5 pictures", Toast.LENGTH_SHORT).show();
         }
     }
@@ -693,12 +658,11 @@ public class AddFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
 
             if (data.getClipData() != null) {
                 // picked multiple images
                 int count = data.getClipData().getItemCount();
-
 
 
 //                Check if count >= max number of image
@@ -710,7 +674,7 @@ public class AddFragment extends Fragment {
 
                         try {
                             Bitmap tempBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-                            Bitmap rotatedBitmap = checkOrientation(getContext(),uri,tempBitmap);
+                            Bitmap rotatedBitmap = checkOrientation(getContext(), uri, tempBitmap);
                             imageBitmap.add(rotatedBitmap);
                             notifyImageNumberChange();
                         } catch (IOException e) {
@@ -727,7 +691,7 @@ public class AddFragment extends Fragment {
                 Uri uri = data.getData();
                 try {
                     Bitmap tempBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-                    Bitmap rotatedBitmap = checkOrientation(getContext(),uri,tempBitmap);
+                    Bitmap rotatedBitmap = checkOrientation(getContext(), uri, tempBitmap);
                     imageBitmap.add(rotatedBitmap);
                     notifyImageNumberChange();
                 } catch (IOException e) {
@@ -739,12 +703,12 @@ public class AddFragment extends Fragment {
             }
 
 
-        }else{
+        } else {
             Toast.makeText(addFragmentContext, "Cannot upload image, try choosing another one", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public Bitmap checkOrientation (Context context,Uri uri,Bitmap bitmap){
+    public Bitmap checkOrientation(Context context, Uri uri, Bitmap bitmap) {
 
         ExifInterface ei = null;
         try {
@@ -760,7 +724,7 @@ public class AddFragment extends Fragment {
 
         Bitmap rotatedBitmap = null;
 
-        switch(orientation) {
+        switch (orientation) {
 
             case ExifInterface.ORIENTATION_ROTATE_90:
                 rotatedBitmap = rotateImage(bitmap, 90);
@@ -794,42 +758,45 @@ public class AddFragment extends Fragment {
     //****************
     // METHOD USE FOR UPLOAD DATA EXCEPT IMAGE URL
     //****************
-    private void uploadData(){
+    private void uploadData() {
 
         Item item = getItem();
-        db.collection("items").document(item.getItemid()).set(item).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
+        db.collection("items")
+                .document(item.getItemid())
+                .set(item)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
 
-                additionalInfo.setCondition(conditionSelector.getText().toString().trim());
-                ref.collection("additionInfo")
-                        .document(subCategory)
-                        .set(additionalInfo)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        additionalInfo.setCondition(conditionSelector.getText().toString().trim());
+                        ref.collection("additionInfo")
+                                .document(subCategory)
+                                .set(additionalInfo)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(addFragmentContext, "Item Uploaded", Toast.LENGTH_SHORT).show();
+                                        if (pd != null) {
+                                            pd.dismiss();
+                                        }
+                                        clearDataAfterUpload();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(addFragmentContext, "Item Uploaded", Toast.LENGTH_SHORT).show();
-                                if (pd!=null) {
+                            public void onFailure(@NonNull Exception e) {
+                                if (pd != null) {
                                     pd.dismiss();
                                 }
-                                clearDataAfterUpload();
+                                Toast.makeText(addFragmentContext, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pd!=null) {
-                            pd.dismiss();
-                        }
-                        Toast.makeText(addFragmentContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+
+
                     }
-                });
-
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                if (pd!=null) {
+                if (pd != null) {
                     pd.dismiss();
                 }
                 Toast.makeText(addFragmentContext, "Failed Item Uploaded", Toast.LENGTH_SHORT).show();
@@ -884,10 +851,10 @@ public class AddFragment extends Fragment {
     //****************
     // METHOD USE FOR UPLOAD DATA WITH IMAGEURL
     //****************
-    private void uploadDataAndPicture(byte[] bytes){
+    private void uploadDataAndPicture(byte[] bytes) {
 
         final String randomKey = UUID.randomUUID().toString();
-        storageRef = firebaseStorage.getReference().child("images/" +randomKey);
+        storageRef = firebaseStorage.getReference().child("images/" + randomKey);
 
         UploadTask uploadTask = storageRef.putBytes(bytes);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -905,9 +872,9 @@ public class AddFragment extends Fragment {
 
                         uploadNumber++;
 
-                        if (uploadNumber<imageBitmap.size()){
+                        if (uploadNumber < imageBitmap.size()) {
                             new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
-                        }else{
+                        } else {
                             uploadNumber = 0;
                             uploadData();
                             Toast.makeText(addFragmentContext, "Image Upload Successfully", Toast.LENGTH_LONG).show();
@@ -917,11 +884,11 @@ public class AddFragment extends Fragment {
                 });
             }
         }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Toast.makeText(addFragmentContext, "Upload Fail, TRY AGAIN", Toast.LENGTH_LONG).show();
-                    }
-                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(addFragmentContext, "Upload Fail, TRY AGAIN", Toast.LENGTH_LONG).show();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
 
             @Override
             public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
@@ -935,10 +902,10 @@ public class AddFragment extends Fragment {
     //****************
     // METHOD USE FOR CONVERTING BITMAP TO BYTES
     //****************
-    private static byte[] getBytesFromBitmap (Bitmap bitmap, int quality){
+    private static byte[] getBytesFromBitmap(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG,quality,stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
 
         return stream.toByteArray();
     }
@@ -966,14 +933,14 @@ public class AddFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.confirm_menu_item,menu);
+        inflater.inflate(R.menu.confirm_menu_item, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.confirmPost: {
                 if (checkView()) {
                     pd = new ProgressDialog(addFragmentContext);
@@ -983,20 +950,21 @@ public class AddFragment extends Fragment {
                     new BackgroundImageResize().execute(imageBitmap.get(uploadNumber));
                 }
 
-            }break;
+            }
+            break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean checkView (){
+    private boolean checkView() {
         String errorMsg = "Here";
         boolean flag = true;
 
-        if (itemName.getText().toString().isEmpty()){
+        if (itemName.getText().toString().isEmpty()) {
             itemName.setError(errorMsg);
             flag = false;
-        }else{
+        } else {
             itemName.setError(null);
         }
         if (!price.getText().toString().isEmpty()) {
@@ -1007,98 +975,98 @@ public class AddFragment extends Fragment {
                 price.setError("Number Format Error");
                 flag = false;
             }
-        }else {
+        } else {
             price.setError(errorMsg);
             flag = false;
         }
 
-        if (address.getText().toString().isEmpty()){
+        if (address.getText().toString().isEmpty()) {
             address.setError(errorMsg);
             flag = false;
-        }else{
+        } else {
             address.setError(null);
         }
-        if (phone.getText().toString().isEmpty()){
+        if (phone.getText().toString().isEmpty()) {
             phone.setError(errorMsg);
             flag = false;
-        }else{
+        } else {
             phone.setError(null);
         }
-        if (description.getText().toString().isEmpty()){
+        if (description.getText().toString().isEmpty()) {
             description.setError(errorMsg);
             flag = false;
-        }else if (description.getLineCount()>20){
+        } else if (description.getLineCount() > 20) {
             description.setError("Description Too Long");
             flag = false;
-        }else{
+        } else {
             description.setError(null);
         }
-        if (imageBitmap.size() == 0){
+        if (imageBitmap.size() == 0) {
             Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }
 
         if (conditionSelector.getText().toString().equalsIgnoreCase("")
                 || conditionSelector.getText().toString().equalsIgnoreCase("(Condition)")
-                || conditionSelector.getText().toString().isEmpty()){
+                || conditionSelector.getText().toString().isEmpty()) {
             conditionSelector.setError("Please select Condition");
             flag = false;
-        }else {
+        } else {
             conditionSelector.setError(null);
         }
 
-        if (subCategory == null || mainCategory ==null){
+        if (subCategory == null || mainCategory == null) {
             Toast.makeText(getContext(), "Please Choose a Category", Toast.LENGTH_SHORT).show();
             flag = false;
-        }else{
-            if (subCategory.equalsIgnoreCase("cars")){
-                if (additionalInfo.getCar() == null){
+        } else {
+            if (subCategory.equalsIgnoreCase("cars")) {
+                if (additionalInfo.getCar() == null) {
                     brandSelector.setError("Please Enter Car Detail");
                     flag = false;
-                }else{
+                } else {
                     if (additionalInfo.getCar().getBrand() == null
                             | additionalInfo.getCar().getModel() == null
                             | additionalInfo.getCar().getCategory() == null
-                            | additionalInfo.getCar().getYear() == null){
+                            | additionalInfo.getCar().getYear() == null) {
                         brandSelector.setError("Not Enough Information");
-                        flag=false;
-                    }else{
+                        flag = false;
+                    } else {
                         brandSelector.setError(null);
                     }
 
                 }
-            }else if (subCategory.equalsIgnoreCase("phone")){
-                if (additionalInfo.getPhone() ==null){
+            } else if (subCategory.equalsIgnoreCase("phone")) {
+                if (additionalInfo.getPhone() == null) {
                     brandSelector.setError("Please Enter Phone Detail");
                     flag = false;
-                }else{
+                } else {
                     if (additionalInfo.getPhone().getPhoneBrand() == null
-                            | additionalInfo.getPhone().getPhoneModel() == null ){
+                            | additionalInfo.getPhone().getPhoneModel() == null) {
                         brandSelector.setError("Not Enough Information");
-                        flag=false;
-                    }else {
+                        flag = false;
+                    } else {
                         brandSelector.setError(null);
                     }
                 }
-            }else if (subCategory.toLowerCase().contains("parts")){
-                if (additionalInfo.getComputerParts() == null){
+            } else if (subCategory.toLowerCase().contains("parts")) {
+                if (additionalInfo.getComputerParts() == null) {
                     typeSelector.setError("Please Select Type of Item");
                     flag = false;
-                }else {
+                } else {
                     typeSelector.setError(null);
                 }
-            }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
-                if (additionalInfo.getBikeType() == null){
+            } else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())) {
+                if (additionalInfo.getBikeType() == null) {
                     typeSelector.setError("Please Select Type of Item");
                     flag = false;
-                }else {
+                } else {
                     typeSelector.setError(null);
                 }
-            }else if (subCategory.toLowerCase().contains("moto")){
-                if (additionalInfo.getMotoType() == null){
+            } else if (subCategory.toLowerCase().contains("moto")) {
+                if (additionalInfo.getMotoType() == null) {
                     typeSelector.setError("Please Select Type of Item");
                     flag = false;
-                }else {
+                } else {
                     typeSelector.setError(null);
                 }
             }
@@ -1111,13 +1079,13 @@ public class AddFragment extends Fragment {
     //****************
     // METHOD USE FOR INFLATING VIEWS
     //****************
-    private void inflateViews(){
-        itemName = (EditText)v.findViewById(R.id.itemNameTextField);
-        amount = (EditText)v.findViewById(R.id.amountTextField);
-        price = (EditText)v.findViewById(R.id.priceTextField);
-        address = (EditText)v.findViewById(R.id.addressTextField);
-        phone = (EditText)v.findViewById(R.id.phoneTextField);
-        description = (EditText)v.findViewById(R.id.descriptionTextField);
+    private void inflateViews() {
+        itemName = (EditText) v.findViewById(R.id.itemNameTextField);
+        amount = (EditText) v.findViewById(R.id.amountTextField);
+        price = (EditText) v.findViewById(R.id.priceTextField);
+        address = (EditText) v.findViewById(R.id.addressTextField);
+        phone = (EditText) v.findViewById(R.id.phoneTextField);
+        description = (EditText) v.findViewById(R.id.descriptionTextField);
         categorySelector = v.findViewById(R.id.categorySelector);
         mainCategoryText = v.findViewById(R.id.mainCategoryText);
         remainingImages = v.findViewById(R.id.remainingImages);
@@ -1170,14 +1138,14 @@ public class AddFragment extends Fragment {
                         conditionSelector.setText(name);
                     }
                 });
-                bottomSheet.show(getFragmentManager(),getTag());
+                bottomSheet.show(getFragmentManager(), getTag());
             }
         });
 
         layoutGone();
     }
 
-    private void layoutGone(){
+    private void layoutGone() {
         brandLayout.setVisibility(View.GONE);
         yearLayout.setVisibility(View.GONE);
         modelLayout.setVisibility(View.GONE);
@@ -1189,7 +1157,7 @@ public class AddFragment extends Fragment {
         typeSelector.setError(null);
     }
 
-    private void carProcedure(){
+    private void carProcedure() {
 
         brandLayout.setVisibility(View.VISIBLE);
         brandText.setText("Car Information (Brand, Model, Type of Car, Year)");
@@ -1212,7 +1180,7 @@ public class AddFragment extends Fragment {
             public void onClick(View view) {
                 Car tempCar = new Car();
 
-                if (carList.size()!=0) {
+                if (carList.size() != 0) {
                     Set<String> brandList = new HashSet<>();
                     for (Car c : carList) {
                         brandList.add(c.getBrand());
@@ -1230,7 +1198,7 @@ public class AddFragment extends Fragment {
 
                             Set<String> modelList = new HashSet<>();
                             for (Car c : carList) {
-                                if (c.getBrand().equalsIgnoreCase(name)){
+                                if (c.getBrand().equalsIgnoreCase(name)) {
                                     modelList.add(c.getModel());
                                 }
                             }
@@ -1248,12 +1216,12 @@ public class AddFragment extends Fragment {
 
                                     Set<String> carTypeList = new HashSet<>();
                                     for (Car c : carList) {
-                                        if (c.getModel().equals(name)){
+                                        if (c.getModel().equals(name)) {
                                             carTypeList.add(c.getCategory());
                                         }
                                     }
                                     carTypeList.add("Other");
-                                    if (carTypeList.size()==1){
+                                    if (carTypeList.size() == 1) {
                                         for (Car c : carList) {
                                             carTypeList.add(c.getCategory());
                                         }
@@ -1278,12 +1246,11 @@ public class AddFragment extends Fragment {
                                                 }
                                             }
                                             yearList.add("Other");
-                                            if (yearList.size()==1){
+                                            if (yearList.size() == 1) {
                                                 for (Car c : carList) {
                                                     yearList.add(c.getYear());
                                                 }
                                             }
-
 
 
                                             bottomSheets = new AddBottomSheetDialog(sortSetString(yearList));
@@ -1310,7 +1277,7 @@ public class AddFragment extends Fragment {
                     });
                     bottomSheets.show(getFragmentManager(), getTag());
 
-                }else{
+                } else {
                     Toast.makeText(addFragmentContext, "Please Wait A bit", Toast.LENGTH_SHORT).show();
                 }
 
@@ -1320,7 +1287,7 @@ public class AddFragment extends Fragment {
     }
 
     //    Work for Phone, Tablet
-    private void phoneProcedure(){
+    private void phoneProcedure() {
 
         brandLayout.setVisibility(View.VISIBLE);
         brandText.setText("Phone Detail (Brand, Model)");
@@ -1345,11 +1312,10 @@ public class AddFragment extends Fragment {
 
                 Phone tempPhone = new Phone();
 
-                Set<String> listPhoneBrand= new HashSet<>();
-                for (Phone p: phoneList){
+                Set<String> listPhoneBrand = new HashSet<>();
+                for (Phone p : phoneList) {
                     listPhoneBrand.add(p.getPhoneBrand());
                 }
-
 
 
                 bottomSheets = new AddBottomSheetDialog(sortSetString(listPhoneBrand));
@@ -1365,8 +1331,8 @@ public class AddFragment extends Fragment {
 
 
                         Set<String> listPhoneModel = new HashSet<>();
-                        for (Phone p: phoneList){
-                            if (p.getPhoneBrand().equalsIgnoreCase(name)){
+                        for (Phone p : phoneList) {
+                            if (p.getPhoneBrand().equalsIgnoreCase(name)) {
                                 listPhoneModel.add(p.getPhoneModel());
                             }
                         }
@@ -1385,11 +1351,11 @@ public class AddFragment extends Fragment {
                             }
                         });
                         assert getFragmentManager() != null;
-                        bottomSheets.show(getFragmentManager(),getTag());
+                        bottomSheets.show(getFragmentManager(), getTag());
                     }
                 });
                 assert getFragmentManager() != null;
-                bottomSheets.show(getFragmentManager(),getTag());
+                bottomSheets.show(getFragmentManager(), getTag());
             }
         });
 
@@ -1397,7 +1363,7 @@ public class AddFragment extends Fragment {
     }
 
     //    For Electronic Part and accessories
-    private void partAccessoriesComputerProcedure(){
+    private void partAccessoriesComputerProcedure() {
 
         brandLayout.setVisibility(View.GONE);
         brandText.setText(null);
@@ -1431,13 +1397,13 @@ public class AddFragment extends Fragment {
                         additionalInfo.setComputerParts(name);
                     }
                 });
-                bottomSheets.show(getFragmentManager(),getTag());
+                bottomSheets.show(getFragmentManager(), getTag());
             }
         });
 
     }
 
-    private void bikeProcedure(){
+    private void bikeProcedure() {
 
 
         brandLayout.setVisibility(View.GONE);
@@ -1472,12 +1438,12 @@ public class AddFragment extends Fragment {
                         additionalInfo.setBikeType(name);
                     }
                 });
-                bottomSheets.show(getFragmentManager(),getTag());
+                bottomSheets.show(getFragmentManager(), getTag());
             }
         });
     }
 
-    private void motoProcedure(){
+    private void motoProcedure() {
 
         brandLayout.setVisibility(View.GONE);
         brandText.setText(null);
@@ -1511,16 +1477,17 @@ public class AddFragment extends Fragment {
                         additionalInfo.setMotoType(name);
                     }
                 });
-                bottomSheets.show(getFragmentManager(),getTag());
+                bottomSheets.show(getFragmentManager(), getTag());
             }
         });
     }
 
-    private ArrayList<String> sortSetString (Set<String> unsortedSet){
+    private ArrayList<String> sortSetString(Set<String> unsortedSet) {
         ArrayList<String> sortedList = new ArrayList<>(unsortedSet);
         Collections.sort(sortedList);
         return sortedList;
     }
+
     private Spinner mainCategorySpinner;
     private Spinner subCategorySpinner;
 
@@ -1528,7 +1495,7 @@ public class AddFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.category_dialog_box,null);
+        View view = inflater.inflate(R.layout.category_dialog_box, null);
 
 
         setUpSpinner(view);
@@ -1553,17 +1520,17 @@ public class AddFragment extends Fragment {
 
                         additionalInfo = new AdditionalInfo();
 
-                        if (subCategory.equalsIgnoreCase("cars")){
+                        if (subCategory.equalsIgnoreCase("cars")) {
                             carProcedure();
-                        }else if (subCategory.equalsIgnoreCase("phone")){
+                        } else if (subCategory.equalsIgnoreCase("phone")) {
                             phoneProcedure();
-                        }else if (subCategory.toLowerCase().contains("parts")){
+                        } else if (subCategory.toLowerCase().contains("parts")) {
                             partAccessoriesComputerProcedure();
-                        }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                        } else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())) {
                             bikeProcedure();
-                        }else if (subCategory.toLowerCase().contains("moto")){
+                        } else if (subCategory.toLowerCase().contains("moto")) {
                             motoProcedure();
-                        }else{
+                        } else {
                             layoutGone();
                         }
                         brandSelector.setError(null);
@@ -1578,7 +1545,7 @@ public class AddFragment extends Fragment {
         builder.show();
     }
 
-    private void setUpSpinner(View view){
+    private void setUpSpinner(View view) {
         mainCategorySpinner = view.findViewById(R.id.categorySpinner);
         subCategorySpinner = view.findViewById(R.id.subCategorySpinner);
 
@@ -1599,7 +1566,7 @@ public class AddFragment extends Fragment {
                     subSpinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.electronic, android.R.layout.simple_spinner_item);
                 } else if (mainCategorySpinner.getSelectedItem().toString().toLowerCase().contains("vehicle")) {
                     subSpinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.vehicle, android.R.layout.simple_spinner_item);
-                }else{
+                } else {
                     subSpinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.furiture, android.R.layout.simple_spinner_item);
                 }
                 subSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1625,7 +1592,7 @@ public class AddFragment extends Fragment {
         addFragmentContext = null;
     }
 
-    private void clearDataAfterUpload(){
+    private void clearDataAfterUpload() {
         itemName.setText(null);
         amount.setText(null);
         price.setText(null);
@@ -1649,7 +1616,7 @@ public class AddFragment extends Fragment {
 
     }
 
-    private void notifyImageNumberChange(){
+    private void notifyImageNumberChange() {
         remainingImages.setText("(" +
                 imageBitmap.size() +
                 "/5)");
