@@ -97,11 +97,6 @@ public class AboutMeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (auth.getCurrentUser()!=null){
-//            if (!auth.getCurrentUser().isAnonymous()) {
-//                setHasOptionsMenu(true);
-//            }
-//        }
         setHasOptionsMenu(false);
     }
 
@@ -140,17 +135,6 @@ public class AboutMeFragment extends Fragment {
 
                         auth.signOut();
 
-//                // Create new fragment and transaction
-//                FragmentManager fragmentManager = getFragmentManager();
-//                assert fragmentManager != null;
-//                FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                transaction.setReorderingAllowed(true);
-//
-//                // Replace whatever is in the fragment_container view with this fragment
-//                transaction.replace(R.id.fragment_container, HomeFragment.class, null);
-//
-//                // Commit the transaction
-//                transaction.commit();
                         Intent intent = new Intent();
                         intent.setClass(getContext(), HomeActivity.class);
                         startActivity(intent);

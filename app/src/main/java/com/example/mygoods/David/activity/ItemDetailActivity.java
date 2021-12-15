@@ -56,13 +56,13 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     private SQLiteManager sqLiteManager;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
 
     private Item item;
-    private ArrayList<Item> similarItemData = new ArrayList<>();
-    private ArrayList<Item> filterSimilarItemData = new ArrayList<>();
-    private ArrayList<String> imageUrl = new ArrayList<String>();
-    private ArrayList<User> users = new ArrayList<>();
+    private final ArrayList<Item> similarItemData = new ArrayList<>();
+    private final ArrayList<Item> filterSimilarItemData = new ArrayList<>();
+    private final ArrayList<String> imageUrl = new ArrayList<String>();
+    private final ArrayList<User> users = new ArrayList<>();
 
     private boolean isSaved = false;
 
@@ -725,9 +725,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
 //            }
 //        });
 
-
     private void addToSaveItem() {
-        //TODO: Change documentPath to adaptive user id
         DocumentReference ref = db.collection(Constant.userCollection).document(currentUser.getUid().toString()).collection("saveItems").document(item.getItemid());
         Map<String, Object> saveItem = new HashMap<>();
         saveItem.put("itemid", item.getItemid());
@@ -748,7 +746,10 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     }
 
     private void unSaveItem() {
-        db.collection("users").whereEqualTo("userId", mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("users")
+                .whereEqualTo("userId", mAuth.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {

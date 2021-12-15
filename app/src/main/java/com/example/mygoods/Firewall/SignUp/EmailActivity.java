@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public class EmailActivity extends AppCompatActivity {
 
-    private String email,password;
+    private String email, password;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button sendEmailBtn;
     private TextInputLayout emailEdt;
@@ -49,32 +49,32 @@ public class EmailActivity extends AppCompatActivity {
                 email = emailEdt.getEditText().getText().toString().trim();
                 password = UUID.randomUUID().toString();
 
-                if (checkEmail(email)){
-                    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-                    if (auth.getCurrentUser()!=null) {
+                if (checkEmail(email)) {
+                    final AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+                    if (auth.getCurrentUser() != null) {
                         auth.getCurrentUser()
                                 .linkWithCredential(credential)
                                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                            @Override
-                            public void onSuccess(AuthResult authResult) {
-                                authResult.getUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        sendEmailBtn.setEnabled(true);
-                                        Toast.makeText(EmailActivity.this, "Verification Email Sent to " + email, Toast.LENGTH_SHORT).show();
-                                        auth.signOut();
-                                        moveToEmailVerification();
+                                    public void onSuccess(AuthResult authResult) {
+                                        authResult.getUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                sendEmailBtn.setEnabled(true);
+                                                Toast.makeText(EmailActivity.this, "Verification Email Sent to " + email, Toast.LENGTH_SHORT).show();
+                                                auth.signOut();
+                                                moveToEmailVerification();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                sendEmailBtn.setEnabled(true);
+                                                progressBar.setVisibility(View.INVISIBLE);
+                                                Toast.makeText(EmailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        sendEmailBtn.setEnabled(true);
-                                        progressBar.setVisibility(View.INVISIBLE);
-                                        Toast.makeText(EmailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 sendEmailBtn.setEnabled(true);
@@ -83,11 +83,11 @@ public class EmailActivity extends AppCompatActivity {
 //                                Toast.makeText(EmailActivity.this, "Email Exists", Toast.LENGTH_SHORT).show();
                             }
                         });
-                    }else {
+                    } else {
                         sendEmailBtn.setEnabled(true);
                         progressBar.setVisibility(View.INVISIBLE);
                     }
-                }else{
+                } else {
                     sendEmailBtn.setEnabled(true);
                     progressBar.setVisibility(View.INVISIBLE);
                 }
@@ -99,17 +99,17 @@ public class EmailActivity extends AppCompatActivity {
     private boolean checkEmail(String email) {
         boolean flag = true;
 
-        if (email.isEmpty()){
+        if (email.isEmpty()) {
             emailEdt.setError("Email is Empty");
             flag = false;
-        }else{
+        } else {
             emailEdt.setError(null);
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailEdt.setError("Email is Invalid");
             flag = false;
-        }else{
+        } else {
             emailEdt.setError(null);
         }
         return flag;
@@ -118,9 +118,9 @@ public class EmailActivity extends AppCompatActivity {
     private void moveToEmailVerification() {
         progressBar.setVisibility(View.INVISIBLE);
 
-        Intent intent = new Intent(this,EmailVerificationActivity.class);
-        intent.putExtra("email",email);
-        intent.putExtra("password",password);
+        Intent intent = new Intent(this, EmailVerificationActivity.class);
+        intent.putExtra("email", email);
+        intent.putExtra("password", password);
         startActivity(intent);
         finish();
     }

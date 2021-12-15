@@ -19,10 +19,11 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class EmailVerificationActivity extends AppCompatActivity {
     private TextView verifyEmailText;
-    private Button verifyEmailBtn,doneVerificationBtn;
+    private Button verifyEmailBtn, doneVerificationBtn;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    private String email,password;
+    private String email, password;
+
     @SuppressLint("SetTextI18n")
 
     @Override
@@ -45,31 +46,31 @@ public class EmailVerificationActivity extends AppCompatActivity {
         doneVerificationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (getIntent().getExtras()!=null){
-                    if (getIntent().getExtras().get("skipToPassword") == "true"){
+                if (getIntent().getExtras() != null) {
+                    if (getIntent().getExtras().get("skipToPassword") == "true") {
                         Intent intent = new Intent(getApplicationContext(), PersonalInformationActivity.class);
                         startActivity(intent);
                         finish();
-                    }else{
+                    } else {
                         moveToPassword();
                     }
-                }else{
+                } else {
                     moveToPassword();
                 }
             }
         });
 
-        if (getIntent().getExtras()!=null){
-            if (getIntent().getExtras().getString("email")!=null){
+        if (getIntent().getExtras() != null) {
+            if (getIntent().getExtras().getString("email") != null) {
 
                 email = getIntent().getExtras().getString("email");
 
                 verifyEmailText.setText(
                         getResources().getString(R.string.emailVerificationMessageStart)
-                        + " " + email + " "
-                        + getResources().getString(R.string.emailVerificationMessageEnd));
+                                + " " + email + " "
+                                + getResources().getString(R.string.emailVerificationMessageEnd));
             }
-            if (getIntent().getExtras().getString("password")!=null){
+            if (getIntent().getExtras().getString("password") != null) {
                 password = getIntent().getExtras().getString("password");
             }
         }
@@ -79,8 +80,8 @@ public class EmailVerificationActivity extends AppCompatActivity {
 
     private void moveToPassword() {
         Intent intent = new Intent(getApplicationContext(), PasswordActivity.class);
-        intent.putExtra("email",email);
-        intent.putExtra("password",password);
+        intent.putExtra("email", email);
+        intent.putExtra("password", password);
         startActivity(intent);
         finish();
     }
@@ -90,32 +91,30 @@ public class EmailVerificationActivity extends AppCompatActivity {
 
     }
 
-    private void sendVerificationEmail(){
-       auth.signInWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-           @Override
-           public void onSuccess(AuthResult authResult) {
-               authResult.getUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
-                   @Override
-                   public void onSuccess(Void aVoid) {
-                       auth.signOut();
-                       Toast.makeText(EmailVerificationActivity.this, "Verification Email Resent", Toast.LENGTH_SHORT).show();
-                   }
-               }).addOnFailureListener(new OnFailureListener() {
-                   @Override
-                   public void onFailure(@NonNull Exception e) {
-                       auth.signOut();
-                       Toast.makeText(EmailVerificationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                   }
-               });
-           }
-       }).addOnFailureListener(new OnFailureListener() {
-           @Override
-           public void onFailure(@NonNull Exception e) {
-               Toast.makeText(EmailVerificationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-           }
-       });
-
-
+    private void sendVerificationEmail() {
+        auth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                authResult.getUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        auth.signOut();
+                        Toast.makeText(EmailVerificationActivity.this, "Verification Email Resent", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        auth.signOut();
+                        Toast.makeText(EmailVerificationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EmailVerificationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
     }

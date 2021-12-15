@@ -28,17 +28,18 @@ public class WelcomeActivity extends AppCompatActivity {
 
 
     private boolean confirmBack = false;
+
     @Override
     public void onBackPressed() {
-        if (getIntent().getExtras() != null){
+        if (getIntent().getExtras() != null) {
             super.onBackPressed();
-        }else {
+        } else {
             if (!confirmBack) {
                 confirmBack = true;
                 Toast.makeText(getApplicationContext(), "Press Back again to exit", Toast.LENGTH_SHORT).show();
             } else {
                 Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                homeIntent.addCategory( Intent.CATEGORY_HOME );
+                homeIntent.addCategory(Intent.CATEGORY_HOME);
                 homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(homeIntent);
             }
@@ -57,7 +58,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onStart();
         if (getIntent().getExtras() == null) {
             if (auth.getUid() != null) {
-                if (auth.getCurrentUser()!=null && !auth.getCurrentUser().isAnonymous()){
+                if (auth.getCurrentUser() != null && !auth.getCurrentUser().isAnonymous()) {
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(intent);
                     finish();
@@ -66,20 +67,17 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    public void signupBtn (View V) {
-//        Intent intent = new Intent(this, SignUpActivity.class);
-//        startActivity(intent);
-
+    public void signupBtn(View V) {
         Intent intent = new Intent(this, EmailActivity.class);
         startActivity(intent);
     }
 
-    public void loginBtn (View V) {
+    public void loginBtn(View V) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
-    public void guestBtn (View V) {
+    public void guestBtn(View V) {
         auth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
             public void onSuccess(AuthResult authResult) {

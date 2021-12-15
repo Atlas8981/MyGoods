@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private Button forgotPasswordBtn;
     private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         setTitle("Log In");
 
         progressBar = findViewById(R.id.progressBar2);
-        eemail = findViewById(R.id. emaileditText);
-        ppassword = findViewById(R.id. passwordeditText);
+        eemail = findViewById(R.id.emaileditText);
+        ppassword = findViewById(R.id.passwordeditText);
         forgotPasswordBtn = findViewById(R.id.forgotPasswordBtn);
 
         forgotPasswordBtn.setOnClickListener(new View.OnClickListener() {
@@ -53,14 +54,14 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void loginuser (){
+    public void loginuser() {
 //        SQLiteManager sqLiteManager = new SQLiteManager(LoginActivity.this);
 //        sqLiteManager.open();
         progressBar.setVisibility(View.VISIBLE);
         String email = eemail.getEditText().getText().toString().trim();
         String password = ppassword.getEditText().getText().toString().trim();
 
-        if(checkViews(email,password)) {
+        if (checkViews(email, password)) {
             auth.signInWithEmailAndPassword(email, password)
                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
@@ -99,36 +100,36 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-        }else{
+        } else {
             progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
     private boolean checkViews(String email, String password) {
         boolean flag = true;
-        if (TextUtils.isEmpty(email)){
+        if (TextUtils.isEmpty(email)) {
             eemail.setError("Email is require");
             eemail.setErrorIconDrawable(null);
             progressBar.setVisibility(View.INVISIBLE);
-            flag =false;
-        }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            flag = false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             eemail.setError("Email is incorrect format");
             eemail.setErrorIconDrawable(null);
             progressBar.setVisibility(View.INVISIBLE);
-            flag =false;
+            flag = false;
         }
-        if(TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password)) {
             ppassword.setError("Password is require");
             ppassword.setErrorIconDrawable(null);
             progressBar.setVisibility(View.INVISIBLE);
-            flag =false;
+            flag = false;
         }
 
         return flag;
     }
 
 
-    public void loginBtn (View V){
+    public void loginBtn(View V) {
         loginuser();
     }
 

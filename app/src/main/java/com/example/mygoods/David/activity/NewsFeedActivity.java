@@ -87,7 +87,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (newsFeedData.size()==0) {
+                if (newsFeedData.size() == 0) {
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
@@ -98,7 +98,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (newsFeedData.size()==0 && progressDialog != null && progressDialog.isShowing()) {
+                if (newsFeedData.size() == 0 && progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                     Toast.makeText(NewsFeedActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 }
@@ -116,7 +116,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (sqLiteManager!=null){
+        if (sqLiteManager != null) {
             sqLiteManager.close();
         }
     }
@@ -156,10 +156,10 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         prepareForRefresh();
                         getRecentViewItemID();
                     }
-                }else if (intentFromCategory != null) {
+                } else if (intentFromCategory != null) {
                     prepareForRefresh();
                     getSubCategoryData();
-                }else{
+                } else {
                     //TODO: Disable swipe to refresh
                     swipeRefreshLayout.setRefreshing(false);
                     swipeRefreshLayout.setEnabled(false);
@@ -186,12 +186,12 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             NewsFeedActivity.this.setTitle(intentFromHome);
 
 
-        }else if (intentFromCategory != null){
+        } else if (intentFromCategory != null) {
             // Get items for sub category
             NewsFeedActivity.this.setTitle(intentFromCategory);
             getSubCategoryData();
 
-        }else{
+        } else {
             NewsFeedActivity.this.setTitle("Results");
             ArrayList<Item> searchData = (ArrayList<Item>) getIntent().getSerializableExtra("SearchData");
             time = (ArrayList<String>) getIntent().getSerializableExtra("SearchDataItemDuration");
@@ -200,7 +200,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             Collections.sort(newsFeedData);
             if (progressDialog != null) {
                 progressDialog.hide();
-            }else{
+            } else {
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -214,7 +214,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
     }
 
-    private void getSubCategoryData(){
+    private void getSubCategoryData() {
         dataBundle = getIntent().getExtras();
         getCategory = dataBundle.getString(Constant.intentFromSubCat).toLowerCase();
         String getMainCategory = dataBundle.getString(Constant.mainCatTitle).toLowerCase();
@@ -225,21 +225,21 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if(!queryDocumentSnapshots.isEmpty()){
+                        if (!queryDocumentSnapshots.isEmpty()) {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                             int notMatchCount = 0;
 
-                            for(DocumentSnapshot doc : list) {
+                            for (DocumentSnapshot doc : list) {
                                 //TODO: Check if MainCat equal each other
-                                if(doc.get(Constant.subCategoryField).equals(getCategory) && doc.get(Constant.mainCategoryField).equals(getMainCategory)) {
+                                if (doc.get(Constant.subCategoryField).equals(getCategory) && doc.get(Constant.mainCategoryField).equals(getMainCategory)) {
                                     Item item = doc.toObject(Item.class);
 
-                                    if (item != null){
+                                    if (item != null) {
                                         item.setItemid(doc.getId());
                                     }
 
                                     newsFeedData.add(item);
-                                }else{
+                                } else {
                                     notMatchCount += 1;
                                     if (notMatchCount == list.size()) {
                                         progressDialog.hide();
@@ -266,7 +266,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                         if (!list.isEmpty()) {
-                            for(DocumentSnapshot doc : list) {
+                            for (DocumentSnapshot doc : list) {
                                 Item trending = doc.toObject(Item.class);
                                 if (trending != null) {
                                     trending.setItemid(doc.getId());
@@ -277,7 +277,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                     generateTimeAndSellerName();
                                 }
                             }
-                        }else{
+                        } else {
                             progressDialog.hide();
                             Toast.makeText(NewsFeedActivity.this, "There are no data at the moment, try again later!", Toast.LENGTH_SHORT).show();
                         }
@@ -287,23 +287,23 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
     private void getRecentViewItemID() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null&&currentUser.isAnonymous()) {
+        if (currentUser != null && currentUser.isAnonymous()) {
             sqLiteManager = new SQLiteManager(NewsFeedActivity.this);
             sqLiteManager.open();
             Cursor cursor = sqLiteManager.fetch(Constant.recentViewTable);
-            if (cursor != null && cursor.getCount() != 0  ) {
-                do{
+            if (cursor != null && cursor.getCount() != 0) {
+                do {
                     String getItemID = cursor.getString(cursor.getColumnIndex("item_id"));
                     recentlyViewItemID.add(getItemID);
                     if (recentlyViewItemID.size() == 7) {
                         break;
                     }
-                }while (cursor.moveToNext());
+                } while (cursor.moveToNext());
                 getRecentViewItem();
-            }else{
+            } else {
                 return;
             }
-        }else {
+        } else {
 
             db.collection(Constant.userCollection)
                     .document(currentUserID)
@@ -336,6 +336,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     private int i = 0;
+
     private void getRecentViewItem() {
 
 //        for (int i = 0; i<recentlyViewItemID.size(); i++) {
@@ -356,13 +357,13 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 //                            System.out.println("NF RECENTLY VIEWWWWWWWWWWWWWWWWWWWW");
 //                            generateTimeAndSellerName();
 //                        }
-                        }else{
+                        } else {
                             deletedItem += 1;
                         }
                         i++;
-                        if (i<recentlyViewItemID.size()){
+                        if (i < recentlyViewItemID.size()) {
                             getRecentViewItem();
-                        }else{
+                        } else {
                             generateTimeAndSellerName();
                         }
                     }
@@ -378,7 +379,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
     private void getRecommendationItem() {
         preferences = (ArrayList<String>) getIntent().getSerializableExtra(Constant.dataIntentFromHome);
 
-        if (preferences != null && preferences.size()>0) {
+        if (preferences != null && preferences.size() > 0) {
             for (int i = 0; i < preferences.size(); i++) {
                 int count = i;
 
@@ -410,14 +411,14 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                             }
                                         }
                                     }
-                                    if (newsFeedData.size() == (preferences.size()-noTopViewItem)) {
+                                    if (newsFeedData.size() == (preferences.size() - noTopViewItem)) {
                                         System.out.println("PREFERENCE ADAPTER NOTIFYYYYYYYYYYYY");
                                         customAdapter.notifyDataSetChanged();
                                     }
                                 } else {
                                     noTopViewItem += 1; // Count the number of category that does not has item so that we can use this variable to handle firebase async
                                 }
-                                if (count == (preferences.size()-1)) {
+                                if (count == (preferences.size() - 1)) {
                                     generateTimeAndSellerName();
                                 }
 
@@ -425,14 +426,14 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                         });
             }
 
-        }else{
+        } else {
             Toast.makeText(NewsFeedActivity.this, "No Recommendation Data Available", Toast.LENGTH_SHORT).show();
         }
 
     }
     //////////////////////////////
 
-    private void moveToDetailActivity(int pos){
+    private void moveToDetailActivity(int pos) {
         Intent intent = new Intent();
         intent.setClass(this, ItemDetailActivity.class);
         intent.putExtra("ItemData", newsFeedData.get(pos));
@@ -451,12 +452,12 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
     private void generateTimeAndSellerName() {
         if (!newsFeedData.isEmpty()) {
-            for (int i = 0; i<newsFeedData.size(); i++) {
+            for (int i = 0; i < newsFeedData.size(); i++) {
                 ownerID.add(newsFeedData.get(i).getUserid());
 
             }
 
-            for (int o = 0; o<ownerID.size(); o++) {
+            for (int o = 0; o < ownerID.size(); o++) {
                 // Convert date
 //                String duration = calculateDate(newsFeedData.get(o).getDate());
                 String duration = Constant.calculateDate(newsFeedData.get(o).getDate());
@@ -473,7 +474,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
                                 if (user != null) {
                                     owner = user.getUsername();
-                                }else{
+                                } else {
                                     owner = "Someone";
                                 }
 
@@ -483,20 +484,20 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                                         progressDialog.hide();
                                         customAdapter.notifyDataSetChanged();
                                     }
-                                }else{
+                                } else {
 
                                     noOwner += 1;
                                 }
                             }
                         });
             }
-        }else{
+        } else {
             System.out.println("CANNOT GENERATEEEEEEEEE");
-            System.out.println("NEWSFEED SIZEEEEE: "+newsFeedData.size());
+            System.out.println("NEWSFEED SIZEEEEE: " + newsFeedData.size());
         }
     }
 
-    private String calculateDate(Date itemDate){
+    private String calculateDate(Date itemDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date dateOfItem = itemDate;
         dateFormat.format(dateOfItem);
@@ -509,7 +510,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
                 date = date / 60;
                 timeEnd = " hour(s) ";
                 if (date >= 24) {
-                    date = date/24;
+                    date = date / 24;
                     timeEnd = " day(s) ";
                 }
             }
@@ -527,7 +528,7 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
 
     }
 
-    private static class ViewHolder{
+    private static class ViewHolder {
         ImageView itemImage;
         TextView itemName;
         TextView itemPrice;
@@ -536,32 +537,32 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
         TextView itemViewCount;
     }
 
-    public class CustomAdapter extends ArrayAdapter<Item>{
+    public class CustomAdapter extends ArrayAdapter<Item> {
 
         private Context mContext;
         private int mResource;
         private ArrayList<Item> dataObjects;
 
-        public CustomAdapter(Context context, int resource, ArrayList<Item>dataObjects) {
+        public CustomAdapter(Context context, int resource, ArrayList<Item> dataObjects) {
             super(context, resource, dataObjects);
             this.mContext = context;
             this.mResource = resource;
             this.dataObjects = dataObjects;
         }
 
-        public View getView(int pos, View cView, ViewGroup parent){
+        public View getView(int pos, View cView, ViewGroup parent) {
             ViewHolder viewHolder = new ViewHolder();
-            if(cView == null){
+            if (cView == null) {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
-                cView = inflater.inflate(R.layout.custom_newsfeed,parent,false);
-                viewHolder.itemName = (TextView)cView.findViewById(R.id.titleTextView);
-                viewHolder.itemPrice = (TextView)cView.findViewById(R.id.priceTextView);
-                viewHolder.itemOwner = (TextView)cView.findViewById(R.id.postedByTextView);
-                viewHolder.itemDuration = (TextView)cView.findViewById(R.id.durationTextView);
-                viewHolder.itemViewCount = (TextView)cView.findViewById(R.id.viewCountTextView);
-                viewHolder.itemImage = (ImageView)cView.findViewById(R.id.itemImageView);
+                cView = inflater.inflate(R.layout.custom_newsfeed, parent, false);
+                viewHolder.itemName = (TextView) cView.findViewById(R.id.titleTextView);
+                viewHolder.itemPrice = (TextView) cView.findViewById(R.id.priceTextView);
+                viewHolder.itemOwner = (TextView) cView.findViewById(R.id.postedByTextView);
+                viewHolder.itemDuration = (TextView) cView.findViewById(R.id.durationTextView);
+                viewHolder.itemViewCount = (TextView) cView.findViewById(R.id.viewCountTextView);
+                viewHolder.itemImage = (ImageView) cView.findViewById(R.id.itemImageView);
                 cView.setTag(viewHolder);
-            }else{
+            } else {
                 viewHolder = (ViewHolder) cView.getTag();
             }
 
@@ -569,20 +570,21 @@ public class NewsFeedActivity extends AppCompatActivity implements SwipeRefreshL
             viewHolder.itemPrice.setText("USD " + dataObjects.get(pos).getPrice());
 
 
-            if (pos< owners.size()) {
-                for (User user: owners){
-                    if (user.getUserId().equals(dataObjects.get(pos).getUserid())){
+            if (pos < owners.size()) {
+                for (User user : owners) {
+                    if (user != null
+                            && user.getUserId().equals(dataObjects.get(pos).getUserid())) {
                         viewHolder.itemOwner.setText("Posted by: " + user.getUsername());
                     }
                 }
             }
 
 
-            if (pos<time.size()) {
+            if (pos < time.size()) {
                 viewHolder.itemDuration.setText("Posted " + time.get(pos));
             }
 
-            viewHolder.itemViewCount.setText("View: "+dataObjects.get(pos).getViews());
+            viewHolder.itemViewCount.setText("View: " + dataObjects.get(pos).getViews());
             viewHolder.itemImage.setImageResource(R.drawable.plastic);
 
             Glide.with(mContext)

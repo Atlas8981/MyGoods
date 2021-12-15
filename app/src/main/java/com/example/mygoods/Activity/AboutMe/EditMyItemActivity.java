@@ -114,7 +114,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     private LinearLayout brandLayout, conditionLayout, yearLayout, modelLayout, typeLayout;
     private TextView brandText, conditionText, yearText, modelText, typeText;
-    private TextView brandSelector, yearSelector, modelSelector, typeSelector,conditionSelector;
+    private TextView brandSelector, yearSelector, modelSelector, typeSelector, conditionSelector;
 
 
     private AddBottomSheetDialog bottomSheets;
@@ -133,17 +133,16 @@ public class EditMyItemActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
-        if (carList==null
-                || bikePartsList ==null
+        if (carList == null
+                || bikePartsList == null
                 || phoneList == null
                 || motoTypeList == null
-                || computerPartsList ==null) {
+                || computerPartsList == null) {
             getDataFromApi();
         }
 
@@ -174,7 +173,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                 try {
 
                     URL url = new URL("https://parseapi.back4app.com/classes/Car_Model_List?limit=9581&order=Make");
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestProperty("X-Parse-Application-Id", "hlhoNKjOvEhqzcVAJ1lxjicJLZNVv36GdbboZj3Z"); // This is the fake app's application id
                     urlConnection.setRequestProperty("X-Parse-Master-Key", "SNMJJF0CZZhTPhLDIqGhTlUNV9r60M2Z5spyWfXW"); // This is the fake app's readonly master key
                     try {
@@ -197,14 +196,14 @@ public class EditMyItemActivity extends AppCompatActivity {
         })).start();
     }
 
-    private void getMotobikeApi(){
+    private void getMotobikeApi() {
         (new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     URL url = new URL("https://api.trademe.co.nz/v1/Categories/MotorBikes.json");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     try {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                         StringBuilder stringBuilder = new StringBuilder();
@@ -226,7 +225,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     }
 
-    private void getBikeApi(){
+    private void getBikeApi() {
 
         (new Thread(new Runnable() {
             @Override
@@ -234,7 +233,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                 try {
                     URL url = new URL("https://api.trademe.co.nz/v1/Categories/0005.json");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     try {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                         StringBuilder stringBuilder = new StringBuilder();
@@ -258,14 +257,14 @@ public class EditMyItemActivity extends AppCompatActivity {
         })).start();
     }
 
-    private void getComputerApi(){
+    private void getComputerApi() {
         (new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     URL url = new URL("https://api.trademe.co.nz/v1/Categories/0002.json");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 //                    urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
 //                    urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
                     try {
@@ -308,7 +307,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                             "}", "utf-8");
                     URL url = new URL("https://parseapi.back4app.com/classes/Dataset_Cell_Phones_Model_Brand?count=1&limit=7418&order=Brand&keys=Brand,Model,Display_resolution&where=" + where);
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestProperty("X-Parse-Application-Id", "MEqvn3N742oOXsF33z6BFeezRkW8zXXh4nIwOQUT"); // This is the fake app's application id
                     urlConnection.setRequestProperty("X-Parse-Master-Key", "uZ1r1iHnOQr5K4WggIibVczBZSPpWfYbSRpD6INw"); // This is the fake app's readonly master key
                     try {
@@ -335,7 +334,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     private Set<Car> generateCarData(JSONObject thisData) {
 
-        Set<Car> setCars =new HashSet<>();
+        Set<Car> setCars = new HashSet<>();
 
 //        Set<String> carBrands =new HashSet<>();
 
@@ -349,8 +348,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             JSONObject jObj = null;
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -390,8 +388,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             try {
                 jObj = ja_data.getJSONObject(i);
                 assert jObj != null;
@@ -408,7 +405,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
         Set<String> bikeSet = new HashSet<>();
 
-        JSONObject jObj ;
+        JSONObject jObj;
         //extracting data array from json string
         JSONArray ja_data = null;
         try {
@@ -419,8 +416,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
 
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -447,7 +443,7 @@ public class EditMyItemActivity extends AppCompatActivity {
     }
 
     private Set<String> generateComputerData(JSONObject thisData) {
-        Set<String > computerSet = new HashSet<>();
+        Set<String> computerSet = new HashSet<>();
 
         JSONObject jObj;
 
@@ -461,8 +457,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
 
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -491,7 +486,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     private Set<Phone> generatePhoneData(JSONObject thisData) {
 
-        Set<Phone> setPhone =new HashSet<>();
+        Set<Phone> setPhone = new HashSet<>();
 
 
         //extracting data array from json string
@@ -504,8 +499,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         assert ja_data != null;
         int length = ja_data.length();
         //loop to get all json objects from data json array
-        for(int i=0; i<length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             JSONObject jObj = null;
             try {
                 jObj = ja_data.getJSONObject(i);
@@ -519,13 +513,14 @@ public class EditMyItemActivity extends AppCompatActivity {
                 double screenSize = 0;
                 try {
                     screenSize = Double.parseDouble(firstWord);
-                }catch (NumberFormatException e){}
+                } catch (NumberFormatException e) {
+                }
 
 
-                if (screenSize > 1.8 &&screenSize < 7.0){
+                if (screenSize > 1.8 && screenSize < 7.0) {
 
                     setPhone.add(new Phone(jObj.getString("Brand"),
-                            jObj.getString("Model").replace("_","")));
+                            jObj.getString("Model").replace("_", "")));
                 }
 
             } catch (JSONException e) {
@@ -536,7 +531,6 @@ public class EditMyItemActivity extends AppCompatActivity {
         return setPhone;
 
     }
-
 
 
     @Override
@@ -565,31 +559,30 @@ public class EditMyItemActivity extends AppCompatActivity {
     }
 
 
-
-    private void choosePicture(){
-        if (currentImageBitmaps.size()<5) {
+    private void choosePicture() {
+        if (currentImageBitmaps.size() < 5) {
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Select Image(s)"), REQUEST_CODE);
-        }else {
+        } else {
             Toast.makeText(this, "You cannot add more than 5 pictures", Toast.LENGTH_SHORT).show();
         }
     }
 
-//    The function to get the image from file
+    //    The function to get the image from file
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
 
 
             if (data.getClipData() != null) {
                 // picked multiple images
                 int count = data.getClipData().getItemCount();
 
-    //                Check if count >= max number of image
+                //                Check if count >= max number of image
                 int check = count + currentImageBitmaps.size();
 
                 if (count <= MAX_NUM_IMAGE && check <= MAX_NUM_IMAGE) {
@@ -598,7 +591,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
                         try {
                             Bitmap tempBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                            Bitmap rotatedBitmap = checkOrientation(getApplicationContext(),uri,tempBitmap);
+                            Bitmap rotatedBitmap = checkOrientation(getApplicationContext(), uri, tempBitmap);
                             currentImageBitmaps.add(rotatedBitmap);
                             notifyImageNumberChange();
                         } catch (IOException e) {
@@ -615,7 +608,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                 Uri uri = data.getData();
                 try {
                     Bitmap tempBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                    Bitmap rotatedBitmap = checkOrientation(getApplicationContext(),uri,tempBitmap);
+                    Bitmap rotatedBitmap = checkOrientation(getApplicationContext(), uri, tempBitmap);
                     currentImageBitmaps.add(rotatedBitmap);
                     notifyImageNumberChange();
                 } catch (IOException e) {
@@ -625,12 +618,12 @@ public class EditMyItemActivity extends AppCompatActivity {
             }
 
 
-        }else{
+        } else {
             Toast.makeText(this, "Cannot upload image, try choosing another one", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public Bitmap checkOrientation (Context context, Uri uri, Bitmap bitmap){
+    public Bitmap checkOrientation(Context context, Uri uri, Bitmap bitmap) {
 
         ExifInterface ei = null;
         try {
@@ -646,7 +639,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
         Bitmap rotatedBitmap = null;
 
-        switch(orientation) {
+        switch (orientation) {
 
             case ExifInterface.ORIENTATION_ROTATE_90:
                 rotatedBitmap = rotateImage(bitmap, 90);
@@ -678,7 +671,7 @@ public class EditMyItemActivity extends AppCompatActivity {
     private class CompressAndUpload extends AsyncTask<Bitmap, Integer, byte[]> {
 
 
-        public CompressAndUpload(){
+        public CompressAndUpload() {
         }
 
         @Override
@@ -695,13 +688,14 @@ public class EditMyItemActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {}
+        protected void onProgressUpdate(Integer... values) {
+        }
     }
 
-    private void uploadImageToFirestore (byte[] bytes){
+    private void uploadImageToFirestore(byte[] bytes) {
 
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference storageRef = firebaseStorage.getReference().child("images/" +randomKey);
+        StorageReference storageRef = firebaseStorage.getReference().child("images/" + randomKey);
 
         UploadTask uploadTask = storageRef.putBytes(bytes);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -717,14 +711,14 @@ public class EditMyItemActivity extends AppCompatActivity {
                         imagesUpload.add(imageData);
                         uploadNumber++;
 
-                        if (uploadNumber< currentImageBitmaps.size()){
+                        if (uploadNumber < currentImageBitmaps.size()) {
                             new CompressAndUpload().execute(currentImageBitmaps.get(uploadNumber));
-                        }else{
+                        } else {
                             uploadNumber = 0;
-                            if (progressDialog!=null) {
+                            if (progressDialog != null) {
                                 progressDialog.dismiss();
                             }
-                            for (int i =0;i<mitem.getImages().size();i++) {
+                            for (int i = 0; i < mitem.getImages().size(); i++) {
                                 firebaseStorage.getReference().child("images/" + mitem.getImages().get(i).getImageName()).delete();
                             }
                             uploadDataToFirestore(imagesUpload);
@@ -752,7 +746,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     }
 
-    private void uploadDataToFirestore(List<Image> images){
+    private void uploadDataToFirestore(List<Image> images) {
 
         String itemid = mitem.getItemid();
         String name = itemName.getText().toString().trim();
@@ -760,10 +754,10 @@ public class EditMyItemActivity extends AppCompatActivity {
         String descriptionString = itemDescription.getText().toString().trim();
         String phoneString = itemPhone.getText().toString().trim();
         double priceDouble = Double.parseDouble(itemPrice.getText().toString().trim());
-        if (subCategory == null){
+        if (subCategory == null) {
             subCategory = mitem.getSubCategory();
         }
-        if (mainCategory == null){
+        if (mainCategory == null) {
             mainCategory = mitem.getMainCategory();
         }
 
@@ -780,58 +774,58 @@ public class EditMyItemActivity extends AppCompatActivity {
         itemRef.document(itemid)
                 .set(updatedItem)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
 
-                if (task.isSuccessful()){
-                    additionalInfo.setCondition(conditionSelector.getText().toString().trim());
-                    firestore.collection(Constant.itemCollection)
-                            .document(mitem.getItemid())
-                            .collection("additionInfo")
-                            .document(subCategory)
-                            .set(additionalInfo)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        if (task.isSuccessful()) {
+                            additionalInfo.setCondition(conditionSelector.getText().toString().trim());
+                            firestore.collection(Constant.itemCollection)
+                                    .document(mitem.getItemid())
+                                    .collection("additionInfo")
+                                    .document(subCategory)
+                                    .set(additionalInfo)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+
+                                            if (progressDialog != null) {
+                                                progressDialog.dismiss();
+                                            }
+                                            Toast.makeText(EditMyItemActivity.this, "Data Updated", Toast.LENGTH_SHORT).show();
+//                                  When upload is successful launch the myitemAcitivity without user ability to come back
+                                            launchActivityWithoutBack();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
                                 @Override
-                                public void onSuccess(Void aVoid) {
-
-                                    if (progressDialog!=null) {
+                                public void onFailure(@NonNull Exception e) {
+                                    if (progressDialog != null) {
                                         progressDialog.dismiss();
                                     }
-                                    Toast.makeText(EditMyItemActivity.this, "Data Updated", Toast.LENGTH_SHORT).show();
-//                                  When upload is successful launch the myitemAcitivity without user ability to come back
-                                    launchActivityWithoutBack();
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-                            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            if (progressDialog!=null) {
+                            });
+
+                        } else {
+                            if (progressDialog != null) {
                                 progressDialog.dismiss();
                             }
-                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                }else {
-                    if (progressDialog!=null) {
-                        progressDialog.dismiss();
-                    }
 //                  Else stay in the same activity until everything workout
-                    Toast.makeText(EditMyItemActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-                }
+                            Toast.makeText(EditMyItemActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                        }
 
-            }
-        });
+                    }
+                });
     }
 
-//    Getting Byte from bitmap to covert
-    public static byte[] getBytesFromBitmap (Bitmap bitmap, int quality){
+    //    Getting Byte from bitmap to covert
+    public static byte[] getBytesFromBitmap(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,quality,stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
 
-//    FindViewById in the layout and other necessary things
-    private void initializeUI(){
+    //    FindViewById in the layout and other necessary things
+    private void initializeUI() {
         setTitle("Edit Item");
         progressDialog = new ProgressDialog(EditMyItemActivity.this);
 
@@ -914,14 +908,14 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     }
 
-    private void layoutGone(){
+    private void layoutGone() {
         brandLayout.setVisibility(View.GONE);
         yearLayout.setVisibility(View.GONE);
         modelLayout.setVisibility(View.GONE);
         typeLayout.setVisibility(View.GONE);
     }
 
-    private void carProcedure(){
+    private void carProcedure() {
         brandLayout.setVisibility(View.VISIBLE);
         brandText.setText("Car Information (Brand, Model, Type of Car, Year)");
         brandSelector.setText("(Enter Car Information)");
@@ -943,7 +937,7 @@ public class EditMyItemActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Car tempCar = new Car();
 
-                if (carList.size()!=0) {
+                if (carList.size() != 0) {
                     Set<String> brandList = new HashSet<>();
                     for (Car c : carList) {
                         brandList.add(c.getBrand());
@@ -961,7 +955,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
                             Set<String> modelList = new HashSet<>();
                             for (Car c : carList) {
-                                if (c.getBrand().equalsIgnoreCase(name)){
+                                if (c.getBrand().equalsIgnoreCase(name)) {
                                     modelList.add(c.getModel());
                                 }
                             }
@@ -979,12 +973,12 @@ public class EditMyItemActivity extends AppCompatActivity {
 
                                     Set<String> carTypeList = new HashSet<>();
                                     for (Car c : carList) {
-                                        if (c.getModel().equals(name)){
+                                        if (c.getModel().equals(name)) {
                                             carTypeList.add(c.getCategory());
                                         }
                                     }
                                     carTypeList.add("Other");
-                                    if (carTypeList.size()==1){
+                                    if (carTypeList.size() == 1) {
                                         for (Car c : carList) {
                                             carTypeList.add(c.getCategory());
                                         }
@@ -1009,7 +1003,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                                                 }
                                             }
                                             yearList.add("Other");
-                                            if (yearList.size()==1){
+                                            if (yearList.size() == 1) {
                                                 for (Car c : carList) {
                                                     yearList.add(c.getYear());
                                                 }
@@ -1039,7 +1033,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                     });
                     bottomSheets.show(getSupportFragmentManager(), "AddBottomSheetDialog");
 
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Please Wait A bit", Toast.LENGTH_SHORT).show();
                 }
 
@@ -1049,7 +1043,7 @@ public class EditMyItemActivity extends AppCompatActivity {
     }
 
     //    Work for Phone, Tablet
-    private void phoneProcedure(){
+    private void phoneProcedure() {
 
         brandLayout.setVisibility(View.VISIBLE);
         brandText.setText("Phone Detail (Brand, Model)");
@@ -1074,7 +1068,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                 Phone tempPhone = new Phone();
 
                 Set<String> listPhoneBrand = new HashSet<>();
-                for (Phone p: phoneList){
+                for (Phone p : phoneList) {
                     listPhoneBrand.add(p.getPhoneBrand());
                 }
                 bottomSheets = new AddBottomSheetDialog(sortSetString(listPhoneBrand));
@@ -1090,8 +1084,8 @@ public class EditMyItemActivity extends AppCompatActivity {
 
 
                         Set<String> listPhoneModel = new HashSet<>();
-                        for (Phone p: phoneList){
-                            if (p.getPhoneBrand().equalsIgnoreCase(name)){
+                        for (Phone p : phoneList) {
+                            if (p.getPhoneBrand().equalsIgnoreCase(name)) {
                                 listPhoneModel.add(p.getPhoneModel());
                             }
                         }
@@ -1122,7 +1116,7 @@ public class EditMyItemActivity extends AppCompatActivity {
     }
 
     //    For Electronic Part and accessories
-    private void partAccessoriesComputerProcedure(){
+    private void partAccessoriesComputerProcedure() {
 
         brandLayout.setVisibility(View.GONE);
         brandText.setText(null);
@@ -1162,7 +1156,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     }
 
-    private void bikeProcedure(){
+    private void bikeProcedure() {
 
 
         brandLayout.setVisibility(View.GONE);
@@ -1202,7 +1196,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         });
     }
 
-    private void motoProcedure(){
+    private void motoProcedure() {
 
         brandLayout.setVisibility(View.GONE);
         brandText.setText(null);
@@ -1241,7 +1235,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         });
     }
 
-    private ArrayList<String> sortSetString (Set<String> unsortedSet){
+    private ArrayList<String> sortSetString(Set<String> unsortedSet) {
         ArrayList<String> sortedList = new ArrayList<>(unsortedSet);
         Collections.sort(sortedList);
         return sortedList;
@@ -1268,7 +1262,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     };
 
-    private void NotifyData(){
+    private void NotifyData() {
         recyclerAdapter = new RecyclerHorizontalScrollAdapter(currentImageBitmaps);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerAdapter.setOnItemClickListener(onItemClickListener);
@@ -1278,7 +1272,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         android.app.AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.category_dialog_box,null);
+        View view = inflater.inflate(R.layout.category_dialog_box, null);
 
 
         setUpSpinner(view);
@@ -1302,17 +1296,17 @@ public class EditMyItemActivity extends AppCompatActivity {
 
                         additionalInfo = new AdditionalInfo();
 
-                        if (subCategory.equalsIgnoreCase("cars")){
+                        if (subCategory.equalsIgnoreCase("cars")) {
                             carProcedure();
-                        }else if (subCategory.equalsIgnoreCase("phone")){
+                        } else if (subCategory.equalsIgnoreCase("phone")) {
                             phoneProcedure();
-                        }else if (subCategory.toLowerCase().contains("parts")){
+                        } else if (subCategory.toLowerCase().contains("parts")) {
                             partAccessoriesComputerProcedure();
-                        }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                        } else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())) {
                             bikeProcedure();
-                        }else if (subCategory.toLowerCase().contains("moto")){
+                        } else if (subCategory.toLowerCase().contains("moto")) {
                             motoProcedure();
-                        }else{
+                        } else {
                             layoutGone();
                         }
 
@@ -1327,7 +1321,7 @@ public class EditMyItemActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void setUpSpinner(View view){
+    private void setUpSpinner(View view) {
         mainCategorySpinner = view.findViewById(R.id.categorySpinner);
         subCategorySpinner = view.findViewById(R.id.subCategorySpinner);
 
@@ -1340,7 +1334,6 @@ public class EditMyItemActivity extends AppCompatActivity {
 //        subCategorySpinner.setAdapter(subSpinnerAdapter);
 
 
-
         mainCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -1350,7 +1343,7 @@ public class EditMyItemActivity extends AppCompatActivity {
                     subSpinnerAdapter = ArrayAdapter.createFromResource(EditMyItemActivity.this, R.array.electronic, android.R.layout.simple_spinner_item);
                 } else if (mainCategorySpinner.getSelectedItem().toString().toLowerCase().contains("vehicle")) {
                     subSpinnerAdapter = ArrayAdapter.createFromResource(EditMyItemActivity.this, R.array.vehicle, android.R.layout.simple_spinner_item);
-                }else{
+                } else {
                     subSpinnerAdapter = ArrayAdapter.createFromResource(EditMyItemActivity.this, R.array.furiture, android.R.layout.simple_spinner_item);
                 }
                 subSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1362,7 +1355,7 @@ public class EditMyItemActivity extends AppCompatActivity {
 
             }
         });
-        if (mitem.getSubCategory()!=null && mitem.getMainCategory() !=null) {
+        if (mitem.getSubCategory() != null && mitem.getMainCategory() != null) {
             for (int i = 0; i < mainCategorySpinner.getCount(); i++) {
                 if (mainCategorySpinner.getItemAtPosition(i).toString().equalsIgnoreCase(mitem.getMainCategory())) {
                     mainCategorySpinner.setSelection(i);
@@ -1374,8 +1367,8 @@ public class EditMyItemActivity extends AppCompatActivity {
 
     }
 
-//    Data from Detail Activity will be place accordingly to each views
-    private void putDataIntoViews(){
+    //    Data from Detail Activity will be place accordingly to each views
+    private void putDataIntoViews() {
         bundle = getIntent().getExtras();
         mitem = new Item();
         if (bundle != null) {
@@ -1383,23 +1376,23 @@ public class EditMyItemActivity extends AppCompatActivity {
 
             itemName.setText(mitem.getName());
 
-            if (mitem.getSubCategory()!=null && mitem.getMainCategory() !=null) {
+            if (mitem.getSubCategory() != null && mitem.getMainCategory() != null) {
                 mainCategoryText.setText("Category : " + mitem.getMainCategory());
                 categorySelector.setText(mitem.getSubCategory());
                 subCategory = mitem.getSubCategory();
                 mainCategory = mitem.getMainCategory();
 
-                if (subCategory.equalsIgnoreCase("cars")){
+                if (subCategory.equalsIgnoreCase("cars")) {
                     carProcedure();
-                }else if (subCategory.equalsIgnoreCase("phone")){
+                } else if (subCategory.equalsIgnoreCase("phone")) {
                     phoneProcedure();
-                }else if (subCategory.toLowerCase().contains("parts")){
+                } else if (subCategory.toLowerCase().contains("parts")) {
                     partAccessoriesComputerProcedure();
-                }else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())){
+                } else if (subCategory.equalsIgnoreCase("Bicycle".toLowerCase())) {
                     bikeProcedure();
-                }else if (subCategory.toLowerCase().contains("moto")){
+                } else if (subCategory.toLowerCase().contains("moto")) {
                     motoProcedure();
-                }else{
+                } else {
                     layoutGone();
                 }
             }
@@ -1412,7 +1405,7 @@ public class EditMyItemActivity extends AppCompatActivity {
             recyclerAdapter = new RecyclerHorizontalScrollAdapter(currentImageBitmaps);
             recyclerView.setAdapter(recyclerAdapter);
             recyclerAdapter.setOnItemClickListener(onItemClickListener);
-            for (int i = 0; i<mitem.getImages().size();i++) {
+            for (int i = 0; i < mitem.getImages().size(); i++) {
                 Glide.with(this)
                         .load(mitem.getImages().get(i).getImageURL())
                         .into(new SimpleTarget<Drawable>() {
@@ -1434,33 +1427,34 @@ public class EditMyItemActivity extends AppCompatActivity {
                 .document(i.getItemid())
                 .collection("additionInfo")
                 .document(i.getSubCategory())
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        AdditionalInfo tempAdditionalInfo = documentSnapshot.toObject(AdditionalInfo.class);
 
-                if (tempAdditionalInfo != null) {
-                    conditionSelector.setText(tempAdditionalInfo.getCondition());
-                    if (tempAdditionalInfo.getBikeType()!=null){
-                        typeSelector.setText(tempAdditionalInfo.getBikeType());
-                    }else if (tempAdditionalInfo.getCar()!=null){
-                        brandSelector.setText(tempAdditionalInfo.getCar().toString());
+                        if (tempAdditionalInfo != null) {
+                            conditionSelector.setText(tempAdditionalInfo.getCondition());
+                            if (tempAdditionalInfo.getBikeType() != null) {
+                                typeSelector.setText(tempAdditionalInfo.getBikeType());
+                            } else if (tempAdditionalInfo.getCar() != null) {
+                                brandSelector.setText(tempAdditionalInfo.getCar().toString());
 
-                    }else if (tempAdditionalInfo.getComputerParts()!=null){
-                        typeSelector.setText(tempAdditionalInfo.getComputerParts());
+                            } else if (tempAdditionalInfo.getComputerParts() != null) {
+                                typeSelector.setText(tempAdditionalInfo.getComputerParts());
 
-                    }else if (tempAdditionalInfo.getPhone()!=null){
-                        brandSelector.setText(tempAdditionalInfo.getPhone().getPhoneBrand()
-                                + ", " +tempAdditionalInfo.getPhone().getPhoneModel() );
+                            } else if (tempAdditionalInfo.getPhone() != null) {
+                                brandSelector.setText(tempAdditionalInfo.getPhone().getPhoneBrand()
+                                        + ", " + tempAdditionalInfo.getPhone().getPhoneModel());
 
-                    }else if (tempAdditionalInfo.getMotoType()!=null){
-                        typeSelector.setText(tempAdditionalInfo.getMotoType());
+                            } else if (tempAdditionalInfo.getMotoType() != null) {
+                                typeSelector.setText(tempAdditionalInfo.getMotoType());
 
+                            }
+                            additionalInfo = tempAdditionalInfo;
+                        }
                     }
-                    additionalInfo = tempAdditionalInfo;
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -1468,26 +1462,26 @@ public class EditMyItemActivity extends AppCompatActivity {
         });
     }
 
-    private void notifyImageNumberChange(){
+    private void notifyImageNumberChange() {
         remainingImages.setText("(" + currentImageBitmaps.size() + "/5)");
     }
 
-//    Launch Activity that user cannot go back
-    private void launchActivityWithoutBack(){
+    //    Launch Activity that user cannot go back
+    private void launchActivityWithoutBack() {
         Intent intent = new Intent(EditMyItemActivity.this, MyItemActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
-//    A simple but long function body just to check if the views are all corrected and no bad data
-    private boolean checkView (){
+    //    A simple but long function body just to check if the views are all corrected and no bad data
+    private boolean checkView() {
         String errorMsg = "Here";
         boolean flag = true;
 
-        if (itemName.getText().toString().isEmpty()){
+        if (itemName.getText().toString().isEmpty()) {
             itemName.setError(errorMsg);
             flag = false;
-        }else{
+        } else {
             itemName.setError(null);
         }
         if (!itemPrice.getText().toString().isEmpty()) {
@@ -1498,50 +1492,50 @@ public class EditMyItemActivity extends AppCompatActivity {
                 itemPrice.setError("Number Format Error");
                 flag = false;
             }
-        }else {
+        } else {
             itemPrice.setError(errorMsg);
             flag = false;
         }
 
-        if (itemAddress.getText().toString().isEmpty()){
+        if (itemAddress.getText().toString().isEmpty()) {
             itemAddress.setError(errorMsg);
             flag = false;
-        }else{
+        } else {
             itemAddress.setError(null);
         }
-        if (itemPhone.getText().toString().isEmpty()){
+        if (itemPhone.getText().toString().isEmpty()) {
             itemPhone.setError(errorMsg);
             flag = false;
-        }else{
+        } else {
             itemPhone.setError(null);
         }
-        if (itemDescription.getText().toString().isEmpty()){
+        if (itemDescription.getText().toString().isEmpty()) {
             itemDescription.setError(errorMsg);
             flag = false;
-        }else if (itemDescription.getLineCount()>20){
+        } else if (itemDescription.getLineCount() > 20) {
             itemDescription.setError("Description Too Long");
             flag = false;
-        }else{
+        } else {
             itemDescription.setError(null);
         }
-        if (currentImageBitmaps.size()==0){
+        if (currentImageBitmaps.size() == 0) {
             Toast.makeText(this, "No Image Selected", Toast.LENGTH_SHORT).show();
             flag = false;
         }
 
         if (conditionSelector.getText().toString().equalsIgnoreCase("")
                 || conditionSelector.getText().toString().equalsIgnoreCase("(Condition)")
-                || conditionSelector.getText().toString().isEmpty()){
+                || conditionSelector.getText().toString().isEmpty()) {
             conditionSelector.setError("Please select Condition");
             flag = false;
-        }else {
+        } else {
             conditionSelector.setError(null);
         }
 
-        if (subCategory == null || mainCategory ==null){
+        if (subCategory == null || mainCategory == null) {
             Toast.makeText(this, "Please Choose a Category", Toast.LENGTH_SHORT).show();
             flag = false;
-        }else {
+        } else {
             if (subCategory.equalsIgnoreCase("cars")) {
                 if (additionalInfo.getCar() == null) {
                     brandSelector.setError("Please Enter Car Detail");

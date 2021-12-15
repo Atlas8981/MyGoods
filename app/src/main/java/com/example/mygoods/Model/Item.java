@@ -2,6 +2,7 @@ package com.example.mygoods.Model;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +44,7 @@ public class Item implements Serializable, Comparable<Item> {
         this.phone = phone;
         this.date = date;
         this.views = 0;
+        this.viewers = new ArrayList<>();
     }
 
     public String getSubCategory() {

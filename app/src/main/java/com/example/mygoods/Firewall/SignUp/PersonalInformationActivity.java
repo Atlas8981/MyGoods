@@ -32,7 +32,7 @@ import java.util.Date;
 
 public class PersonalInformationActivity extends AppCompatActivity {
 
-    private TextInputEditText ffirstname, llastname, uusername, pphonenumber,aaddress,eemail,ppassword,cconfirmpassword;
+    private TextInputEditText ffirstname, llastname, uusername, pphonenumber, aaddress, eemail, ppassword, cconfirmpassword;
     private Button signUpBtn;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -40,7 +40,8 @@ public class PersonalInformationActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private DocumentReference documentReference;
-    private WriteBatch batch = firestore.batch();
+    private final WriteBatch batch = firestore.batch();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +54,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
         pphonenumber = findViewById(R.id.phonenumberEditText);
         aaddress = findViewById(R.id.addressEditText);
         eemail = findViewById(R.id.emaileditText);
-        ppassword= findViewById(R.id.passwordeditText);
+        ppassword = findViewById(R.id.passwordeditText);
         cconfirmpassword = findViewById(R.id.confirmpasswordEditText);
         signUpBtn = findViewById(R.id.signUpButton);
 
@@ -129,7 +130,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
             public void onFailure(@NonNull Exception e) {
                 signUpBtn.setEnabled(true);
                 progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(PersonalInformationActivity.this, e.getMessage() , Toast.LENGTH_SHORT).show();
+                Toast.makeText(PersonalInformationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -144,7 +145,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
         finish();
     }
 
-    private void uploadLocalDataToFirestore(User user){
+    private void uploadLocalDataToFirestore(User user) {
         documentReference = firestore.collection("users").document(auth.getUid());
 
 //        User user = new User(auth.getUid(), "Paulo", "Dybala", "dybala10", "012297777", "leomessi@gmail.com", "Phnom Penh");
@@ -154,12 +155,12 @@ public class PersonalInformationActivity extends AppCompatActivity {
             public void onSuccess(Void aVoid) {
                 SQLiteManager sqLiteManager = new SQLiteManager(PersonalInformationActivity.this);
                 sqLiteManager.open();
-                Cursor recentViewItemData   = sqLiteManager.fetch(Constant.recentViewTable); // get all recentView item id + date
+                Cursor recentViewItemData = sqLiteManager.fetch(Constant.recentViewTable); // get all recentView item id + date
                 Cursor recentSearchItemData = sqLiteManager.fetch(Constant.recentSearchTable); // get all recentSearch item name + date
 
                 // Get all recentView itemID
                 if (recentViewItemData.getCount() != 0 && recentViewItemData != null) {
-                    do{
+                    do {
                         String getItemID = recentViewItemData.getString(recentViewItemData.getColumnIndex("item_id"));
                         long getDate = Long.parseLong(recentViewItemData.getString(recentViewItemData.getColumnIndex("date")));
                         getFormatDate(getDate);
@@ -168,12 +169,12 @@ public class PersonalInformationActivity extends AppCompatActivity {
                         RecentItem recentViewItem = new RecentItem(getItemID, new Timestamp(getDateFromString(getDate)));
                         documentReference = firestore.collection("users").document(auth.getUid().toString()).collection("recentView").document(getItemID);
                         batch.set(documentReference, recentViewItem);
-                    }while (recentViewItemData.moveToNext());
+                    } while (recentViewItemData.moveToNext());
                 }
 
                 // Get all recentSearch data
                 if (recentSearchItemData.getCount() != 0 && recentSearchItemData != null) {
-                    do{
+                    do {
                         String getSearchItemName = recentSearchItemData.getString(recentSearchItemData.getColumnIndex("item_id"));
                         long getDate = Long.parseLong(recentSearchItemData.getString(recentSearchItemData.getColumnIndex("date")));
 
@@ -181,7 +182,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
                         RecentItem recentSearch = new RecentItem(getSearchItemName, new Timestamp(getDateFromString(getDate))); // put searchItemName + date into an object
                         documentReference = firestore.collection("users").document(auth.getUid().toString()).collection("recentSearch").document(getSearchItemName);
                         batch.set(documentReference, recentSearch);
-                    }while (recentSearchItemData.moveToNext());
+                    } while (recentSearchItemData.moveToNext());
 
                     batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -196,7 +197,7 @@ public class PersonalInformationActivity extends AppCompatActivity {
                             Toast.makeText(PersonalInformationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                }else{
+                } else {
                     batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -226,16 +227,16 @@ public class PersonalInformationActivity extends AppCompatActivity {
     }
 
     // Method use to convert current date to String
-    private  Date getDateFromString(long date){
+    private Date getDateFromString(long date) {
 //        final SimpleDateFormat originalFormat     = new SimpleDateFormat("YYYY-MM-DD HH:MM:SS.SSS");
-        final SimpleDateFormat targetFormat       = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+        final SimpleDateFormat targetFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 
         String oldDate = getFormatDate(date);
         try {
             Date newDate = targetFormat.parse(oldDate);
-            return newDate ;
-        } catch (java.text.ParseException e){
-            return null ;
+            return newDate;
+        } catch (java.text.ParseException e) {
+            return null;
         }
     }
 
