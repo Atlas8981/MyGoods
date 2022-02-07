@@ -19,7 +19,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.mygoods.Activity.Other.FullScreenImageActivity;
-import com.example.mygoods.David.SQLite.SQLiteManager;
 import com.example.mygoods.David.others.Constant;
 import com.example.mygoods.David.others.ViewPagerAdapter;
 import com.example.mygoods.David.others.collectionview.ItemDetail.SimilarItemCollectionView;
@@ -52,8 +51,7 @@ import java.util.Set;
 public class ItemDetailActivity extends AppCompatActivity implements SimilarItemCollectionView.SimilarItemOnClickListener, Serializable, ViewPagerAdapter.OnViewPagerItemClick {
 
     private ViewPager viewPager;
-    //    private Intent intent = getIntent();
-    private SQLiteManager sqLiteManager;
+    //    private SQLiteManager sqLiteManager;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -105,11 +103,11 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (currentUser.isAnonymous()) {
-            if (sqLiteManager != null) {
-                sqLiteManager.close();
-            }
-        }
+//        if (currentUser.isAnonymous()) {
+//            if (sqLiteManager != null) {
+//                sqLiteManager.close();
+//            }
+//        }
     }
 
     private void addView() {
@@ -123,7 +121,7 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                        Item currentItem = documentSnapshot.toObject(Item.class);
+                        final Item currentItem = documentSnapshot.toObject(Item.class);
 
                         if (currentItem != null && currentItem.getViewers() != null) {
                             currentViewers.addAll(currentItem.getViewers());
@@ -137,7 +135,9 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                         currentItem.setViewers(toFirebase);
                         currentItem.setViews(currentViewers.size());
 
-                        db.collection("items").document(item.getItemid()).set(currentItem);
+                        db.collection("items")
+                                .document(item.getItemid())
+                                .set(currentItem);
                     }
                 });
 
@@ -750,24 +750,24 @@ public class ItemDetailActivity extends AppCompatActivity implements SimilarItem
                 .whereEqualTo("userId", mAuth.getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    db.collection("users")
-                            .document(documentSnapshot.getId())
-                            .collection("saveItems")
-                            .document(item.getItemid())
-                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            isSaved = false;
-                            Toast.makeText(ItemDetailActivity.this, "Item remove from save item", Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            db.collection("users")
+                                    .document(documentSnapshot.getId())
+                                    .collection("saveItems")
+                                    .document(item.getItemid())
+                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    isSaved = false;
+                                    Toast.makeText(ItemDetailActivity.this, "Item remove from save item", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
-                }
 
-            }
-        });
+                    }
+                });
     }
 
     private void CheckIfItemSaved() {
