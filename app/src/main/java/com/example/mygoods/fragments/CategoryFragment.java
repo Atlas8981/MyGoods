@@ -40,22 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CategoryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class CategoryFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
 
     private View v;
     private String[] arrCategoryTitles;
@@ -64,7 +50,7 @@ public class CategoryFragment extends Fragment {
     private PopularCategoryView[] popularCategoryView;
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference itemRef = db.collection("items");
+    private final CollectionReference itemRef = db.collection("items");
 
     private List<String> arrSubCat;
     private static List<PopularCategory> popularCategories;
@@ -76,25 +62,6 @@ public class CategoryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static CategoryFragment newInstance(String param1, String param2) {
-        CategoryFragment fragment = new CategoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -105,7 +72,7 @@ public class CategoryFragment extends Fragment {
         progressBar.setVisibility(View.INVISIBLE);
 
         swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setColorSchemeColors(Color.argb(100,56,144,255));
+        swipeRefreshLayout.setColorSchemeColors(Color.argb(100, 56, 144, 255));
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -129,15 +96,10 @@ public class CategoryFragment extends Fragment {
             }
         });
 
-        if (popularCategories != null){
+        if (popularCategories != null) {
             putDataintoPopularCategoryViews(popularCategories);
-        }else{
+        } else {
             progressBar.setVisibility(View.VISIBLE);
-//            progressDialog = new CustomProgressDialog(getContext());
-//            progressDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
-//            progressDialog.setCancelable(true);
-//            progressDialog.show();
-
             getPopularCategories();
         }
 
@@ -154,29 +116,30 @@ public class CategoryFragment extends Fragment {
 
     private int i = 0;
     private HashMap<String, Integer> mapAmoutViewPerSubCategory;
+
     private void getPopularCategoryFromFirestore() {
 //        We loop it for each subCategory
-        itemRef.whereEqualTo("subCategory",arrSubCat.get(i)).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        itemRef.whereEqualTo("subCategory", arrSubCat.get(i)).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 int totalViewsPerSubCategory = 0;
 //                top6PopularCategories.put(arrSubCat.get(i),queryDocumentSnapshots.size());
-                for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     Item tempItem = documentSnapshot.toObject(Item.class);
-                    if (tempItem.getViewers()!=null){
+                    if (tempItem.getViewers() != null) {
                         totalViewsPerSubCategory = totalViewsPerSubCategory + tempItem.getViews();
                     }
                 }
 //                For Each category we put the category name in key
 //                and total amount of View per Sub Cat in the value
-                mapAmoutViewPerSubCategory.put(arrSubCat.get(i),totalViewsPerSubCategory);
+                mapAmoutViewPerSubCategory.put(arrSubCat.get(i), totalViewsPerSubCategory);
 
 //                Check When the loop end
 
-                if (i<arrSubCat.size()-1) {
+                if (i < arrSubCat.size() - 1) {
                     i++;
                     getPopularCategoryFromFirestore();
-                }else{
+                } else {
                     //2. Then determine the top 6 popular category
                     setUpPopularCategory();
                 }
@@ -186,7 +149,7 @@ public class CategoryFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Exception e) {
                 progressBar.setVisibility(View.INVISIBLE);
-                if (swipeRefreshLayout.isRefreshing()){
+                if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -194,7 +157,7 @@ public class CategoryFragment extends Fragment {
         });
     }
 
-    private Map<String, Integer> SortHashMap(HashMap<String, Integer> unSortedMap){
+    private Map<String, Integer> SortHashMap(HashMap<String, Integer> unSortedMap) {
         //convert HashMap into List
         List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(unSortedMap.entrySet());
         //sorting the list elements
@@ -202,7 +165,7 @@ public class CategoryFragment extends Fragment {
             @Override
             public int compare(Map.Entry<String, Integer> t1, Map.Entry<String, Integer> t2) {
 //                if (order){
-                    return t2.getValue().compareTo(t1.getValue());
+                return t2.getValue().compareTo(t1.getValue());
 //                else{
 //                    return o2.getValue().compareTo(o1.getValue());
 //                }
@@ -211,7 +174,7 @@ public class CategoryFragment extends Fragment {
         });
 
         Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> entry : list){
+        for (Map.Entry<String, Integer> entry : list) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
@@ -220,7 +183,7 @@ public class CategoryFragment extends Fragment {
     }
 
 
-    private void setUpPopularCategory(){
+    private void setUpPopularCategory() {
 
 //        3. Sort data we get from firestore then put it in a list so that we can easily view
         populatePopularCategoriesList(SortHashMap(mapAmoutViewPerSubCategory));
@@ -231,8 +194,8 @@ public class CategoryFragment extends Fragment {
         popularCategories = new ArrayList<>();
 
 //        We get that sorted hashmap which is the data
-        sortedMap.entrySet().forEach(entry->{
-            popularCategories.add(new PopularCategory(entry.getKey(),findImageForSubCategory(entry.getKey())));
+        sortedMap.entrySet().forEach(entry -> {
+            popularCategories.add(new PopularCategory(entry.getKey(), findImageForSubCategory(entry.getKey())));
 //            System.out.println(entry.getKey() + " " + entry.getValue());
         });
 
@@ -240,15 +203,14 @@ public class CategoryFragment extends Fragment {
     }
 
 
-
-    private void putDataintoPopularCategoryViews(List<PopularCategory> popularCategories){
+    private void putDataintoPopularCategoryViews(List<PopularCategory> popularCategories) {
 //        initialize array of PopularCategory Views (Card Findview by id)
 
-        for (int i = 0; i< popularCategoryView.length; i++){
+        for (int i = 0; i < popularCategoryView.length; i++) {
             int position = i;
             PopularCategory currentPopCat = popularCategories.get(i);
 
-            if (getContext()!=null) {
+            if (getContext() != null) {
                 Glide.with(getContext())
                         .load(currentPopCat.getCategoryImageRes())
                         .placeholder(R.drawable.ic_camera)
@@ -267,46 +229,46 @@ public class CategoryFragment extends Fragment {
             });
         }
         progressBar.setVisibility(View.INVISIBLE);
-        if (swipeRefreshLayout.isRefreshing()){
+        if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
 
     }
 
     private int findImageForSubCategory(String subCategoryName) {
-        if (subCategoryName.equalsIgnoreCase("Bicycle")){
+        if (subCategoryName.equalsIgnoreCase("Bicycle")) {
             return R.drawable.bikepicture;
-        }else if (subCategoryName.equalsIgnoreCase("phone")){
+        } else if (subCategoryName.equalsIgnoreCase("phone")) {
             return R.drawable.phonepicture;
-        }else if (subCategoryName.equalsIgnoreCase("Parts & Accessories")
-                || subCategoryName.toLowerCase().contains("Parts".toLowerCase())){
+        } else if (subCategoryName.equalsIgnoreCase("Parts & Accessories")
+                || subCategoryName.toLowerCase().contains("Parts".toLowerCase())) {
             return R.drawable.pc;
-        }else if (subCategoryName.equalsIgnoreCase("Desktop")){
+        } else if (subCategoryName.equalsIgnoreCase("Desktop")) {
             return R.drawable.desktoppic;
-        }else if (subCategoryName.equalsIgnoreCase("cars")){
+        } else if (subCategoryName.equalsIgnoreCase("cars")) {
             return R.drawable.carpic;
-        }else if (subCategoryName.equalsIgnoreCase("laptop")){
+        } else if (subCategoryName.equalsIgnoreCase("laptop")) {
             return R.drawable.laptoppicture;
-        }else if (subCategoryName.contains("Chair & Sofa") ||
-                subCategoryName.toLowerCase().contains("Chair".toLowerCase())){
+        } else if (subCategoryName.contains("Chair & Sofa") ||
+                subCategoryName.toLowerCase().contains("Chair".toLowerCase())) {
             return R.drawable.sofapic;
-        }else if (subCategoryName.equalsIgnoreCase("Table & Desk")
-                || subCategoryName.toLowerCase().contains("Table".toLowerCase())){
+        } else if (subCategoryName.equalsIgnoreCase("Table & Desk")
+                || subCategoryName.toLowerCase().contains("Table".toLowerCase())) {
             return R.drawable.desk;
-        }else if (subCategoryName.equalsIgnoreCase("Household item")
-                || subCategoryName.toLowerCase().contains("Household".toLowerCase())){
+        } else if (subCategoryName.equalsIgnoreCase("Household item")
+                || subCategoryName.toLowerCase().contains("Household".toLowerCase())) {
             return R.drawable.householdpic;
-        }else if (subCategoryName.equalsIgnoreCase("Motobikes")
-                ||subCategoryName.toLowerCase().contains("Moto".toLowerCase())){
+        } else if (subCategoryName.equalsIgnoreCase("Motobikes")
+                || subCategoryName.toLowerCase().contains("Moto".toLowerCase())) {
             return R.drawable.motopic;
-        }else{
+        } else {
             return R.drawable.camera;
         }
     }
 
     private void initializePopularCategoryView() {
         popularCategoryView = new PopularCategoryView[6];
-        for (int i = 0; i< popularCategoryView.length; i++){
+        for (int i = 0; i < popularCategoryView.length; i++) {
             popularCategoryView[i] = new PopularCategoryView();
         }
         popularCategoryView[0].cardView = v.findViewById(R.id.card1);
@@ -332,14 +294,14 @@ public class CategoryFragment extends Fragment {
     }
 
 
-//    Normal Main Category To SubCategory
-    private void ActivateListCategory(){
+    //    Normal Main Category To SubCategory
+    private void ActivateListCategory() {
         populateListCategory();
 
         categoryRecyclerView = v.findViewById(R.id.categoryRecyclerView);
         categoryRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        RecyclerCategoryItemAdapter recyclerCategoryItemAdapter = new RecyclerCategoryItemAdapter(arrCategoryTitles,arrCategoryImages);
+        RecyclerCategoryItemAdapter recyclerCategoryItemAdapter = new RecyclerCategoryItemAdapter(arrCategoryTitles, arrCategoryImages);
 
         categoryRecyclerView.setLayoutManager(layoutManager);
         categoryRecyclerView.setAdapter(recyclerCategoryItemAdapter);
@@ -357,7 +319,7 @@ public class CategoryFragment extends Fragment {
 
     }
 
-    private void populateListCategory(){
+    private void populateListCategory() {
 
         arrCategoryTitles = getResources().getStringArray(R.array.categories);
 
@@ -369,7 +331,6 @@ public class CategoryFragment extends Fragment {
         };
 
     }
-
 
 
 }
